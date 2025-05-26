@@ -17,7 +17,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="#">Giới thiệu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Bác sĩ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../home/doctor-list.jsp">Bác sĩ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>

@@ -17,10 +17,11 @@
             <div class="col-md-4">
                 <h5>Liên kết nhanh</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">Giới thiệu</a></li>
+                    <li><a href="${pageContext.request.contextPath}/views/info/about_us.jsp" class="text-white">Giới thiệu</a></li>
+                    <li><a href="${pageContext.request.contextPath}/views/info/policies.jsp" class="text-white">Chính Sách</a></li>
                     <li><a href="#" class="text-white">Chuyên khoa</a></li>
                     <li><a href="#" class="text-white">Bác sĩ</a></li>
-                    <li><a href="#" class="text-white">Liên hệ</a></li>
+                    <li><a href="${pageContext.request.contextPath}/views/info/contact_us.jsp" class="text-white">Liên hệ</a></li>
                 </ul>
             </div>
             <div class="col-md-4">

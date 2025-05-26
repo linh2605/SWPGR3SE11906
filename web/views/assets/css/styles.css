@@ -229,3 +229,9 @@ footer a:hover {
     padding-bottom: 0;
     margin-bottom: 0;
 }
+
+        .section-title { color: #004d99; font-weight: bold; }
+        .bg-light-blue { background-color: #f0f8ff; padding: 20px; border-radius: 10px; }
+        .img-fluid { max-width: 100%; height: auto; }
+        .btn-custom { background-color: #007bff; color: white; }
+        .btn-custom:hover { background-color: #0056b3; }

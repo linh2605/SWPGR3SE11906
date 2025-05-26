@@ -320,9 +320,12 @@
     </main>
 
     <!-- Bản đồ OpenStreetMap với Leaflet -->
-    <section class="map-section mb-4">
+    <div>
+        <section class="map-section mb-4">
         <div id="map" style="height: 300px; width: 100%;"></div>
     </section>
+    </div>
+    
 
     <!-- Nhúng footer -->
     <%@ include file="../layouts/footer.jsp" %>

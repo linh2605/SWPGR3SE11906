@@ -3,7 +3,7 @@
     Created on : May 23, 2025, 3:20:14 PM
     Author     : HoangAnh
 --%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <header class="header">
     <nav class="navbar navbar-expand-lg navbar-light">
@@ -17,7 +17,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="#">Giới thiệu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../home/doctor-list.jsp">Bác sĩ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/home/doctor-list.jsp">Bác sĩ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>

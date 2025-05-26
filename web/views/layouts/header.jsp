@@ -25,7 +25,11 @@
                 </ul>
                 <div class="d-flex align-items-center">
                     <span class="hotline me-3">Hỗ trợ tư vấn: 0976054728</span>
-                    <button class="btn btn-outline-primary">Đăng ký / Đăng nhập</button>
+                    <a href="${pageContext.request.contextPath}/views/home/login.jsp" class="btn btn-outline-primary">
+                        Đăng ký / Đăng nhập
+                    </a>
+
+
                 </div>
             </div>
         </div>

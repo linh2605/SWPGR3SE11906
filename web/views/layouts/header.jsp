@@ -8,7 +8,7 @@
 <header class="header">
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/views/home/index.jsp">
                 <img src="https://picsum.photos/150/60" alt="G3 Hospital Logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

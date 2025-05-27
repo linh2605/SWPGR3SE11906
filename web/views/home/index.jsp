@@ -59,7 +59,7 @@
                     </a>
                 </div>
                 <div class="col-auto">
-                    <a href="#" class="btn btn-outline-success me-2">
+                    <a href="${pageContext.request.contextPath}/views/home/doctor-list.jsp" class="btn btn-outline-success me-2">
                         <i class="bi bi-search"></i> Tìm bác sĩ
                     </a>
                 </div>
@@ -76,6 +76,61 @@
             </div>
         </div>
     </section>
+                        
+        <!-- Modal Đặt Lịch Khám -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">Đặt Lịch Khám - G3 Hospital</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="specialty" class="form-label">Chuyên khoa</label>
+                            <select class="form-select" id="specialty" name="specialty" required>
+                                <option value="">Chọn chuyên khoa</option>
+                                <option value="co-xuong-khop">Cơ Xương Khớp</option>
+                                <option value="ngoai-tong-hop">Ngoại Tổng Hợp</option>
+                                <option value="nhi-khoa">Nhi Khoa</option>
+                                <option value="san-khoa">Sản Khoa</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="doctor" class="form-label">Bác sĩ</label>
+                            <select class="form-select" id="doctor" name="doctor" required>
+                                <option value="">Chọn bác sĩ</option>
+                                <option value="dr1">ThS.BSCKI Trịnh Minh Thanh</option>
+                                <option value="dr2">ThS.BS Nguyễn Văn Hải</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="appointmentDate" class="form-label">Ngày giờ hẹn</label>
+                            <input type="datetime-local" class="form-control" id="appointmentDate" name="appointmentDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Đặt lịch</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="container my-5">

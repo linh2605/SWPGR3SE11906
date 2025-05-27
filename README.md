@@ -22,7 +22,7 @@ This project is a homepage for a modern hospital, featuring a static list of sta
 1. Clone the repository: git clone https://github.com/linh2605/SWPGR3SE11906.git
 2. Open the project in NetBeans.
 3. Build and deploy the project on Tomcat.
-4. Access: `http://localhost:8080/ClinicManagementSystem/`.
+4. Access: `http://localhost:9999/ClinicManagementSystem/`.
 
 ## Usage
 - Navigate to the homepage to view the banner, staff list, and OpenStreetMap.

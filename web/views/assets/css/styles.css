@@ -2,15 +2,21 @@
 body {
     font-family: 'Montserrat', sans-serif;
     color: #333;
+    margin: 0;
+    background-color: #f0f8ff;
 }
 
-.header {
+/* Wrapper để căn chỉnh toàn trang */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* HEADER (Bootstrap style) */
+.navbar {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
     padding: 10px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
 }
 
 .navbar-brand img {
@@ -29,7 +35,7 @@ body {
 }
 
 .nav-link:hover {
-    color: #ffd700 !important; /* Vàng ánh hồng */
+    color: #ffd700 !important;
 }
 
 .hotline {
@@ -45,7 +51,7 @@ body {
 }
 
 .btn-outline-primary:hover {
-    background-color: #ffd700; /* Vàng ánh hồng */
+    background-color: #ffd700;
     color: #fff;
     border-color: #ffd700;
 }
@@ -180,11 +186,12 @@ body {
 footer {
     background-color: #004d99;
     color: #fff;
-    padding: 40px 0;
+    padding: 30px 0;
+    margin-top: auto;
 }
 
 footer a {
-    color: #ffd700; /* Vàng ánh hồng */
+    color: #ffd700;
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -204,7 +211,7 @@ footer a:hover {
 .function-bar {
     background-color: #f8f9fa;
     padding: 10px 0;
-    margin-top: 20px; /* Thêm khoảng cách trên để tránh lấn vào carousel */
+    margin-top: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -231,14 +238,350 @@ footer a:hover {
 }
 
 /* Style cho màn hình Lịch hẹn đã đặt */
-.section-title { color: #004d99; font-weight: bold; }
-.bg-light-blue { background-color: #f0f8ff; padding: 20px; border-radius: 10px; }
-.img-fluid { max-width: 100%; height: auto; }
-.btn-custom { background-color: #007bff; color: white; }
-.btn-custom:hover { background-color: #0056b3; }
-#calendar { max-width: 1100px; margin: 0 auto; }
-.fc-event { cursor: pointer; }
-.appointment-table { margin-top: 20px; }
-.filter-bar { margin-bottom: 20px; }
-.sync-btn { background-color: #28a745; color: white; }
-.sync-btn:hover { background-color: #218838; }
+.section-title {
+    color: #004d99;
+    font-weight: bold;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.bg-light-blue {
+    background-color: #f0f8ff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.btn-custom {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
+}
+
+#calendar {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.fc-event {
+    cursor: pointer;
+}
+
+.appointment-table {
+    margin-top: 20px;
+}
+
+.filter-bar {
+    margin-bottom: 20px;
+}
+
+.sync-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.sync-btn:hover {
+    background-color: #218838;
+}
+
+/* Style cho login.jsp */
+.login-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.login-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-box h2 {
+    color: #004d99;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.login-box p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.login-box input[type="text"]:focus,
+.login-box input[type="password"]:focus {
+    border-color: #004d99;
+    outline: none;
+}
+
+.login-box .checkbox-group {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    margin: 10px 0 20px;
+}
+
+.login-box .checkbox-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.login-box .checkbox-group input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.login-box button {
+    width: 100%;
+    background-color: #004d99;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.login-box button:hover {
+    background-color: #003366;
+    transform: scale(1.02);
+}
+
+/* Style cho admin-dashboard.jsp */
+.main {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+}
+
+.sidebar {
+    background-color: #e6f0fa;
+    width: 250px;
+    padding: 20px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
+}
+
+.sidebar h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #004d99;
+    border-bottom: 2px solid #004d99;
+    padding-bottom: 10px;
+}
+
+.sidebar a {
+    display: block;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar a:hover {
+    background-color: #004d99;
+    color: #fff;
+    transform: scale(1.02);
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Style cho about_us.jsp */
+main {
+    flex: 1;
+}
+
+.banner-img {
+    max-height: 350px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.banner-img:hover {
+    transform: scale(1.02);
+}
+
+.introduction-section,
+.history-section,
+.team-section,
+.facilities-section,
+.cooperation-section {
+    padding: 40px 20px;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.history-section,
+.facilities-section {
+    background-color: #f0f8ff;
+}
+
+.section-img {
+    max-height: 350px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.section-img:hover {
+    transform: scale(1.02);
+}
+
+section p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #555;
+}
+
+/* Style cho why_choose_us.jsp */
+main {
+    flex: 1;
+}
+
+.banner-img {
+    max-height: 350px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.banner-img:hover {
+    transform: scale(1.02);
+}
+
+.technology-section,
+.elite-team-section,
+.experience-section,
+.education-section,
+.sustainability-section {
+    padding: 40px 20px;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.elite-team-section,
+.education-section {
+    background-color: #f0f8ff;
+}
+
+.section-img {
+    max-height: 350px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.section-img:hover {
+    transform: scale(1.02);
+}
+
+section p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #555;
+}
+
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.modal-title {
+    color: #004d99;
+    font-weight: 700;
+}
+
+.modal-body .form-label {
+    color: #004d99;
+    font-weight: 600;
+}
+
+.modal-body .form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.modal-body .form-control:focus {
+    border-color: #004d99;
+    box-shadow: 0 0 5px rgba(0, 77, 153, 0.2);
+    outline: none;
+}
+
+.modal-body textarea {
+    resize: vertical;
+}
+
+.modal-body .btn-custom {
+    background-color: #004d99;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-body .btn-custom:hover {
+    background-color: #003366;
+    transform: scale(1.02);
+}
+
+/* Animation và hiệu ứng JS */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

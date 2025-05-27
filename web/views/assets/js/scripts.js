@@ -1,8 +1,22 @@
-function removeDiacritics(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
 document.addEventListener('DOMContentLoaded', function () {
-    
+    // Hiệu ứng fade-in cho content
+    const fadeElements = document.querySelectorAll('.content, .login-box');
+    fadeElements.forEach((el, index) => {
+        el.classList.add('fade-in');
+        el.style.animationDelay = `${index * 0.2}s`;
+    });
+
+    // Hiệu ứng hover cho nút và liên kết trong sidebar
+    const buttons = document.querySelectorAll('.btn-primary, .sidebar a');
+    buttons.forEach(button => {
+        button.addEventListener('mouseover', () => {
+            button.style.transform = 'scale(1.02)';
+        });
+        button.addEventListener('mouseout', () => {
+            button.style.transform = 'scale(1)';
+        });
+    });
+
     // Khởi tạo carousel banner nếu tồn tại
     if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
         console.log('Initializing carousel banner...');
@@ -92,11 +106,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('Event clicked:', info.event.id);
                 alert(
                     'Chi tiết lịch hẹn:\nID: ' +
-                        info.event.id +
-                        '\nTên: ' +
-                        info.event.title +
-                        '\nThời gian: ' +
-                        info.event.start.toLocaleString()
+                    info.event.id +
+                    '\nTên: ' +
+                    info.event.title +
+                    '\nThời gian: ' +
+                    info.event.start.toLocaleString()
                 );
             }
         });
@@ -170,10 +184,28 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         console.log('Booking form event listener attached.');
     }
-        if (document.getElementById('filterButton')) {
+    if (document.getElementById('filterButton')) {
         document.getElementById('filterButton').addEventListener('click', filterAppointments);
     }
+    
+    // Logic cho form góp ý
+    if (document.querySelector('form[action="feedback"]')) {
+        console.log('Initializing feedback form...');
+        const feedbackForm = document.querySelector('form[action="feedback"]');
+        feedbackForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            console.log('Feedback submitted:', this.elements);
+            alert('Cảm ơn bạn đã góp ý! Chúng tôi sẽ xem xét và phản hồi sớm nhất.');
+            this.reset();
+            bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+        });
+        console.log('Feedback form event listener attached.');
+    }
 });
+
+function removeDiacritics(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
 function filterAppointments() {
     const dateFilter = (document.getElementById('filterDate')?.value || '').trim();
@@ -201,7 +233,6 @@ function filterAppointments() {
     });
 }
 
-
 function viewDetails(id) {
     console.log('Viewing details for appointment ID:', id);
     alert('Xem chi tiết lịch hẹn ID: ' + id);
@@ -217,5 +248,4 @@ function cancelAppointment(id) {
 function syncWithExternalCalendar() {
     console.log('Syncing with external calendar...');
     alert('Đồng bộ với lịch ngoài: Tính năng này sẽ tích hợp với Google Calendar hoặc Outlook.');
-    // Logic đồng bộ sẽ được triển khai sau
 }

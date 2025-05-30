@@ -1,175 +1,84 @@
 <%-- 
-    Document   : giaodien_patientmanager
-    Created on : May 28, 2025, 5:08:45 AM
-    Author     : THANH
+    Document   : admin-dashboard
+    Created on : May 26, 2025, 5:17:03 AM
+    Author     : tamthui
 --%>
-
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Patient Manager</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        .sidebar {
-            width: 200px;
-            background-color: #0f172a;
-            color: white;
-            height: 100vh;
-            float: left;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .main {
-            margin-left: 200px;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 28px;
-        }
-
-        .search-bar {
-            float: right;
-            margin-top: -50px;
-        }
-
-        .search-bar input[type="text"] {
-            padding: 5px;
-            width: 200px;
-        }
-
-        .search-bar input[type="submit"] {
-            padding: 5px 10px;
-            background-color: #1d4ed8;
-            color: white;
-            border: none;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f3f4f6;
-        }
-
-        .action {
-            color: #1d4ed8;
-            cursor: pointer;
-        }
-
-        .icon {
-            text-align: center;
-        }
-
-        .pagination {
-            margin-top: 20px;
-            text-align: right;
-        }
-
-        .pagination span, .pagination a {
-            margin: 0 5px;
-            padding: 6px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-decoration: none;
-            color: black;
-        }
-
-        .pagination .active {
-            background-color: #3b82f6;
-            color: white;
-        }
-    </style>
+    <title>Admin Dashboard - G3 Hospital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
 </head>
 <body>
-
-<div class="sidebar">
-    <img src="images/avatar.png" alt="Avatar" width="64" height="64" style="border-radius: 50%;">
-    <h3>Parker Whitson</h3>
-    <p>parker@gmail.com</p>
-    <p>Patient manage</p>
-</div>
-
-<div class="main">
-    <h1>Patient manager</h1>
-
-    <div class="search-bar">
-        <form action="search.jsp" method="get">
-            <input type="text" name="query" placeholder="🔍 Search..." />
-            <input type="submit" value="Search" />
-        </form>
+<div class="wrapper">
+    <%@ include file="../layouts/header.jsp" %>
+    <!-- BODY -->
+    <div class="main">
+        <div class="sidebar">
+            <h3>ADMIN DASHBOARD</h3>
+            <a href="doctorManager.jsp">Quản lý bác sĩ</a>
+            <a href="userManager.jsp">Quản lý bệnh nhân</a>
+        </div>
+        <div class="content">
+            <h2>Quản lý bệnh nhân</h2>
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>FullName</th>
+                    <th>Number Phone</th>
+                    <th>Birth of date</th>
+                    <th>Avatar</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Nguyễn Văn A</td>
+                    <td>0123456789</td>
+                    <td>01/01/2000</td>
+                    <td><a href="#">link avatar</a></td>
+                    <td>328 Ba Trieu Street</td>
+                    <td>
+                        View( Or Edit)
+                        <a href="#" class="ms-2 text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4z"/>
+                                <path d="M.05 4.555L8 9.414l7.95-4.86A1.99 1.99 0 0 0 14 4H2c-.73 0-1.378.195-1.95.555z"/>
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Phạm Thị B</td>
+                    <td>0123456789</td>
+                    <td>01/01/2000</td>
+                    <td><a href="#">link avatar</a></td>
+                    <td>406 Tran Hung Dao Street, Ward 2, District 5</td>
+                    <td>
+                        View( Or Edit)
+                        <a href="#" class="ms-2 text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4z"/>
+                                <path d="M.05 4.555L8 9.414l7.95-4.86A1.99 1.99 0 0 0 14 4H2c-.73 0-1.378.195-1.95.555z"/>
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>FullName</th>
-                <th>Number Phone</th>
-                <th>Birth of date</th>
-                <th>Avatar</th>
-                <th>Address</th>
-                <th>Action</th>
-                <th class="icon">📩</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%
-                String[] names = {
-                    "Nguyễn Văn A", "Phạm Thị B", "Trần Ngọc C", "Doãn Chí D", "Đỗ Ngọc E", "Hà Chí G", "Vũ Văn H",
-                    "Lê Quốc I", "Hồ Quang K", "Trịnh Tuấn L", "Phùng Quang M", "Hoàng Hải N", "Bùi Đình P",
-                    "Dương Quang Q", "Đinh Sơn S", "Vũ Như T", "Trương Thanh V"
-                };
-                String[] addresses = {
-                    "328 Ba Trieu Street", "406 Tran Hung Dao Street, Ward 2, District 5", "41 Tran Quy, Ward 4, Dist.11",
-                    "5/5 CACH MANG THANG TAM STREET", "B1.3-2, Ward 12, Dist.10", "82 Giai Phong St, Ward 14",
-                    "59 Pho Duc Chinh Street", "287-289 Hung Vuong, Ward 9, Dist.5", "125 Phan Van Truong St.",
-                    "96 Tran Hung Dao", "3B Giang Vo St., Lane 43", "83 Chua Boc, Trung Liet Ward",
-                    "23 Kim Dong Street, Lane 19", "83A Le Van Viet, KP3", "32 National Highway 19",
-                    "129 Au Co, Ward 14", "44 Ly Thuong Kiet st., Ward"
-                };
 
-                for (int i = 0; i < names.length; i++) {
-            %>
-            <tr>
-                <td><%= i + 1 %></td>
-                <td><%= names[i] %></td>
-                <td>0123456789</td>
-                <td>01/01/2000</td>
-                <td><a href="#">link avatar</a></td>
-                <td><%= addresses[i] %></td>
-                <td class="action">View( Or Edit)</td>
-                <td class="icon"><img src="images/01.png" alt="action" width="30" height="20" style="border-radius: 20%;"></td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
-
-    <div class="pagination">
-        <span>Previous</span>
-        <a href="#">1</a>
-        <span class="active">2</span>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <a href="#">Next</a>
-    </div>
+    <%@ include file="../layouts/footer.jsp" %>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+<script src="${pageContext.request.contextPath}/views/assets/js/scripts.js"></script>
 </body>
 </html>
-

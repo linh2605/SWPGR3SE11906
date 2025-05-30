@@ -1,16 +1,32 @@
-"nbproject/private/" 
-"build/" 
-"dist/" 
-/build/
-/dist/
+# ====================================
+# NetBeans-specific files and folders
+# ====================================
 nbproject/private/
 nbproject/build-impl.xml
 nbproject/genfiles.properties
+
+# =======================
+# Build output directories
+# =======================
 build/
 dist/
+
+# ==================================
+# Java generated class and artifact files
+# ==================================
+*.class
+*.war
+
+# ==================================
+# NetBeans generated sources
+# ==================================
 build/web/WEB-INF/classes/
 build/generated-sources/
 build/generated-web-pages/
 build/web/META-INF/
-*.war
-*.class
+
+# ==================================
+# External libraries (keep lib folder)
+# ==================================
+!lib/
+!lib/*.jar

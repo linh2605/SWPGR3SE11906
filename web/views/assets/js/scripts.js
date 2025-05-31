@@ -1,218 +1,230 @@
+// Đặt biến toàn cục để sử dụng ở nhiều nơi
+let calendar;
+
+// Lấy role_id và contextPath từ server (phải được gán trong .jsp)
+const roleId = window.roleId || null;
+const contextPath = window.contextPath || '';
+
 document.addEventListener('DOMContentLoaded', function () {
-    // Hiệu ứng fade-in cho content
+    // Hiệu ứng fade-in
     const fadeElements = document.querySelectorAll('.content, .login-box');
     fadeElements.forEach((el, index) => {
         el.classList.add('fade-in');
         el.style.animationDelay = `${index * 0.2}s`;
     });
 
-    // Hiệu ứng hover cho nút và liên kết trong sidebar
+    // Hiệu ứng hover cho nút và sidebar
     const buttons = document.querySelectorAll('.btn-primary, .sidebar a');
     buttons.forEach(button => {
-        button.addEventListener('mouseover', () => {
-            button.style.transform = 'scale(1.02)';
-        });
-        button.addEventListener('mouseout', () => {
-            button.style.transform = 'scale(1)';
-        });
+        button.addEventListener('mouseover', () => button.style.transform = 'scale(1.02)');
+        button.addEventListener('mouseout', () => button.style.transform = 'scale(1)');
     });
 
-    // Khởi tạo carousel banner nếu tồn tại
+    // Khởi tạo carousel
     if (typeof bootstrap !== 'undefined' && bootstrap.Carousel) {
-        console.log('Initializing carousel banner...');
-        var bannerEl = document.getElementById('carouselBanner');
-        if (bannerEl) {
-            var carouselBanner = new bootstrap.Carousel(bannerEl, {
-                interval: 3000,
-                ride: 'carousel'
-            });
-            console.log('Carousel banner initialized.');
-        } else {
-            console.warn('#carouselBanner not found.');
-        }
+        const bannerEl = document.getElementById('carouselBanner');
+        if (bannerEl) new bootstrap.Carousel(bannerEl, { interval: 3000, ride: 'carousel' });
 
-        console.log('Initializing doctor carousel...');
-        var doctorEl = document.getElementById('doctorCarousel');
-        if (doctorEl) {
-            var doctorCarousel = new bootstrap.Carousel(doctorEl, {
-                interval: 3000,
-                ride: 'carousel'
-            });
-            console.log('Doctor carousel initialized.');
-        } else {
-            console.warn('#doctorCarousel not found.');
-        }
-    } else {
-        console.warn('Bootstrap JS is not loaded properly.');
+        const doctorEl = document.getElementById('doctorCarousel');
+        if (doctorEl) new bootstrap.Carousel(doctorEl, { interval: 3000, ride: 'carousel' });
     }
 
-    // Khởi tạo bản đồ OpenStreetMap với Leaflet nếu tồn tại
+    // Khởi tạo bản đồ OpenStreetMap
     if (typeof L !== 'undefined' && document.getElementById('map')) {
-        console.log('Initializing map...');
-        var map = L.map('map').setView([21.0134, 105.5265], 15);
-        console.log('Map view set.');
-
+        const map = L.map('map').setView([21.0134, 105.5265], 15);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
-        console.log('Tile layer added to map.');
 
-        var marker = L.marker([21.0134, 105.5265]).addTo(map);
-        console.log('Marker added to map.');
-
+        const marker = L.marker([21.0134, 105.5265]).addTo(map);
         marker.on('click', function () {
-            console.log('Marker clicked.');
-            var lat = 21.0134;
-            var lng = 105.5265;
-            var label = encodeURIComponent('Đại học FPT, Khu Công nghệ cao Hòa Lạc, Thạch Thất, Hà Nội');
-            var url = `geo:${lat},${lng}?q=${lat},${lng}(${label})`;
+            const lat = 21.0134, lng = 105.5265;
+            const label = encodeURIComponent('Đại học FPT, Khu Công nghệ cao Hòa Lạc, Thạch Thất, Hà Nội');
+            const url = `geo:${lat},${lng}?q=${lat},${lng}(${label})`;
             window.location.href = url;
-            setTimeout(function () {
-                console.log('Opening fallback map URL...');
+            setTimeout(() => {
                 window.open(`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`, '_blank');
             }, 500);
         });
-    } else {
-        console.warn('Leaflet JS is not loaded properly or map element not found.');
     }
 
-    // Logic cho trang appointments.jsp
-    if (document.getElementById('calendar')) {
-        console.log('Initializing appointments page...');
-        var calendarEl = document.getElementById('calendar');
-        if (!calendarEl) {
-            console.error('Calendar element not found!');
-            return;
-        }
-        console.log('Calendar element found, initializing FullCalendar...');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: [
-                {
-                    id: '1',
-                    title: 'Hẹn với ThS.BSCKI Trịnh Minh Thanh',
-                    start: '2025-05-27T10:00:00',
-                    className: 'fc-event-pending'
+    // Logic cho các trang dashboard
+    ['appointments', 'doctorDashboard', 'receptionistDashboard'].forEach(pageId => {
+        if (document.getElementById('calendar') && document.getElementById(pageId)) {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    let url = '';
+                    if (pageId === 'appointments') url = `${contextPath}/getAppointments`;
+                    else if (pageId === 'doctorDashboard') url = `${contextPath}/getDoctorAppointments`;
+                    else if (pageId === 'receptionistDashboard') url = `${contextPath}/getAllAppointments`;
+
+                    $.ajax({
+                        url: url,
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            const events = data.map(appt => ({
+                                id: appt.id,
+                                title: `Hẹn với ${appt.doctor} (${appt.patient})`,
+                                start: appt.dateTime,
+                                className: 'fc-event-' + appt.status
+                            }));
+                            successCallback(events);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(`Error fetching ${pageId} appointments:`, error);
+                            failureCallback(error);
+                        }
+                    });
                 },
-                {
-                    id: '2',
-                    title: 'Hẹn với ThS.BS Nguyễn Văn Hải',
-                    start: '2025-05-28T14:00:00',
-                    className: 'fc-event-completed'
+                eventClick: function(info) {
+                    alert(`Chi tiết lịch hẹn:\nID: ${info.event.id}\nTên: ${info.event.title}\nThời gian: ${info.event.start.toLocaleString('vi-VN')}`);
                 }
-            ],
-            eventClick: function (info) {
-                console.log('Event clicked:', info.event.id);
-                alert(
-                    'Chi tiết lịch hẹn:\nID: ' +
-                    info.event.id +
-                    '\nTên: ' +
-                    info.event.title +
-                    '\nThời gian: ' +
-                    info.event.start.toLocaleString()
-                );
-            }
-        });
-        calendar.render();
-        console.log('FullCalendar rendered.');
+            });
+            calendar.render();
 
-        var appointmentList = document.getElementById('appointmentList');
-        if (!appointmentList) {
-            console.error('Appointment list element not found!');
-            return;
+            // Điền bộ lọc
+            populateFilters(pageId);
         }
-        console.log('Appointment list element found, populating data...');
-        const appointments = [
-            {
-                id: '1',
-                datetime: '27/05/2025 10:00',
-                doctor: 'ThS.BSCKI Trịnh Minh Thanh',
-                patient: 'Nguyễn Văn A',
-                status: 'Đang chờ'
-            },
-            {
-                id: '2',
-                datetime: '28/05/2025 14:00',
-                doctor: 'ThS.BS Nguyễn Văn Hải',
-                patient: 'Trần Thị B',
-                status: 'Hoàn thành'
+
+        const appointmentList = document.getElementById('appointmentList');
+        if (appointmentList && document.getElementById(pageId)) {
+            function loadAppointments() {
+                let url = '';
+                if (pageId === 'appointments') url = `${contextPath}/getAppointments`;
+                else if (pageId === 'doctorDashboard') url = `${contextPath}/getDoctorAppointments`;
+                else if (pageId === 'receptionistDashboard') url = `${contextPath}/getAllAppointments`;
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        appointmentList.innerHTML = '';
+                        data.forEach(appt => {
+                            const row = document.createElement('tr');
+                            let actions = `<button class="btn btn-sm btn-primary" onclick="viewDetails('${appt.id}')">Xem</button>`;
+                            if (pageId === 'receptionistDashboard') {
+                                actions += `
+                                    <button class="btn btn-sm btn-success" onclick="updateStatus('${appt.id}', 'completed')">Hoàn thành</button>
+                                    <button class="btn btn-sm btn-danger" onclick="updateStatus('${appt.id}', 'canceled')">Hủy</button>
+                                `;
+                            }
+                            row.innerHTML = `
+                                <td>${appt.id}</td>
+                                <td>${new Date(appt.dateTime).toLocaleString('vi-VN')}</td>
+                                <td>${appt.doctor}</td>
+                                <td>${appt.patient}</td>
+                                <td>${appt.status === 'pending' ? 'Đang chờ' : appt.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}</td>
+                                <td>${actions}</td>
+                            `;
+                            appointmentList.appendChild(row);
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(`Error loading ${pageId} appointments:`, error);
+                    }
+                });
             }
-        ];
-        appointments.forEach(appt => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${appt.id}</td>
-                <td>${appt.datetime}</td>
-                <td>${appt.doctor}</td>
-                <td>${appt.patient}</td>
-                <td>${appt.status}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary" onclick="viewDetails('${appt.id}')">Xem</button>
-                    <button class="btn btn-sm btn-danger" onclick="cancelAppointment('${appt.id}')">Hủy</button>
-                </td>
-            `;
-            appointmentList.appendChild(row);
-        });
-        console.log('Appointment data populated.');
 
-        document.getElementById('filterDate').addEventListener('change', filterAppointments);
-        document.getElementById('filterDoctor').addEventListener('change', filterAppointments);
-        document.getElementById('filterStatus').addEventListener('change', filterAppointments);
-        document.getElementById('search').addEventListener('input', filterAppointments);
-        console.log('Filter event listeners attached.');
+            loadAppointments();
 
-        const syncBtn = document.getElementById('syncCalendarBtn');
-        if (syncBtn) {
-            syncBtn.addEventListener('click', syncWithExternalCalendar);
-            console.log('Sync button event listener attached.');
-        } else {
-            console.error('Sync button not found!');
+            document.getElementById('filterDate')?.addEventListener('change', filterAppointments);
+            document.getElementById('filterDoctor')?.addEventListener('change', filterAppointments);
+            document.getElementById('filterPatient')?.addEventListener('change', filterAppointments);
+            document.getElementById('filterStatus')?.addEventListener('change', filterAppointments);
+            document.getElementById('search')?.addEventListener('input', filterAppointments);
+            document.getElementById('filterButton')?.addEventListener('click', filterAppointments);
+            document.getElementById('syncCalendarBtn')?.addEventListener('click', syncWithExternalCalendar);
         }
-    }
+    });
 
-    // Logic cho form đặt lịch (index.jsp)
+    // Form đặt lịch
     if (document.getElementById('bookingForm')) {
-        console.log('Initializing booking form...');
         const bookingForm = document.getElementById('bookingForm');
         bookingForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            console.log('Form submitted:', this.elements);
             alert('Đặt lịch thành công! Chúng tôi sẽ liên hệ để xác nhận.');
             this.reset();
             bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
         });
-        console.log('Booking form event listener attached.');
     }
-    if (document.getElementById('filterButton')) {
-        document.getElementById('filterButton').addEventListener('click', filterAppointments);
-    }
-    
-    // Logic cho form góp ý
-    if (document.querySelector('form[action="feedback"]')) {
-        console.log('Initializing feedback form...');
-        const feedbackForm = document.querySelector('form[action="feedback"]');
+
+    // Form góp ý
+    const feedbackForm = document.querySelector('form[action="feedback"]');
+    if (feedbackForm) {
         feedbackForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            console.log('Feedback submitted:', this.elements);
             alert('Cảm ơn bạn đã góp ý! Chúng tôi sẽ xem xét và phản hồi sớm nhất.');
             this.reset();
             bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
         });
-        console.log('Feedback form event listener attached.');
     }
 });
 
+// Điền dữ liệu cho bộ lọc
+function populateFilters(pageId) {
+    let url = '';
+    if (pageId === 'appointments') url = `${contextPath}/getAppointments`;
+    else if (pageId === 'doctorDashboard') url = `${contextPath}/getDoctorAppointments`;
+    else if (pageId === 'receptionistDashboard') url = `${contextPath}/getAllAppointments`;
+
+    $.ajax({
+        url: url,
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            const dates = new Set();
+            const doctors = new Set();
+            const patients = new Set();
+
+            data.forEach(appt => {
+                const date = new Date(appt.dateTime).toLocaleDateString('vi-VN');
+                dates.add(date);
+                doctors.add(appt.doctor);
+                patients.add(appt.patient);
+            });
+
+            const filterDate = document.getElementById('filterDate');
+            if (filterDate) {
+                filterDate.innerHTML = '<option value="">Tất cả</option>';
+                dates.forEach(date => {
+                    filterDate.innerHTML += `<option value="${date}">${date}</option>`;
+                });
+            }
+
+            const filterDoctor = document.getElementById('filterDoctor');
+            if (filterDoctor) {
+                filterDoctor.innerHTML = '<option value="">Tất cả</option>';
+                doctors.forEach(doctor => {
+                    filterDoctor.innerHTML += `<option value="${doctor}">${doctor}</option>`;
+                });
+            }
+
+            const filterPatient = document.getElementById('filterPatient');
+            if (filterPatient) {
+                filterPatient.innerHTML = '<option value="">Tất cả</option>';
+                patients.forEach(patient => {
+                    filterPatient.innerHTML += `<option value="${patient}">${patient}</option>`;
+                });
+            }
+        }
+    });
+}
+
+// Utilities
 function removeDiacritics(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 function filterAppointments() {
     const dateFilter = (document.getElementById('filterDate')?.value || '').trim();
-    const doctorFilter = removeDiacritics(document.getElementById('filterDoctor')?.value || '').trim();
+    const doctorFilter = removeDiacritics(document.getElementById('filterDoctor')?.value || document.getElementById('filterPatient')?.value || '').trim();
     const statusFilter = removeDiacritics(document.getElementById('filterStatus')?.value || '').trim();
     const searchText = removeDiacritics(document.getElementById('search')?.value || '').trim();
-
     const rows = document.querySelectorAll('#appointmentList tr');
 
     rows.forEach(row => {
@@ -225,7 +237,7 @@ function filterAppointments() {
         const status = removeDiacritics(cells[4].textContent.trim());
 
         const matchesDate = !dateFilter || datetime.includes(dateFilter);
-        const matchesDoctor = !doctorFilter || doctor.includes(doctorFilter);
+        const matchesDoctor = !doctorFilter || doctor.includes(doctorFilter) || patient.includes(doctorFilter);
         const matchesStatus = !statusFilter || status.includes(statusFilter);
         const matchesSearch = !searchText || patient.includes(searchText) || doctor.includes(searchText);
 
@@ -234,18 +246,73 @@ function filterAppointments() {
 }
 
 function viewDetails(id) {
-    console.log('Viewing details for appointment ID:', id);
     alert('Xem chi tiết lịch hẹn ID: ' + id);
 }
 
-function cancelAppointment(id) {
-    console.log('Canceling appointment ID:', id);
-    if (confirm('Bạn có chắc muốn hủy lịch hẹn ID: ' + id + '?')) {
-        alert('Đã hủy lịch hẹn ID: ' + id);
-    }
+function syncWithExternalCalendar() {
+    if (!calendar) return alert('Lịch chưa được tải.');
+    const events = calendar.getEvents().map(event => ({
+        title: event.title,
+        start: event.start.toISOString(),
+        end: event.end ? event.end.toISOString() : null
+    }));
+    const googleCalendarUrl = 'https://www.google.com/calendar/render';
+    const eventData = encodeURIComponent(JSON.stringify(events));
+    window.open(`${googleCalendarUrl}?action=TEMPLATE&text=Appointments&dates=${events[0].start}/${events[0].end || events[0].start}&details=${eventData}`, '_blank');
+    alert('Đồng bộ với Google Calendar. Vui lòng kiểm tra và lưu thủ công.');
 }
 
-function syncWithExternalCalendar() {
-    console.log('Syncing with external calendar...');
-    alert('Đồng bộ với lịch ngoài: Tính năng này sẽ tích hợp với Google Calendar hoặc Outlook.');
+function updateStatus(id, status) {
+    if (roleId != 3) {
+        alert('Bạn không có quyền cập nhật trạng thái!');
+        return;
+    }
+
+    if (confirm(`Bạn có chắc muốn cập nhật trạng thái lịch hẹn ID: ${id} thành ${status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}?`)) {
+        $.ajax({
+            url: `${contextPath}/updateAppointmentStatus`,
+            method: 'POST',
+            data: { id: id, status: status },
+            success: function() {
+                alert('Cập nhật trạng thái thành công!');
+                if (typeof calendar !== 'undefined') calendar.refetchEvents();
+                // Gọi lại loadAppointments để làm mới danh sách
+                const appointmentList = document.getElementById('appointmentList');
+                if (appointmentList) {
+                    const pageId = document.getElementById('receptionistDashboard') ? 'receptionistDashboard' : null;
+                    if (pageId) {
+                        let url = `${contextPath}/getAllAppointments`;
+                        $.ajax({
+                            url: url,
+                            method: 'GET',
+                            dataType: 'json',
+                            success: function(data) {
+                                appointmentList.innerHTML = '';
+                                data.forEach(appt => {
+                                    const row = document.createElement('tr');
+                                    let actions = `<button class="btn btn-sm btn-primary" onclick="viewDetails('${appt.id}')">Xem</button>`;
+                                    actions += `
+                                        <button class="btn btn-sm btn-success" onclick="updateStatus('${appt.id}', 'completed')">Hoàn thành</button>
+                                        <button class="btn btn-sm btn-danger" onclick="updateStatus('${appt.id}', 'canceled')">Hủy</button>
+                                    `;
+                                    row.innerHTML = `
+                                        <td>${appt.id}</td>
+                                        <td>${new Date(appt.dateTime).toLocaleString('vi-VN')}</td>
+                                        <td>${appt.doctor}</td>
+                                        <td>${appt.patient}</td>
+                                        <td>${appt.status === 'pending' ? 'Đang chờ' : appt.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}</td>
+                                        <td>${actions}</td>
+                                    `;
+                                    appointmentList.appendChild(row);
+                                });
+                            }
+                        });
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Lỗi khi cập nhật trạng thái: ' + error);
+            }
+        });
+    }
 }

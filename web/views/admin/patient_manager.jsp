@@ -1,8 +1,3 @@
-<%-- 
-    Document   : admin-dashboard
-    Created on : May 26, 2025, 5:17:03 AM
-    Author     : tamthui
---%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>

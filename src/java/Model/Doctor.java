@@ -2,7 +2,13 @@ package Model;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import lombok.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Doctor {
     public int doctor_id;
     public User user;

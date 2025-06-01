@@ -1,40 +1,66 @@
-# ClinicManagementSystem
 
-A homepage for a modern hospital integrated with OpenStreetMap.
+ 🏥 Dự án SWPGR3SE11906 – Hệ thống Quản lý Bệnh viện G3
 
-## Summary
-This project is a homepage for a modern hospital, featuring a static list of staff and a marker with click-to-open map functionality using OpenStreetMap.
+> Mô phỏng hệ thống đặt lịch khám và quản lý bệnh viện
 
-## Description
-- Developed a responsive hospital homepage using Bootstrap.
-- Integrated JSTL for enhanced JSP functionality.
-- Added OpenStreetMap with a marker for location-based interaction.
-- Designed with a user-friendly interface and organized code structure.
+---
 
-## Getting Started
+ 📌 Giới thiệu
 
-### Prerequisites
-- Apache Tomcat (e.g., 9.0.x)
-- NetBeans IDE
-- Internet connection (for loading CDN resources)
+Dự án xây dựng hệ thống quản lý bệnh viện với các chức năng chính:
 
-### Installation
-1. Clone the repository: git clone https://github.com/linh2605/SWPGR3SE11906.git
-2. Open the project in NetBeans.
-3. Build and deploy the project on Tomcat.
-4. Access: `http://localhost:9999/ClinicManagementSystem/`.
+- Đặt lịch khám bệnh trực tuyến
+- Quản lý thông tin bác sĩ, bệnh nhân
+- Quản lý chuyên khoa, dịch vụ
+- Lịch làm việc của bác sĩ
+- Xác thực và phân quyền người dùng
 
-## Usage
-- Navigate to the homepage to view the banner, staff list, and OpenStreetMap.
-- Click the marker on the map to open the default map app on your device.
+---
 
-## Contributing
-- Feel free to fork this repository and submit pull requests for improvements.
+ 💻 Công nghệ sử dụng
 
-## License
-- No specific license applied. Use at your own discretion.
+- Ngôn ngữ: Java  
+- Framework: Jakarta EE (Servlet, JSP)  
+- IDE: NetBeans  
+- Cơ sở dữ liệu: MySQL  
+- Thư viện: Jakarta Servlet, JDBC, JSTL  
+- Giao diện: HTML, CSS, JavaScript, Bootstrap  
 
-## Acknowledgments
-- Bootstrap for responsive design.
-- Leaflet.js for OpenStreetMap integration.
-- Google Fonts for typography.
+---
+
+
+ 🚀 Hướng dẫn cài đặt và chạy dự án
+
+ 1. Clone dự án:
+
+git clone https://github.com/linh2605/SWPGR3SE11906.git
+
+
+ 2. Mở bằng NetBeans:
+- File → Open Project → chọn thư mục `SWPGR3SE11906`
+
+ 3. Cấu hình cơ sở dữ liệu:
+- Tạo CSDL MySQL
+- Cập nhật chuỗi kết nối trong mã nguồn
+
+ 4. Thêm thư viện:
+- Đảm bảo thư mục `lib/` chứa đầy đủ các file `.jar` cần thiết
+- Vào NetBeans → chuột phải dự án → Properties → Libraries → Add JAR/Folder
+
+ 5. Chạy ứng dụng:
+- Nhấn `F6` hoặc chuột phải → Run Project
+
+---
+
+
+ 📜 Giấy phép
+
+Dự án sử dụng cho mục đích học tập và nghiên cứu, phi thương mại.
+
+---
+
+ 👨‍💻 Nhóm phát triển
+
+- Nhóm 3 – Lớp SE1906
+- Email: anhndhhe163634@fpt.edu.vn
+- GitHub: [linh2605](https://github.com/linh2605)

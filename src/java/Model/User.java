@@ -1,6 +1,14 @@
 package Model;
 
+import lombok.*;
+
 import java.sql.Timestamp;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 
 public class User {
     public int user_id;

@@ -1,41 +1,55 @@
-package Model;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class DBContext {
-    public static Connection getConnection(){
+/**
+ *
+ * @author HoangAnh
+ */
+public class DBContext{
+    
+    public static Connection makeConnection() {
         try {
+            // URL cho MySQL: jdbc:mysql://<host>:<port>/<databaseName>
+            String url = "jdbc:mysql://" + host + ":" + portNumber + "/" + dbName;
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String serverName = "mysql-a943150-tranquangminh050802-8c52.g.aivencloud.com";
-            String port = "24719";
-            String databaseName = "defaultdb";
-            String username = "avnadmin";
-            String password = "AVNS_aKeOgaBsPidcv6PHRUx";
-            String url = "jdbc:mysql://" + serverName + ":" + port + "/" + databaseName + "?useSSL=true";
-            return DriverManager.getConnection(url, username, password);
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-            return null;
+            return DriverManager.getConnection(url, userID, password);
+        } catch (SQLException ex) {
+            System.out.println("Connection error! " + ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            System.out.println("MySQL JDBC Driver not found! " + ex.getMessage());
         }
+        return null;
     }
+    
+    // Cấu hình cho MySQL
+    private final static String host = "localhost"; // Máy local
+    private final static String dbName = "swp_db";  // Database 
+    private final static String portNumber = "3306"; // Cổng mặc định của MySQL
+    private final static String userID = "root";    // Tài khoản MySQL
+    private final static String password = "1234";  // Mật khẩu 
 
-    public static boolean executeUpdate(String sql, String[] fields) {// insert update delete
-        Connection connection = getConnection();
-        try {
-            assert connection != null;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            for (int i = 0; i < fields.length; i++) {
-                preparedStatement.setString(i + 1, fields[i]);
+    public static void main(String[] args) {
+        Connection connection = DBContext.makeConnection();
+
+        if (connection != null) {
+            System.out.println("Kết nối thành công đến cơ sở dữ liệu!");
+            try {
+                // Đóng kết nối sau khi sử dụng
+                connection.close();
+                System.out.println("Đã đóng kết nối.");
+            } catch (SQLException ex) {
+                System.out.println("Đóng kết nối không thành công: " + ex.getMessage());
             }
-            int row = preparedStatement.executeUpdate();
-            connection.close();
-            return row > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        } else {
+            System.out.println("Kết nối không thành công.");
         }
     }
 }

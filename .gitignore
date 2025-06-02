@@ -25,8 +25,4 @@ build/generated-sources/
 build/generated-web-pages/
 build/web/META-INF/
 
-# ==================================
-# External libraries (keep lib folder)
-# ==================================
-!lib/
-!lib/*.jar
+

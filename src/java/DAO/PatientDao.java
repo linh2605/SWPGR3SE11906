@@ -31,6 +31,40 @@ public class PatientDao {
         }
         return patients;
     }
+    public static Patient getPatientById(int patient_id) {
+        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description " +
+                "FROM patients p " +
+                "JOIN users u ON p.user_id = u.user_id " +
+                "JOIN roles r ON u.role_id = r.role_id " +
+                "WHERE p.patient_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patient_id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mappingPatient(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static boolean createPatient(Patient patient) {
+        String sql = "INSERT INTO patients (user_id, gender, date_of_birth, address, image_url) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patient.getUser().getUser_id());
+            ps.setString(2, patient.getGender().toString());
+            ps.setDate(3, patient.getDate_of_birth());
+            ps.setString(4, patient.getAddress());
+            ps.setString(5, patient.getImage_url());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     private static Patient mappingPatient(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
         patient.setPatient_id(rs.getInt("patient_id"));

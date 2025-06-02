@@ -14,6 +14,7 @@ public class Doctor {
     public User user;
     public Gender gender;
     public Date dob;
+    public String image_url;
     public Specialty specialty;
     public String degree;
     public String experience;

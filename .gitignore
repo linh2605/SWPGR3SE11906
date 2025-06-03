@@ -24,5 +24,6 @@ build/web/WEB-INF/classes/
 build/generated-sources/
 build/generated-web-pages/
 build/web/META-INF/
+.idea/
 
 

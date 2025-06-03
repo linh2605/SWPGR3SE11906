@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role {
-    public int role_id;
-    public String name;
-    public String description;
+    private int role_id;
+    private String name;
+    private String description;
 }

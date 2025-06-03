@@ -7,8 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Specialty {
-    public int specialty_id;
-    public String name;
-    public String description;
+    private int specialty_id;
+    private String name;
+    private String description;
 
 }

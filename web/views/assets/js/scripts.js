@@ -268,51 +268,57 @@ function updateStatus(id, status) {
         return;
     }
 
-    if (confirm(`Bạn có chắc muốn cập nhật trạng thái lịch hẹn ID: ${id} thành ${status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}?`)) {
+    const statusText = status === 'completed' ? 'Hoàn thành' : 'Hủy';
+    const confirmMessage = `Bạn có chắc chắn muốn ${statusText.toLowerCase()} lịch hẹn này không?`;
+    
+    if (confirm(confirmMessage)) {
         $.ajax({
             url: `${contextPath}/updateAppointmentStatus`,
             method: 'POST',
             data: { id: id, status: status },
             success: function() {
-                alert('Cập nhật trạng thái thành công!');
+                alert(`Đã ${statusText.toLowerCase()} lịch hẹn thành công!`);
                 if (typeof calendar !== 'undefined') calendar.refetchEvents();
-                // Gọi lại loadAppointments để làm mới danh sách
-                const appointmentList = document.getElementById('appointmentList');
-                if (appointmentList) {
-                    const pageId = document.getElementById('receptionistDashboard') ? 'receptionistDashboard' : null;
-                    if (pageId) {
-                        let url = `${contextPath}/getAllAppointments`;
-                        $.ajax({
-                            url: url,
-                            method: 'GET',
-                            dataType: 'json',
-                            success: function(data) {
-                                appointmentList.innerHTML = '';
-                                data.forEach(appt => {
-                                    const row = document.createElement('tr');
-                                    let actions = `<button class="btn btn-sm btn-primary" onclick="viewDetails('${appt.id}')">Xem</button>`;
-                                    actions += `
-                                        <button class="btn btn-sm btn-success" onclick="updateStatus('${appt.id}', 'completed')">Hoàn thành</button>
-                                        <button class="btn btn-sm btn-danger" onclick="updateStatus('${appt.id}', 'canceled')">Hủy</button>
-                                    `;
-                                    row.innerHTML = `
-                                        <td>${appt.id}</td>
-                                        <td>${new Date(appt.dateTime).toLocaleString('vi-VN')}</td>
-                                        <td>${appt.doctor}</td>
-                                        <td>${appt.patient}</td>
-                                        <td>${appt.status === 'pending' ? 'Đang chờ' : appt.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}</td>
-                                        <td>${actions}</td>
-                                    `;
-                                    appointmentList.appendChild(row);
-                                });
-                            }
-                        });
-                    }
-                }
+                loadAppointments();
             },
             error: function(xhr, status, error) {
-                alert('Lỗi khi cập nhật trạng thái: ' + error);
+                alert(`Lỗi khi cập nhật trạng thái: ${error}`);
             }
         });
     }
+}
+
+// Initialize WebSocket connection
+const ws = new WebSocket('ws://' + window.location.host + '/websocket');
+
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.type === 'appointment_update') {
+        // Update appointment status in UI
+        const appointmentRow = document.querySelector(`tr[data-appointment-id="${data.appointmentId}"]`);
+        if (appointmentRow) {
+            const statusCell = appointmentRow.querySelector('.status-cell');
+            if (statusCell) {
+                statusCell.textContent = data.status;
+                // Update status class for styling
+                statusCell.className = 'status-cell ' + data.status.toLowerCase();
+            }
+        }
+        
+        // Show notification
+        showNotification(`Appointment #${data.appointmentId} has been ${data.status}`);
+    }
+};
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }

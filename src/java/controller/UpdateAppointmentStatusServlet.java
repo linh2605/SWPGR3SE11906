@@ -13,57 +13,49 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import DAO.DBContext;
+import config.WebSocketConfig;
 
-@WebServlet("/updateAppointmentStatus")
+@WebServlet(name = "UpdateAppointmentStatusServlet", urlPatterns = {"/update-appointment-status"})
 public class UpdateAppointmentStatusServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("role_id") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
-            return;
-        }
-        int roleId = (int) session.getAttribute("role_id");
-        if (roleId != 3) { // Chỉ cho receptionist (role_id = 3)
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        
+        // Check if user is receptionist
+        if (!"receptionist".equals(role)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }
 
-        int appointmentId;
-        try {
-            appointmentId = Integer.parseInt(request.getParameter("id"));
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid appointment ID");
-            return;
-        }
-
+        int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
         String status = request.getParameter("status");
-        if (!"completed".equals(status) && !"canceled".equals(status)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid status");
-            return;
-        }
 
-        try (Connection conn = DBContext.makeConnection()) {
-            if (conn == null) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot connect to database");
-                return;
-            }
-
-            String sql = "UPDATE appointments SET status = ? WHERE appointment_id = ?";
+        try (Connection conn = new DBContext().makeConnection()) {
+            String sql = "UPDATE appointments SET status = ? WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, status);
                 stmt.setInt(2, appointmentId);
-                int rowsUpdated = stmt.executeUpdate();
-                if (rowsUpdated > 0) {
-                    response.setStatus(HttpServletResponse.SC_OK);
+                int result = stmt.executeUpdate();
+
+                if (result > 0) {
+                    // Send realtime notification
+                    String notification = String.format(
+                        "{\"type\":\"appointment_update\",\"appointmentId\":%d,\"status\":\"%s\"}",
+                        appointmentId, status
+                    );
+                    WebSocketConfig.broadcast(notification);
+                    
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"success\":true}");
                 } else {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Appointment not found");
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
     }
 }

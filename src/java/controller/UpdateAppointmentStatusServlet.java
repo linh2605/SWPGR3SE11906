@@ -34,7 +34,7 @@ public class UpdateAppointmentStatusServlet extends HttpServlet {
         String status = request.getParameter("status");
 
         try (Connection conn = new DBContext().makeConnection()) {
-            String sql = "UPDATE appointments SET status = ? WHERE id = ?";
+            String sql = "UPDATE appointments SET status = ? WHERE appointment_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, status);
                 stmt.setInt(2, appointmentId);

@@ -25,7 +25,7 @@
         window.contextPath = '<%= request.getContextPath() %>';
     </script>
 </head>
-<body>
+  <body id="doctorDashboard">
     <!-- Header -->
     <%@ include file="../layouts/header.jsp" %>
 

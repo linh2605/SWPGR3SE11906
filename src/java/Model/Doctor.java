@@ -10,15 +10,14 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Doctor {
-    public int doctor_id;
-    public User user;
-    public Gender gender;
-    public Date dob;
-    public String image_url;
-    public Specialty specialty;
-    public String degree;
-    public String experience;
-    public Status status;
-    public Timestamp created_at;
-    // test commit dev
+    private int doctor_id;
+    private User user;
+    private Gender gender;
+    private Date dob;
+    private String image_url;
+    private Specialty specialty;
+    private String degree;
+    private String experience;
+    private Status status;
+    private Timestamp created_at;
 }

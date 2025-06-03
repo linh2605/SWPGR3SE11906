@@ -108,10 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             const row = document.createElement('tr');
                             let actions = `<button class="btn btn-sm btn-primary" onclick="viewDetails('${appt.id}')">Xem</button>`;
                             if (pageId === 'receptionistDashboard') {
-                                actions += `
-                                    <button class="btn btn-sm btn-success" onclick="updateStatus('${appt.id}', 'completed')">Hoàn thành</button>
-                                    <button class="btn btn-sm btn-danger" onclick="updateStatus('${appt.id}', 'canceled')">Hủy</button>
-                                `;
+                                if (appt.status === 'pending') {
+                                    actions += `
+                                        <button class="btn btn-sm btn-success" onclick="updateStatus('${appt.id}', 'completed')">Hoàn thành</button>
+                                        <button class="btn btn-sm btn-danger" onclick="updateStatus('${appt.id}', 'canceled')">Hủy</button>
+                                    `;
+                                } else {
+                                    actions += `
+                                        <button class="btn btn-sm btn-success" disabled>Hoàn thành</button>
+                                        <button class="btn btn-sm btn-danger" disabled>Hủy</button>
+                                    `;
+                                }
                             }
                             row.innerHTML = `
                                 <td>${appt.id}</td>
@@ -273,13 +280,12 @@ function updateStatus(id, status) {
     
     if (confirm(confirmMessage)) {
         $.ajax({
-            url: `${contextPath}/updateAppointmentStatus`,
+            url: `${contextPath}/update-appointment-status`,
             method: 'POST',
-            data: { id: id, status: status },
+            data: { appointmentId: id, status: status },
             success: function() {
                 alert(`Đã ${statusText.toLowerCase()} lịch hẹn thành công!`);
-                if (typeof calendar !== 'undefined') calendar.refetchEvents();
-                loadAppointments();
+                location.reload();
             },
             error: function(xhr, status, error) {
                 alert(`Lỗi khi cập nhật trạng thái: ${error}`);

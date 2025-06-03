@@ -77,16 +77,31 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         User user = UserDAO.login(username, password);
-        if (user.getUser_id() != 0) {
+
+        if (user != null && user.getUser_id() != 0) {
             HttpSession session = request.getSession();
             session.setAttribute("user_id", user.getUser_id());
-//            session.setAttribute("user_id", 3);
             session.setAttribute("role_id", user.getRole().getRole_id());
-//            session.setAttribute("role_id", 2);
             session.setAttribute("role", user.getRole().getName());
-//            session.setAttribute("role", "receptionist");
+
+            // Redirect theo role
+            int roleId = user.getRole().getRole_id();
+            if (roleId == 1) {
+                response.sendRedirect(request.getContextPath() + "/views/appoinment/appointments.jsp");
+            } else if (roleId == 2) {
+                response.sendRedirect(request.getContextPath() + "/views/appoinment/doctorDashboard.jsp");
+            } else if (roleId == 3) {
+                response.sendRedirect(request.getContextPath() + "/views/appoinment/receptionistDashboard.jsp");
+            } else if (roleId == 4) {
+                response.sendRedirect(request.getContextPath() + "/views/admin/dashboard.jsp");
+            } else {
+                response.sendRedirect(request.getContextPath());
+            }
+        } else {
+            // Đăng nhập sai, quay lại login và báo lỗi
+            request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
+            request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
         }
-        response.sendRedirect(request.getContextPath());
     }
 
     /**

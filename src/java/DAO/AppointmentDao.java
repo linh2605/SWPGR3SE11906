@@ -11,11 +11,14 @@ import java.util.List;
 public class AppointmentDao {
     
     public static List<Appointment> getAppointmentsByPatientId(int patientId, int page, int size) {
+        System.out.println("[DEBUG] getAppointmentsByPatientId: patientId=" + patientId + ", page=" + page + ", size=" + size);
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, d.full_name AS doctor_name, p.full_name AS patient_name, a.status " +
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status " +
                      "FROM appointments a " +
                      "JOIN doctors d ON a.doctor_id = d.doctor_id " +
+                     "JOIN users ud ON d.user_id = ud.user_id " +
                      "JOIN patients p ON a.patient_id = p.patient_id " +
+                     "JOIN users up ON p.user_id = up.user_id " +
                      "WHERE a.patient_id = ? " +
                      "ORDER BY a.appointment_date DESC " +
                      "LIMIT ? OFFSET ?";
@@ -25,9 +28,12 @@ public class AppointmentDao {
             stmt.setInt(2, size);
             stmt.setInt(3, (page - 1) * size);
             try (ResultSet rs = stmt.executeQuery()) {
+                int count = 0;
                 while (rs.next()) {
                     appointments.add(mappingAppointment(rs));
+                    count++;
                 }
+                System.out.println("[DEBUG] Số dòng trả về: " + count);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,10 +43,12 @@ public class AppointmentDao {
 
     public static List<Appointment> getAppointmentsByDoctorId(int doctorId, int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, d.full_name AS doctor_name, p.full_name AS patient_name, a.status " +
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status " +
                      "FROM appointments a " +
                      "JOIN doctors d ON a.doctor_id = d.doctor_id " +
+                     "JOIN users ud ON d.user_id = ud.user_id " +
                      "JOIN patients p ON a.patient_id = p.patient_id " +
+                     "JOIN users up ON p.user_id = up.user_id " +
                      "WHERE a.doctor_id = ? " +
                      "ORDER BY a.appointment_date DESC " +
                      "LIMIT ? OFFSET ?";
@@ -62,10 +70,12 @@ public class AppointmentDao {
 
     public static List<Appointment> getAllAppointments(int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, d.full_name AS doctor_name, p.full_name AS patient_name, a.status " +
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status " +
                      "FROM appointments a " +
                      "JOIN doctors d ON a.doctor_id = d.doctor_id " +
+                     "JOIN users ud ON d.user_id = ud.user_id " +
                      "JOIN patients p ON a.patient_id = p.patient_id " +
+                     "JOIN users up ON p.user_id = up.user_id " +
                      "ORDER BY a.appointment_date DESC " +
                      "LIMIT ? OFFSET ?";
         try (Connection conn = DBContext.makeConnection();

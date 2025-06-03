@@ -65,6 +65,17 @@ public class PatientDao {
             return false;
         }
     }
+    public static boolean deletePatient(int patient_id) {
+        String sql = "DELETE FROM patients WHERE patient_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, patient_id);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     private static Patient mappingPatient(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
         patient.setPatient_id(rs.getInt("patient_id"));

@@ -5,37 +5,53 @@
  */
 package DAO;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
  *
  * @author HoangAnh
  */
-public class DBContext{
-    
-    public static Connection makeConnection() {
-        try {
-            // URL cho MySQL: jdbc:mysql://<host>:<port>/<databaseName>
-            String url = "jdbc:mysql://" + host + ":" + portNumber + "/" + dbName;
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(url, userID, password);
-        } catch (SQLException ex) {
-            System.out.println("Connection error! " + ex.getMessage());
-        } catch (ClassNotFoundException ex) {
-            System.out.println("MySQL JDBC Driver not found! " + ex.getMessage());
-        }
-        return null;
-    }
-    
+public class DBContext {
     // Cấu hình cho MySQL
     private final static String host = "localhost"; // Máy local
     private final static String dbName = "swp_db";  // Database 
     private final static String portNumber = "3306"; // Cổng mặc định của MySQL
     private final static String userID = "root";    // Tài khoản MySQL
     private final static String password = "1234";  // Mật khẩu 
-
+    
+    private static HikariDataSource dataSource;
+    
+    static {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:mysql://" + host + ":" + portNumber + "/" + dbName);
+        config.setUsername(userID);
+        config.setPassword(password);
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        
+        // Cấu hình connection pool
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(5);
+        config.setIdleTimeout(300000);
+        config.setConnectionTimeout(20000);
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        
+        dataSource = new HikariDataSource(config);
+    }
+    
+    public static Connection makeConnection() {
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException ex) {
+            System.out.println("Connection error! " + ex.getMessage());
+            return null;
+        }
+    }
+    
     public static void main(String[] args) {
         Connection connection = DBContext.makeConnection();
 

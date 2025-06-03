@@ -1,3 +1,7 @@
+<% 
+    out.println("user_id: " + session.getAttribute("user_id"));
+    out.println("role_id: " + session.getAttribute("role_id"));
+%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page session="true" %>
 <html lang="vi">
@@ -25,7 +29,7 @@
         window.contextPath = '<%= request.getContextPath() %>';
     </script>
 </head>
-<body>
+<body id="appointments">
     <!-- Header -->
     <%@ include file="../layouts/header.jsp" %>
 

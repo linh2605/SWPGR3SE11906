@@ -11,11 +11,11 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Patient {
-    public int patient_id;
-    public User user;
-    public Gender gender;
-    public Date date_of_birth;
-    public String address;
-    public String image_url;
-    public Timestamp created_at;
+    private int patient_id;
+    private User user;
+    private Gender gender;
+    private Date date_of_birth;
+    private String address;
+    private String image_url;
+    private Timestamp created_at;
 }

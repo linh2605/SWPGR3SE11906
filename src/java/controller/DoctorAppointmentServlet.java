@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import DAO.DBContext;
+import DAO.AppointmentDao;
+import Model.Appointment;
 import com.google.gson.Gson;
 
 @WebServlet("/getDoctorAppointments")
@@ -38,7 +40,6 @@ public class DoctorAppointmentServlet extends HttpServlet {
         }
         int userId = (int) session.getAttribute("user_id");
 
-        List<Appointment> appointments = new ArrayList<>();
         try (Connection conn = DBContext.makeConnection()) {
             if (conn == null) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot connect to database");
@@ -60,55 +61,24 @@ public class DoctorAppointmentServlet extends HttpServlet {
                 }
             }
 
-            // Lấy lịch hẹn của doctor_id
-            String sql = "SELECT a.appointment_id, a.appointment_date, d.full_name AS doctor_name, p.full_name AS patient_name, a.status " +
-                         "FROM appointments a " +
-                         "JOIN doctors d ON a.doctor_id = d.doctor_id " +
-                         "JOIN patients p ON a.patient_id = p.patient_id " +
-                         "WHERE a.doctor_id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, doctorId);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        Appointment appt = new Appointment();
-                        appt.setId(rs.getInt("appointment_id"));
-                        appt.setDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
-                        appt.setDoctor(rs.getString("doctor_name"));
-                        appt.setPatient(rs.getString("patient_name"));
-                        appt.setStatus(rs.getString("status"));
-                        appointments.add(appt);
-                    }
-                }
+            // Get page and size parameters with defaults
+            int page = 1;
+            int size = 10;
+            try {
+                String pageStr = request.getParameter("page");
+                String sizeStr = request.getParameter("size");
+                if (pageStr != null) page = Integer.parseInt(pageStr);
+                if (sizeStr != null) size = Integer.parseInt(sizeStr);
+            } catch (NumberFormatException e) {
+                // Use default values if parsing fails
             }
+            
+            List<Appointment> appointments = AppointmentDao.getAppointmentsByDoctorId(doctorId, page, size);
+            Gson gson = new Gson();
+            response.getWriter().write(gson.toJson(appointments));
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
-            return;
-        }
-
-        Gson gson = new Gson();
-        response.getWriter().write(gson.toJson(appointments));
-    }
-
-    public static class Appointment {
-        private int id;
-        private String doctor;
-        private String patient;
-        private String status;
-        private String dateTime;
-
-        public int getId() { return id; }
-        public void setId(int id) { this.id = id; }
-        public String getDoctor() { return doctor; }
-        public void setDoctor(String doctor) { this.doctor = doctor; }
-        public String getPatient() { return patient; }
-        public void setPatient(String patient) { this.patient = patient; }
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
-        public String getDateTime() { return dateTime; }
-        public void setDateTime(String dateTime) { this.dateTime = dateTime; }
-        public void setDateTime(java.time.LocalDateTime dateTime) {
-            this.dateTime = dateTime.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         }
     }
 }

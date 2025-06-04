@@ -51,7 +51,7 @@ public class DBContext {
             return null;
         }
     }
-    
+
     public static void main(String[] args) {
         Connection connection = DBContext.makeConnection();
 

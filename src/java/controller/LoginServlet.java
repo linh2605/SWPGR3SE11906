@@ -80,23 +80,14 @@ public class LoginServlet extends HttpServlet {
 
         if (user != null && user.getUser_id() != 0) {
             HttpSession session = request.getSession();
+            // Set toàn bộ thông tin user vào session
+            session.setAttribute("user", user);
             session.setAttribute("user_id", user.getUser_id());
             session.setAttribute("role_id", user.getRole().getRole_id());
             session.setAttribute("role", user.getRole().getName());
 
-            // Redirect theo role
-            int roleId = user.getRole().getRole_id();
-            if (roleId == 1) {
-                response.sendRedirect(request.getContextPath() + "/views/appoinment/appointments.jsp");
-            } else if (roleId == 2) {
-                response.sendRedirect(request.getContextPath() + "/views/appoinment/doctorDashboard.jsp");
-            } else if (roleId == 3) {
-                response.sendRedirect(request.getContextPath() + "/views/appoinment/receptionistDashboard.jsp");
-            } else if (roleId == 4) {
-                response.sendRedirect(request.getContextPath() + "/views/admin/dashboard.jsp");
-            } else {
-                response.sendRedirect(request.getContextPath());
-            }
+            // Chuyển về trang chủ sau khi đăng nhập thành công
+            response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
         } else {
             // Đăng nhập sai, quay lại login và báo lỗi
             request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");

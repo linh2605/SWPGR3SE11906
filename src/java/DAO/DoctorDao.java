@@ -70,7 +70,6 @@ public class DoctorDao {
             return new Doctor();
         }
     }
-
     public static boolean insertDoctor(Doctor doctor) {
         String insertUserSQL = "INSERT INTO users (username, password, full_name, email, phone, role_id) VALUES (?, ?, ?, ?, ?, ?)";
         String insertDoctorSQL = "INSERT INTO doctors (user_id, gender, dob, image_url, specialty_id, degree, experience, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -115,6 +114,42 @@ public class DoctorDao {
                 e.printStackTrace();
                 return false;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static boolean updateDoctor(Doctor doctor) {
+        String updateUserSQL = "UPDATE users SET full_name = ?, email = ?, phone = ? WHERE user_id = ?";
+        String updateDoctorSQL = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ? WHERE doctor_id = ?";
+
+        try (Connection connection = DBContext.makeConnection()) {
+            connection.setAutoCommit(false);
+
+            // Update user
+            try (PreparedStatement userStmt = connection.prepareStatement(updateUserSQL)) {
+                User user = doctor.getUser();
+                userStmt.setString(1, user.getFullname());
+                userStmt.setString(2, user.getEmail());
+                userStmt.setString(3, user.getPhone());
+                userStmt.setInt(4, user.getUser_id());
+                userStmt.executeUpdate();
+            }
+
+            // Update doctor
+            try (PreparedStatement doctorStmt = connection.prepareStatement(updateDoctorSQL)) {
+                doctorStmt.setString(1, doctor.getGender().toString());
+                doctorStmt.setDate(2, doctor.getDob());
+                doctorStmt.setString(3, doctor.getImage_url());
+                doctorStmt.setInt(4, doctor.getSpecialty().getSpecialty_id());
+                doctorStmt.setString(5, doctor.getDegree());
+                doctorStmt.setString(6, doctor.getExperience());
+                doctorStmt.setString(7, doctor.getStatus().toString());
+                doctorStmt.setInt(8, doctor.getDoctor_id());
+                doctorStmt.executeUpdate();
+            }
+            connection.commit();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

@@ -6,6 +6,9 @@ const roleId = window.roleId || null;
 const contextPath = window.contextPath || '';
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Kiểm tra trạng thái đăng nhập
+    checkLoginStatus();
+
     // Hiệu ứng fade-in
     const fadeElements = document.querySelectorAll('.content, .login-box');
     fadeElements.forEach((el, index) => {
@@ -327,4 +330,33 @@ function showNotification(message) {
     setTimeout(() => {
         notification.remove();
     }, 5000);
+}
+
+// Hàm kiểm tra trạng thái đăng nhập
+function checkLoginStatus() {
+    const userDropdown = document.querySelector('.dropdown');
+    const loginButton = document.querySelector('.btn-outline-primary');
+    
+    if (userDropdown && loginButton) {
+        // Nếu có user trong session
+        if (window.user) {
+            userDropdown.style.display = 'block';
+            loginButton.style.display = 'none';
+            
+            // Cập nhật tên user
+            const userNameSpan = userDropdown.querySelector('.text-dark');
+            if (userNameSpan) {
+                userNameSpan.textContent = window.user.fullName || window.user.username;
+            }
+            
+            // Cập nhật avatar nếu có
+            const userAvatar = userDropdown.querySelector('img');
+            if (userAvatar && window.user.avatar) {
+                userAvatar.src = window.user.avatar;
+            }
+        } else {
+            userDropdown.style.display = 'none';
+            loginButton.style.display = 'block';
+        }
+    }
 }

@@ -6,6 +6,23 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <header class="header">
+    <!-- Thêm script để truyền thông tin user -->
+<script>
+    window.user = {
+        <c:if test="${not empty sessionScope.user}">
+            user_id: "${sessionScope.user.user_id}",
+            username: "${sessionScope.user.username}",
+            fullname: "${sessionScope.user.fullname}",
+            email: "${sessionScope.user.email}",
+            phone: "${sessionScope.user.phone}",
+            role_id: "${sessionScope.user.role.role_id}",
+            role_name: "${sessionScope.user.role.name}"
+        </c:if>
+    };
+    window.roleId = ${sessionScope.role_id != null ? sessionScope.role_id : 'null'};
+    window.contextPath = '${pageContext.request.contextPath}';
+</script>
+    
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/views/home/index.jsp">
@@ -26,11 +43,50 @@
                 </ul>
                 <div class="d-flex align-items-center">
                     <span class="hotline me-3">Hỗ trợ tư vấn: 0976054728</span>
-                    <a href="${pageContext.request.contextPath}/views/home/login.jsp" class="btn btn-outline-primary">
-                        Đăng ký / Đăng nhập
-                    </a>
-
-
+                    
+                    <c:choose>
+                        <c:when test="${empty sessionScope.user}">
+                            <!-- Chưa đăng nhập -->
+                            <a href="${pageContext.request.contextPath}/views/home/login.jsp" class="btn btn-outline-primary">
+                                Đăng ký / Đăng nhập
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <!-- Đã đăng nhập -->
+                            <div class="dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="${pageContext.request.contextPath}/views/assets/default-avatar.jpg" alt="Avatar" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                    <span class="text-dark">${sessionScope.user.username}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <c:choose>
+                                        <c:when test="${sessionScope.user.role.role_id == 4}">
+                                            <!-- Menu cho Admin -->
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/admin/admin-dashboard.jsp">Dashboard</a></li>
+                                        </c:when>
+                                        <c:when test="${sessionScope.user.role.role_id == 2}">
+                                            <!-- Menu cho Doctor -->
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/doctor/dashboard.jsp">Dashboard</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/doctorDashboard.jsp">Lịch hẹn</a></li>
+                                        </c:when>
+                                        <c:when test="${sessionScope.user.role.role_id == 3}">
+                                            <!-- Menu cho Receptionist -->
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/receptionist/dashboard.jsp">Dashboard</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/receptionistDashboard.jsp">Quản lý lịch hẹn</a></li>
+                                        </c:when>
+                                        <c:when test="${sessionScope.user.role.role_id == 1}">
+                                            <!-- Menu cho Patient -->
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/profile.jsp">Hồ sơ cá nhân</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/appointments.jsp">Lịch hẹn của tôi</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/medical-records.jsp">Hồ sơ bệnh án</a></li>
+                                        </c:when>
+                                    </c:choose>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Đăng xuất</a></li>
+                                </ul>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>

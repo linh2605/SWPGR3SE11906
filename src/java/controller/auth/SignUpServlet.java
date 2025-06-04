@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller.auth;
 
+import controller.customer.Header;
+import dal.UserDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,72 +13,72 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import model.User;
 
 /**
  *
- * @author auiri
+ * @author ADMIN
  */
-@WebServlet(name="SignUpServlet", urlPatterns={"/auth/signup"})
+@WebServlet(name = "SignUpServlet", urlPatterns = {"/auth/signup"})
 public class SignUpServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet SignUpServlet</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet SignUpServlet at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
-
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
+            throws ServletException, IOException {
+        if (request.getSession().getAttribute("verifyStatus") != null && (int) request.getSession().getAttribute("verifyStatus") == 2) {
+            User user = (User) request.getSession().getAttribute("user-registation");
+            request.getSession().invalidate();
+            new UserDao().createUser(user);
+            request.getSession().setAttribute("usersession", user);
+            response.sendRedirect("../homepage");
+            return;
+        }
+        Header.Load(request, response);
+        request.getRequestDispatcher("login-register.jsp").forward(request, response);
     }
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
     @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        UserDao ud = new UserDao();
+        String fullname = request.getParameter("fullname").trim();
+        String username = request.getParameter("username").trim();
+        String email = request.getParameter("email").trim();
+        if (ud.getByEmail(email) != null) {
+            request.setAttribute("fullname", fullname);
+            request.setAttribute("username", username);
+            request.setAttribute("email", email);
+            request.setAttribute("errmsgemail", "This email already links to another account!");
+            request.getRequestDispatcher("login-register.jsp").forward(request, response);
+            return;
+        }
+        if (ud.getByUsername(username) != null) {
+            request.setAttribute("fullname", fullname);
+            request.setAttribute("username", username);
+            request.setAttribute("email", email);
+            request.setAttribute("errmsgusername", "This username already exists!");
+            request.getRequestDispatcher("login-register.jsp").forward(request, response);
+            return;
+        }
+        String password = request.getParameter("password");
+        String repassword = request.getParameter("repassword");
+
+        if (password.equals(repassword)) {
+            password = Encode.toSHA1(password);
+        }
+        User user = new User(username, password, 4, "assets/profile.png", fullname, "Other", null, email, null);
+        
+        String OTP = EmailServices.SendOTPConfirmEmail(user);
+        if (OTP != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("otp", OTP);
+            session.setAttribute("expireTime", System.currentTimeMillis() + 600000);
+            session.setAttribute("action", "email-verification");
+            session.setAttribute("user-registation", user);
+            request.getRequestDispatcher("EnterOtp.jsp").forward(request, response);
+        }
+    }
 
 }

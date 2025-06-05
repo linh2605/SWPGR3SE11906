@@ -13,6 +13,7 @@ import lombok.*;
 public class Patient {
     private int patient_id;
     private User user;
+    private String fullName;
     private Gender gender;
     private Date date_of_birth;
     private String address;

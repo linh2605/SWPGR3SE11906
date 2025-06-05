@@ -1,6 +1,11 @@
-package DAO;
+package dal;
 
-import Model.*;
+import model.Status;
+import model.User;
+import model.Role;
+import model.Gender;
+import model.Specialty;
+import model.Doctor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

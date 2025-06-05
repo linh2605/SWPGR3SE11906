@@ -1,10 +1,10 @@
 package dal;
 
 import dal.DBContext;
-import Model1.Gender;
-import Model1.Patient;
-import Model1.Role;
-import Model1.User;
+import model.Gender;
+import model.Patient;
+import model.Role;
+import model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

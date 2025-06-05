@@ -1,5 +1,5 @@
 
-package Model1;
+package model;
 
 public enum Status {
     active, inactive

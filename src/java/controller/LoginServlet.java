@@ -5,7 +5,7 @@
 package controller;
 
 import dal.UserDAO;
-import Model1.User;
+import model.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;

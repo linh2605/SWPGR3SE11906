@@ -1,11 +1,11 @@
 package dal;
 
-import Model1.Status;
-import Model1.User;
-import Model1.Role;
-import Model1.Gender;
-import Model1.Specialty;
-import Model1.Doctor;
+import model.Status;
+import model.User;
+import model.Role;
+import model.Gender;
+import model.Specialty;
+import model.Doctor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

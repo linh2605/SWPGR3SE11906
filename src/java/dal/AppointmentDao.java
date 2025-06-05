@@ -1,6 +1,6 @@
 package dal;
 
-import Model1.Appointment;
+import model.Appointment;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

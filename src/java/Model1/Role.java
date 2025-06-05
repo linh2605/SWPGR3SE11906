@@ -1,5 +1,5 @@
 
-package Model;
+package Model1;
 
 import lombok.*;
 

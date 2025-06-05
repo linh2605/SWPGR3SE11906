@@ -1,8 +1,7 @@
-package Model;
+package Model1;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-
 import lombok.*;
 
 @Getter
@@ -10,12 +9,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Patient {
-    private int patient_id;
+public class Doctor {
+    private int doctor_id;
     private User user;
     private Gender gender;
-    private Date date_of_birth;
-    private String address;
+    private Date dob;
     private String image_url;
+    private Specialty specialty;
+    private String degree;
+    private String experience;
+    private Status status;
     private Timestamp created_at;
 }

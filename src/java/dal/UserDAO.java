@@ -6,10 +6,7 @@ package dal;
 
 import models.Role;
 import models.User;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  *
@@ -69,5 +66,73 @@ public class UserDAO {
         user.setRole(role);
         user.setCreated_at(resultSet.getTimestamp("created_at"));
         return user;
+    }
+    public static void insertUser(User user) {
+        String sql = "INSERT INTO users (username, password, full_name, email, phone, role_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getFullname());
+            ps.setString(4, user.getEmail());
+            ps.setString(5, user.getPhone());
+            ps.setInt(6, user.getRole().getRole_id());
+
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        user.setUser_id(rs.getInt(1));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static boolean updateUser(User user) {
+        if (user.getPassword().equals("")){
+            String sql = "UPDATE users SET username = ?, full_name = ?, email = ?, phone = ?, role_id = ? WHERE user_id = ?";
+            try (Connection conn = DBContext.makeConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getFullname());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getPhone());
+                ps.setInt(5, user.getRole().getRole_id());
+                ps.setInt(6, user.getUser_id());
+                return ps.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            String sql = "UPDATE users SET username = ?, password = ?, full_name = ?, email = ?, phone = ?, role_id = ? WHERE user_id = ?";
+            try (Connection conn = DBContext.makeConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword());
+                ps.setString(3, user.getFullname());
+                ps.setString(4, user.getEmail());
+                ps.setString(5, user.getPhone());
+                ps.setInt(6, user.getRole().getRole_id());
+                ps.setInt(7, user.getUser_id());
+                return ps.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
+    public static void deleteUser(int user_id){
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM users WHERE user_id = ?");
+            stmt.setInt(1, user_id);
+            stmt.executeUpdate();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

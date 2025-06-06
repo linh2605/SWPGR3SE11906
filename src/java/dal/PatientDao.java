@@ -1,10 +1,10 @@
-package Dao;
+package dal;
 
-import DAO.DBContext;
-import Model.Gender;
-import Model.Patient;
-import Model.Role;
-import Model.User;
+import dal.DBContext;
+import models.Gender;
+import models.Patient;
+import models.Role;
+import models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

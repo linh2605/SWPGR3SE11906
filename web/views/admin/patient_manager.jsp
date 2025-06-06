@@ -150,6 +150,65 @@
                 </form>
             </div>
         </div>
+                    <!-- UPDATE MODAL -->
+        <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <form action="${pageContext.request.contextPath}/admin/patient/update" method="post" enctype="multipart/form-data" class="modal-content p-4 bg-light rounded shadow-sm">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Update Patient</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body row g-3">
+                        <input type="hidden" id="update_patient_id" name="patient_id">
+                        <div class="col-md-6">
+                            <label for="update_username" class="form-label">Username</label>
+                            <input class="form-control" id="update_username" name="username" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="update_password" name="password">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_fullname" class="form-label">Full Name</label>
+                            <input class="form-control" id="update_fullname" name="fullname" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="update_email" name="email">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_phone" class="form-label">Phone</label>
+                            <input class="form-control" id="update_phone" name="phone">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_gender" class="form-label">Gender</label>
+                            <select class="form-select" id="update_gender" name="gender">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_date_of_birth" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="update_date_of_birth" name="date_of_birth" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_image" class="form-label">Profile Image (leave empty to keep current)</label>
+                            <input type="file" class="form-control" id="update_image" name="image" accept="image/*">
+                        </div>
+                        <div class="col-md-12">
+                            <label for="update_address" class="form-label">Address</label>
+                            <textarea class="form-control" id="update_address" name="address" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit">Update Patient</button>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <%@ include file="../layouts/footer.jsp" %>

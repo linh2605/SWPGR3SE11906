@@ -1,6 +1,6 @@
-package DAO;
+package dal;
 
-import Model.Appointment;
+import models.Appointment;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -91,4 +91,38 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
+    public static boolean updateUser(User user) {
+        if (user.getPassword().equals("")){
+            String sql = "UPDATE users SET username = ?, full_name = ?, email = ?, phone = ?, role_id = ? WHERE user_id = ?";
+            try (Connection conn = DBContext.makeConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getFullname());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getPhone());
+                ps.setInt(5, user.getRole().getRole_id());
+                ps.setInt(6, user.getUser_id());
+                return ps.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            String sql = "UPDATE users SET username = ?, password = ?, full_name = ?, email = ?, phone = ?, role_id = ? WHERE user_id = ?";
+            try (Connection conn = DBContext.makeConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword());
+                ps.setString(3, user.getFullname());
+                ps.setString(4, user.getEmail());
+                ps.setString(5, user.getPhone());
+                ps.setInt(6, user.getRole().getRole_id());
+                ps.setInt(7, user.getUser_id());
+                return ps.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
 }

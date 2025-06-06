@@ -1,4 +1,4 @@
-package Model;
+package models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -20,4 +20,14 @@ public class Doctor {
     private String experience;
     private Status status;
     private Timestamp created_at;
+    public Doctor(User user, Gender gender, Date dob, String image_url, Specialty specialty, String degree, String experience, Status status) {
+        this.user = user;
+        this.gender = gender;
+        this.dob = dob;
+        this.image_url = image_url;
+        this.specialty = specialty;
+        this.degree = degree;
+        this.experience = experience;
+        this.status = status;
+    }
 }

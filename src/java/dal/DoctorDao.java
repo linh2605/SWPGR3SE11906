@@ -1,6 +1,11 @@
-package DAO;
+package dal;
 
-import Model.*;
+import models.Specialty;
+import models.User;
+import models.Gender;
+import models.Role;
+import models.Status;
+import models.Doctor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -120,36 +125,22 @@ public class DoctorDao {
         }
     }
     public static boolean updateDoctor(Doctor doctor) {
-        String updateUserSQL = "UPDATE users SET full_name = ?, email = ?, phone = ? WHERE user_id = ?";
         String updateDoctorSQL = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ? WHERE doctor_id = ?";
 
-        try (Connection connection = DBContext.makeConnection()) {
-            connection.setAutoCommit(false);
+        try (Connection connection = DBContext.makeConnection();
+             PreparedStatement doctorStmt = connection.prepareStatement(updateDoctorSQL)) {
 
-            // Update user
-            try (PreparedStatement userStmt = connection.prepareStatement(updateUserSQL)) {
-                User user = doctor.getUser();
-                userStmt.setString(1, user.getFullname());
-                userStmt.setString(2, user.getEmail());
-                userStmt.setString(3, user.getPhone());
-                userStmt.setInt(4, user.getUser_id());
-                userStmt.executeUpdate();
-            }
+            doctorStmt.setString(1, doctor.getGender().toString());
+            doctorStmt.setDate(2, doctor.getDob());
+            doctorStmt.setString(3, doctor.getImage_url());
+            doctorStmt.setInt(4, doctor.getSpecialty().getSpecialty_id());
+            doctorStmt.setString(5, doctor.getDegree());
+            doctorStmt.setString(6, doctor.getExperience());
+            doctorStmt.setString(7, doctor.getStatus().toString());
+            doctorStmt.setInt(8, doctor.getDoctor_id());
 
-            // Update doctor
-            try (PreparedStatement doctorStmt = connection.prepareStatement(updateDoctorSQL)) {
-                doctorStmt.setString(1, doctor.getGender().toString());
-                doctorStmt.setDate(2, doctor.getDob());
-                doctorStmt.setString(3, doctor.getImage_url());
-                doctorStmt.setInt(4, doctor.getSpecialty().getSpecialty_id());
-                doctorStmt.setString(5, doctor.getDegree());
-                doctorStmt.setString(6, doctor.getExperience());
-                doctorStmt.setString(7, doctor.getStatus().toString());
-                doctorStmt.setInt(8, doctor.getDoctor_id());
-                doctorStmt.executeUpdate();
-            }
-            connection.commit();
-            return true;
+            return doctorStmt.executeUpdate() > 0;
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;

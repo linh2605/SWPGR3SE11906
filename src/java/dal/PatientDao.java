@@ -1,10 +1,10 @@
-package Dao;
+package dal;
 
-import DAO.DBContext;
-import Model.Gender;
-import Model.Patient;
-import Model.Role;
-import Model.User;
+import dal.DBContext;
+import models.Gender;
+import models.Patient;
+import models.Role;
+import models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -102,4 +102,21 @@ public class PatientDao {
         patient.setUser(user);
         return patient;
     }
+    public static boolean updatePatient(Patient patient) {
+    String sql = "UPDATE patients SET gender = ?, date_of_birth = ?, address = ?, image_url = ? " +
+                 "WHERE patient_id = ?";
+    try (Connection conn = DBContext.makeConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, patient.getGender().toString());
+        ps.setDate(2, patient.getDate_of_birth());
+        ps.setString(3, patient.getAddress());
+        ps.setString(4, patient.getImage_url());
+        ps.setInt(5, patient.getPatient_id());
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+
 }

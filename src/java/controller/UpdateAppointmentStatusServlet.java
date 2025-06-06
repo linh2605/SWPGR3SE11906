@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import DAO.DBContext;
+import dal.DBContext;
 import config.WebSocketConfig;
 
 @WebServlet(name = "UpdateAppointmentStatusServlet", urlPatterns = {"/update-appointment-status"})

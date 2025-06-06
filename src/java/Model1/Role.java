@@ -1,14 +1,14 @@
-package model;
+
+package Model1;
+
 import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class Specialty {
-    private int specialty_id;
+public class Role {
+    private int role_id;
     private String name;
     private String description;
-
 }

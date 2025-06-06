@@ -4,8 +4,8 @@
  */
 package dal;
 
-import model.Role;
-import model.User;
+import Model1.Role;
+import Model1.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

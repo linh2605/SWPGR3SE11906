@@ -1,4 +1,4 @@
-package model;
+package Model1;
 
 import java.time.LocalDateTime;
 import lombok.*;

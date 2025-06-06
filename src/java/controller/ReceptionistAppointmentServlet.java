@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpSession;
 
 import dal.DBContext;
 import dal.AppointmentDao;
-import model.Appointment;
+import Model1.Appointment;
 import com.google.gson.Gson;
 
 @WebServlet("/getAllAppointments")

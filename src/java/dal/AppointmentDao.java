@@ -8,32 +8,21 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import model.Doctor;
-import model.Patient;
 
 public class AppointmentDao {
 
     public static List<Appointment> getAppointmentsByPatientId(int patientId, int page, int size) {
         System.out.println("[DEBUG] getAppointmentsByPatientId: patientId=" + patientId + ", page=" + page + ", size=" + size);
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT appointment_id\n"
-                + "	 , a.patient_id\n"
-                + "	 , p.full_name AS patient_name\n"
-                + "	 , a.doctor_id\n"
-                + "	 , d.full_name AS doctor_name\n"
-                + "	 , appointment_date\n"
-                + "	 , a.status\n"
-                + "	 , note\n"
-                + "	 , a.created_at\n"
-                + "	 , updated_at\n"
-                + "  FROM appointments a\n"
-                + "	       JOIN patients p\n"
-                + "	       ON a.patient_id = p.patient_id\n"
-                + "	       JOIN doctors d\n"
-                + "	       ON a.doctor_id = d.doctor_id\n"
-                + " WHERE a.patient_id = ?\n"
-                + " ORDER BY appointment_date DESC\n"
-                + " LIMIT ? OFFSET ?;";
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status "
+                + "FROM appointments a "
+                + "JOIN doctors d ON a.doctor_id = d.doctor_id "
+                + "JOIN users ud ON d.user_id = ud.user_id "
+                + "JOIN patients p ON a.patient_id = p.patient_id "
+                + "JOIN users up ON p.user_id = up.user_id "
+                + "WHERE a.patient_id = ? "
+                + "ORDER BY a.appointment_date DESC "
+                + "LIMIT ? OFFSET ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, patientId);
             stmt.setInt(2, size);
@@ -54,27 +43,15 @@ public class AppointmentDao {
 
     public static List<Appointment> getAppointmentsByDoctorId(int doctorId, int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
-        // limit = page size
-        // offset = (page-1) * page size
-        String sql = "SELECT appointment_id\n"
-                + "	 , a.patient_id\n"
-                + "	 , p.full_name AS patient_name\n"
-                + "	 , a.doctor_id\n"
-                + "	 , d.full_name AS doctor_name\n"
-                + "	 , appointment_date\n"
-                + "	 , a.status\n"
-                + "	 , note\n"
-                + "	 , a.created_at\n"
-                + "	 , updated_at\n"
-                + "  FROM appointments a\n"
-                + "	       JOIN patients p\n"
-                + "	       ON a.patient_id = p.patient_id\n"
-                + "	       JOIN doctors d\n"
-                + "	       ON a.doctor_id = d.doctor_id\n"
-                + " WHERE a.doctor_id = ?\n"
-                + " ORDER BY appointment_date DESC\n"
-                + " LIMIT ? OFFSET ?;";
-
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status "
+                + "FROM appointments a "
+                + "JOIN doctors d ON a.doctor_id = d.doctor_id "
+                + "JOIN users ud ON d.user_id = ud.user_id "
+                + "JOIN patients p ON a.patient_id = p.patient_id "
+                + "JOIN users up ON p.user_id = up.user_id "
+                + "WHERE a.doctor_id = ? "
+                + "ORDER BY a.appointment_date DESC "
+                + "LIMIT ? OFFSET ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, doctorId);
             stmt.setInt(2, size);
@@ -91,26 +68,15 @@ public class AppointmentDao {
     }
 
     public static List<Appointment> getAllAppointments(int page, int size) {
-        // limit = page size
-        // offset = (page-1) * page size
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT appointment_id\n"
-                + "	 , a.patient_id\n"
-                + "	 , p.full_name AS patient_name\n"
-                + "	 , a.doctor_id\n"
-                + "	 , d.full_name AS doctor_name\n"
-                + "	 , appointment_date\n"
-                + "	 , a.status\n"
-                + "	 , note\n"
-                + "	 , a.created_at\n"
-                + "	 , updated_at\n"
-                + "  FROM appointments a\n"
-                + "	       JOIN patients p\n"
-                + "	       ON a.patient_id = p.patient_id\n"
-                + "	       JOIN doctors d\n"
-                + "	       ON a.doctor_id = d.doctor_id\n"
-                + " ORDER BY appointment_date DESC\n"
-                + " LIMIT ? OFFSET ?;";
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status "
+                + "FROM appointments a "
+                + "JOIN doctors d ON a.doctor_id = d.doctor_id "
+                + "JOIN users ud ON d.user_id = ud.user_id "
+                + "JOIN patients p ON a.patient_id = p.patient_id "
+                + "JOIN users up ON p.user_id = up.user_id "
+                + "ORDER BY a.appointment_date DESC "
+                + "LIMIT ? OFFSET ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, size);
             stmt.setInt(2, (page - 1) * size);
@@ -151,25 +117,15 @@ public class AppointmentDao {
             return false;
         }
     }
-
+    
     // TODO: fix sau
-    private static Appointment mappingAppointment(ResultSet rs) throws SQLException {
+    private static Appointment mappingAppointment(ResultSet rs) throws SQLException { 
         Appointment appt = new Appointment();
         appt.setId(rs.getInt("appointment_id"));
-        Patient patient = new Patient();
-        patient.setPatient_id(rs.getInt("patient_id"));
-        patient.setFullName(rs.getString("patient_name"));
-        appt.setPatient(patient);
-        Doctor doctor = new Doctor();
-        doctor.setDoctor_id(rs.getInt("doctor_id"));
-        doctor.setFullName(rs.getString("doctor_name"));
-        appt.setDoctor(doctor);
         appt.setDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
+//        appt.setDoctor(rs.getString("doctor_name"));
+//        appt.setPatient(rs.getString("patient_name"));
         appt.setStatus(rs.getString("status"));
-        appt.setNote(rs.getString("note"));
-        appt.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        appt.setUpdateAt(rs.getTimestamp("updated_at").toLocalDateTime());
-
         return appt;
     }
 }

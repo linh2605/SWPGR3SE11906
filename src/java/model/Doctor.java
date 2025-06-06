@@ -10,10 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Doctor {
-
     private int doctor_id;
     private User user;
-    private String fullName;
     private Gender gender;
     private Date dob;
     private String image_url;

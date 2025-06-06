@@ -216,4 +216,25 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 <script src="${pageContext.request.contextPath}/views/assets/js/scripts.js"></script>
 </body>
+<script>
+    function showDeleteModal(userId) {
+        document.getElementById("deleteUserId").value = userId;
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+
+    function populateUpdateForm(userId, username, fullname, email, phone, gender, dob, address) {
+        document.getElementById("update_patient_id").value = userId;
+        document.getElementById("update_username").value = username;
+        document.getElementById("update_fullname").value = fullname;
+        document.getElementById("update_email").value = email;
+        document.getElementById("update_phone").value = phone;
+        document.getElementById("update_gender").value = gender;
+        document.getElementById("update_date_of_birth").value = dob;
+        document.getElementById("update_address").value = address;
+
+        var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+        updateModal.show();
+    }
+</script>
 </html>

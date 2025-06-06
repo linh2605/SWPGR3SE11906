@@ -125,4 +125,14 @@ public class UserDAO {
             }
         }
     }
+    public static void deleteUser(int user_id){
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement stmt = connection.prepareStatement("DELETE FROM users WHERE user_id = ?");
+            stmt.setInt(1, user_id);
+            stmt.executeUpdate();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

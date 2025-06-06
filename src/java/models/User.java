@@ -18,4 +18,12 @@ public class User {
     private String phone;
     private Role role;
     private Timestamp created_at;
+    public User(String username, String password, String fullname, String email, String phone, Role role) {
+        this.username = username;
+        this.password = password;
+        this.fullname = fullname;
+        this.email = email;
+        this.phone = phone;
+        this.role = role;
+    }
 }

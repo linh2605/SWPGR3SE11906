@@ -15,7 +15,7 @@ public class Appointment {
 //    private String patient;
     private Patient patient;
     private String status;
-    private String dateTime; // bỏ
+    private String dateTime;
     private LocalDateTime appointmentDate;
     private String note;
     private LocalDateTime createdAt;

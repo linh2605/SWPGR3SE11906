@@ -118,14 +118,26 @@ public class AppointmentDao {
         }
     }
     
-    // TODO: fix sau
     private static Appointment mappingAppointment(ResultSet rs) throws SQLException { 
         Appointment appt = new Appointment();
         appt.setId(rs.getInt("appointment_id"));
         appt.setDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
-//        appt.setDoctor(rs.getString("doctor_name"));
-//        appt.setPatient(rs.getString("patient_name"));
         appt.setStatus(rs.getString("status"));
+
+        // Doctor
+        models.Doctor doctor = new models.Doctor();
+        models.User doctorUser = new models.User();
+        doctorUser.setFullname(rs.getString("doctor_name"));
+        doctor.setUser(doctorUser);
+        appt.setDoctor(doctor);
+
+        // Patient
+        models.Patient patient = new models.Patient();
+        models.User patientUser = new models.User();
+        patientUser.setFullname(rs.getString("patient_name"));
+        patient.setUser(patientUser);
+        appt.setPatient(patient);
+
         return appt;
     }
 }

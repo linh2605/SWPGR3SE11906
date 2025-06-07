@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         success: function(data) {
                             const events = data.map(appt => ({
                                 id: appt.id,
-                                title: `Hẹn với ${appt.doctor} (${appt.patient})`,
+                                title: `Hẹn với ${appt.doctor && appt.doctor.user ? appt.doctor.user.fullname : ''} (${appt.patient && appt.patient.user ? appt.patient.user.fullname : ''})`,
                                 start: appt.dateTime,
                                 className: 'fc-event-' + appt.status
                             }));
@@ -84,7 +84,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 },
                 eventClick: function(info) {
-                    alert(`Chi tiết lịch hẹn:\nID: ${info.event.id}\nTên: ${info.event.title}\nThời gian: ${info.event.start.toLocaleString('vi-VN')}`);
+                    // Lấy tên bác sĩ và bệnh nhân từ event object (nếu có)
+                    const event = info.event;
+                    // Tìm lại dữ liệu gốc từ data nếu cần
+                    let doctorName = '';
+                    let patientName = '';
+                    if (event.extendedProps && event.extendedProps.doctor && event.extendedProps.doctor.user) {
+                        doctorName = event.extendedProps.doctor.user.fullname;
+                    }
+                    if (event.extendedProps && event.extendedProps.patient && event.extendedProps.patient.user) {
+                        patientName = event.extendedProps.patient.user.fullname;
+                    }
+                    // Nếu không có thì fallback lấy từ title
+                    if (!doctorName || !patientName) {
+                        const match = event.title.match(/Hẹn với (.*?) \((.*?)\)/);
+                        if (match) {
+                            doctorName = match[1];
+                            patientName = match[2];
+                        }
+                    }
+                    alert(`Chi tiết lịch hẹn:\nID: ${event.id}\nBác sĩ: ${doctorName}\nBệnh nhân: ${patientName}\nThời gian: ${event.start.toLocaleString('vi-VN')}`);
                 }
             });
             calendar.render();
@@ -123,11 +142,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                     `;
                                 }
                             }
+                            // Thêm log kiểm tra dữ liệu
+                            console.log('Doctor:', appt.doctor, 'Patient:', appt.patient);
                             row.innerHTML = `
                                 <td>${appt.id}</td>
                                 <td>${new Date(appt.dateTime).toLocaleString('vi-VN')}</td>
-                                <td>${appt.doctor}</td>
-                                <td>${appt.patient}</td>
+                                <td>${appt.doctor && appt.doctor.user && typeof appt.doctor.user.fullname === 'string' ? appt.doctor.user.fullname : JSON.stringify(appt.doctor)}</td>
+                                <td>${appt.patient && appt.patient.user && typeof appt.patient.user.fullname === 'string' ? appt.patient.user.fullname : JSON.stringify(appt.patient)}</td>
                                 <td>${appt.status === 'pending' ? 'Đang chờ' : appt.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}</td>
                                 <td>${actions}</td>
                             `;

@@ -76,50 +76,24 @@ public class DoctorDao {
         }
     }
     public static boolean insertDoctor(Doctor doctor) {
-        String insertUserSQL = "INSERT INTO users (username, password, full_name, email, phone, role_id) VALUES (?, ?, ?, ?, ?, ?)";
         String insertDoctorSQL = "INSERT INTO doctors (user_id, gender, dob, image_url, specialty_id, degree, experience, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection connection = DBContext.makeConnection()) {
-            connection.setAutoCommit(false);
+        try (Connection connection = DBContext.makeConnection();
+             PreparedStatement doctorStmt = connection.prepareStatement(insertDoctorSQL)) {
 
-            // Insert user
-            try (PreparedStatement userStmt = connection.prepareStatement(insertUserSQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                User user = doctor.getUser();
-                userStmt.setString(1, user.getUsername());
-                userStmt.setString(2, user.getPassword());
-                userStmt.setString(3, user.getFullname());
-                userStmt.setString(4, user.getEmail());
-                userStmt.setString(5, user.getPhone());
-                userStmt.setInt(6, 2); // role_id for doctor, adjust if needed
+            doctorStmt.setInt(1, doctor.getUser().getUser_id());
+            doctorStmt.setString(2, doctor.getGender().toString());
+            doctorStmt.setDate(3, doctor.getDob());
+            doctorStmt.setString(4, doctor.getImage_url());
+            doctorStmt.setInt(5, doctor.getSpecialty().getSpecialty_id());
+            doctorStmt.setString(6, doctor.getDegree());
+            doctorStmt.setString(7, doctor.getExperience());
+            doctorStmt.setString(8, doctor.getStatus().toString());
 
-                userStmt.executeUpdate();
-                ResultSet rs = userStmt.getGeneratedKeys();
-                if (rs.next()) {
-                    int userId = rs.getInt(1);
+            int rowsAffected = doctorStmt.executeUpdate();
+            return rowsAffected > 0;
 
-                    // Insert doctor
-                    try (PreparedStatement doctorStmt = connection.prepareStatement(insertDoctorSQL)) {
-                        doctorStmt.setInt(1, userId);
-                        doctorStmt.setString(2, doctor.getGender().toString());
-                        doctorStmt.setDate(3, doctor.getDob());
-                        doctorStmt.setString(4, doctor.getImage_url());
-                        doctorStmt.setInt(5, doctor.getSpecialty().getSpecialty_id());
-                        doctorStmt.setString(6, doctor.getDegree());
-                        doctorStmt.setString(7, doctor.getExperience());
-                        doctorStmt.setString(8, doctor.getStatus().toString());
-
-                        doctorStmt.executeUpdate();
-                    }
-                }
-
-                connection.commit();
-                return true;
-            } catch (SQLException e) {
-                connection.rollback();
-                e.printStackTrace();
-                return false;
-            }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }

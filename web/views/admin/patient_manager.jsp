@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
 </head>
 <body>
 <div class="wrapper">
@@ -22,7 +23,7 @@
                 Add a patient
             </button>
             <% ArrayList<Patient> patients = (ArrayList<Patient>) request.getAttribute("patients");%>
-            <table class="table table-bordered align-middle text-center">
+            <table class="table table-bordered align-middle text-center" id="table">
                 <thead class="table-light">
                 <tr>
                     <th>ID</th>
@@ -131,7 +132,8 @@
                 </form>
             </div>
         </div>
-                    <!-- DELETE MODAL -->
+
+        <!-- DELETE MODAL -->
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form method="post" action="${pageContext.request.contextPath}/admin/user/delete" class="modal-content">
@@ -150,7 +152,7 @@
                 </form>
             </div>
         </div>
-                    <!-- UPDATE MODAL -->
+        <!-- UPDATE MODAL -->
         <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <form action="${pageContext.request.contextPath}/admin/patient/update" method="post" enctype="multipart/form-data" class="modal-content p-4 bg-light rounded shadow-sm">
@@ -209,14 +211,18 @@
                 </form>
             </div>
         </div>
+
     </div>
 
     <%@ include file="../layouts/footer.jsp" %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 <script src="${pageContext.request.contextPath}/views/assets/js/scripts.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
 </body>
 <script>
+    new DataTable("#table")
     function showDeleteModal(userId) {
         document.getElementById("deleteUserId").value = userId;
         var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));

@@ -1,5 +1,5 @@
-<%@ page import="model.Doctor" %>
-<%@ page import="model.User" %>
+<%@ page import="models.Doctor" %>
+<%@ page import="models.User" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%

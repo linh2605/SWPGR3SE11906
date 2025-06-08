@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
 </head>
 <body>
 <div class="wrapper">
@@ -24,7 +25,7 @@
             <!-- Button trigger create modal -->
             <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createDoctorModal">Thêm bác sĩ</button>
             <%ArrayList<Doctor> doctors  = (ArrayList<Doctor>) request.getAttribute("doctors");%>
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped" id="table">
                 <thead class="table-light">
                 <tr>
                     <th>ID</th>
@@ -250,8 +251,10 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 <script src="${pageContext.request.contextPath}/views/assets/js/scripts.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
 </body>
 <script>
+    new DataTable("#table")
     function showDoctorDeleteModal(userId) {
         document.getElementById("deleteDoctorUserId").value = userId;
         var deleteModal = new bootstrap.Modal(document.getElementById('deleteDoctorModal'));

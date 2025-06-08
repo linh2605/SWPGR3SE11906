@@ -19,6 +19,9 @@ import dal.DBContext;
 import dal.AppointmentDao;
 import models.Appointment;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.time.LocalDateTime;
+import utils.LocalDateTimeAdapter;
 
 @WebServlet("/getAppointments")
 public class AppointmentServlet extends HttpServlet {
@@ -74,7 +77,9 @@ public class AppointmentServlet extends HttpServlet {
             }
             
             List<Appointment> appointments = AppointmentDao.getAppointmentsByPatientId(patientId, page, size);
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
             response.getWriter().write(gson.toJson(appointments));
         } catch (SQLException e) {
             e.printStackTrace();

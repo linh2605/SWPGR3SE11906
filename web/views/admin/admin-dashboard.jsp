@@ -4,6 +4,7 @@
     Author     : tamthui
 --%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ include file="admin-auth.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>

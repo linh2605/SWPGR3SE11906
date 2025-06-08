@@ -2,6 +2,7 @@
 <%@ page import="models.User" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ include file="admin-auth.jsp" %>
 <%
     Patient patient = (Patient) request.getAttribute("patient");
     User user = patient.getUser();

@@ -7,6 +7,7 @@
     User user = doctor.getUser();
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 %>
+<%@ include file="admin-auth.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>

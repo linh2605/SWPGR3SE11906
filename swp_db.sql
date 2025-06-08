@@ -15,6 +15,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP DATABASE IF EXISTS swp_db;
+CREATE DATABASE swp_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE swp_db;
+
 --
 -- Table structure for table `appointments`
 --
@@ -43,11 +47,7 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-LOCK TABLES `appointments` WRITE;
-/*!40000 ALTER TABLE `appointments` DISABLE KEYS */;
 INSERT INTO `appointments` VALUES (1,1,1,'2025-06-01 10:00:00','pending','Đau khớp gối, cần khám','2025-05-31 12:00:00','2025-05-31 12:00:00'),(2,2,2,'2025-06-01 11:00:00','pending','Đau bụng, nghi viêm ruột','2025-05-31 12:00:00','2025-05-31 12:00:00');
-/*!40000 ALTER TABLE `appointments` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `doctors`
@@ -79,11 +79,7 @@ CREATE TABLE `doctors` (
 -- Dumping data for table `doctors`
 --
 
-LOCK TABLES `doctors` WRITE;
-/*!40000 ALTER TABLE `doctors` DISABLE KEYS */;
 INSERT INTO `doctors` VALUES (1,3,'Male','1980-03-15','https://example.com/doctor1.jpg',1,'ThS.BSCKI','10 năm kinh nghiệm tại BV Chợ Rẫy','active','2025-05-31 12:00:00'),(2,4,'Male','1985-07-20','https://example.com/doctor2.jpg',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-05-31 12:00:00');
-/*!40000 ALTER TABLE `doctors` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `patients`
@@ -110,11 +106,7 @@ CREATE TABLE `patients` (
 -- Dumping data for table `patients`
 --
 
-LOCK TABLES `patients` WRITE;
-/*!40000 ALTER TABLE `patients` DISABLE KEYS */;
 INSERT INTO `patients` VALUES (1,1,'Male','1990-05-10','123 Đường Láng, Đống Đa, Hà Nội','https://example.com/patient1.jpg','2025-05-31 12:00:00'),(2,2,'Female','1995-08-25','456 Nguyễn Huệ, TP Huế','https://example.com/patient2.jpg','2025-05-31 12:00:00');
-/*!40000 ALTER TABLE `patients` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `receptionists`
@@ -142,11 +134,7 @@ CREATE TABLE `receptionists` (
 -- Dumping data for table `receptionists`
 --
 
-LOCK TABLES `receptionists` WRITE;
-/*!40000 ALTER TABLE `receptionists` DISABLE KEYS */;
 INSERT INTO `receptionists` VALUES (1,5,'Female','1992-11-30','https://example.com/receptionist1.jpg','Sáng','active','2025-05-31 12:00:00');
-/*!40000 ALTER TABLE `receptionists` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `roles`
@@ -168,11 +156,7 @@ CREATE TABLE `roles` (
 -- Dumping data for table `roles`
 --
 
-LOCK TABLES `roles` WRITE;
-/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
 INSERT INTO `roles` VALUES (1,'patient','Bệnh nhân đặt lịch hẹn'),(2,'doctor','Bác sĩ khám bệnh'),(3,'receptionist','Lễ tân quản lý lịch hẹn'),(4,'admin','Quản trị viên hệ thống');
-/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `specialties`
@@ -193,11 +177,7 @@ CREATE TABLE `specialties` (
 -- Dumping data for table `specialties`
 --
 
-LOCK TABLES `specialties` WRITE;
-/*!40000 ALTER TABLE `specialties` DISABLE KEYS */;
 INSERT INTO `specialties` VALUES (1,'Cơ Xương Khớp','Chuyên khoa điều trị các bệnh về xương khớp'),(2,'Ngoại Tổng Hợp','Chuyên khoa phẫu thuật tổng quát'),(3,'Nội Tiêu Hóa','Chuyên khoa điều trị bệnh tiêu hóa');
-/*!40000 ALTER TABLE `specialties` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `users`
@@ -219,7 +199,9 @@ CREATE TABLE `users` (
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
   KEY `fk_user_role` (`role_id`),
-  CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `check_email` CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  CONSTRAINT `check_phone` CHECK (phone REGEXP '^[0-9]{10,15}$')
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -227,11 +209,59 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'patient1','pass123','Nguyễn Văn An','an.nguyen@email.com','0901234567',1,'2025-05-31 12:00:00'),(2,'patient2','pass123','Trần Thị Bình','binh.tran@email.com','0912345678',1,'2025-05-31 12:00:00'),(3,'(doctor1','pass123','ThS.BSCKI Trịnh Minh Thanh','thanh.trinh@email.com','0923456789',2,'2025-05-31 12:00:00'),(4,'doctor2','pass123','BS. Lê Văn Hùng','hung.le@email.com','0934567890',2,'2025-05-31 12:00:00'),(5,'receptionist1','pass123','Phạm Thị Mai','mai.pham@email.com','0945678901',3,'2025-05-31 12:00:00'),(6,'admin1','adminpass','Nguyễn Văn廠 Quản Trị','admin@email.com','0956789012',4,'2025-05-31 12:00:00');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `users` VALUES 
+(1,'patient1','pass123','Nguyễn Văn An','an.nguyen@email.com','0901234567',1,'2025-05-31 12:00:00'),
+(2,'patient2','pass123','Trần Thị Bình','binh.tran@email.com','0912345678',1,'2025-05-31 12:00:00'),
+(3,'doctor1','pass123','ThS.BSCKI Trịnh Minh Thanh','thanh.trinh@email.com','0923456789',2,'2025-05-31 12:00:00'),
+(4,'doctor2','pass123','BS. Lê Văn Hùng','hung.le@email.com','0934567890',2,'2025-05-31 12:00:00'),
+(5,'receptionist1','pass123','Phạm Thị Mai','mai.pham@email.com','0945678901',3,'2025-05-31 12:00:00'),
+(6,'admin1','adminpass','Nguyễn Văn Quản Trị','admin@email.com','0956789012',4,'2025-05-31 12:00:00');
+
+--
+-- Table structure for table `contact_messages`
+--
+
+DROP TABLE IF EXISTS `contact_messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `contact_messages` (
+  `message_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subject` enum('service_feedback','incident_report','improvement_suggestion','cooperation','other') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('pending','in_progress','resolved') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `priority` enum('low','medium','high') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'medium',
+  `assigned_to` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`message_id`),
+  KEY `idx_email` (`email`),
+  KEY `idx_phone` (`phone`),
+  KEY `idx_status` (`status`),
+  KEY `idx_subject` (`subject`),
+  KEY `idx_priority` (`priority`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `fk_contact_assigned_to` (`assigned_to`),
+  CONSTRAINT `check_contact_email` CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+  CONSTRAINT `check_contact_phone` CHECK (phone REGEXP '^[0-9]{10,15}$'),
+  CONSTRAINT `fk_contact_assigned_to` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contact_messages`
+--
+
+INSERT INTO contact_messages
+(message_id, name, email, phone, subject, message, status, priority, assigned_to, created_at, updated_at)
+VALUES
+(1,'Nguyễn Văn A','nguyenvana@email.com','0987654321','service_feedback','Dịch vụ khám bệnh rất tốt, nhưng thời gian chờ hơi lâu','pending','medium',NULL,'2025-05-31 14:00:00','2025-05-31 14:00:00'),
+(2,'Trần Thị B','tranthib@email.com','0987654322','incident_report','Máy ATM trong bệnh viện bị hỏng','pending','high',NULL,'2025-05-31 15:00:00','2025-05-31 16:00:00'),
+(3,'Lê Văn C','levanc@email.com','0987654323','improvement_suggestion','Nên thêm dịch vụ gửi xe miễn phí cho bệnh nhân','pending','low',NULL,'2025-05-31 16:00:00','2025-05-31 16:00:00'),
+(4,'Phạm Thị D','phamthid@email.com','0987654324','cooperation','Công ty chúng tôi muốn hợp tác về dịch vụ bảo hiểm y tế','pending','high',NULL,'2025-05-31 17:00:00','2025-05-31 17:00:00');
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

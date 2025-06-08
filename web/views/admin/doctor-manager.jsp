@@ -1,3 +1,5 @@
+<%@ include file="admin-auth.jsp" %>
+
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="models.Doctor" %>
 <%@ page import="java.util.List" %>

@@ -4,6 +4,7 @@
     Author     : tamthui
 --%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ include file="admin-auth.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,6 +22,7 @@
                 <h3>ADMIN DASHBOARD</h3>
                 <a href="doctorManager.jsp">Quản lý bác sĩ</a>
                 <a href="userManager.jsp">Quản lý bệnh nhân</a>
+                <a href="${pageContext.request.contextPath}/contactManager">Quản lý liên hệ</a>
             </div>
             <div class="content">
                 <!-- Nội dung chính tại đây -->

@@ -1,7 +1,7 @@
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="model.Doctor" %>
+<%@ page import="models.Doctor" %>
 <%@ page import="java.util.List" %>
-<%@ page import="model.Specialty" %>
+<%@ page import="models.Specialty" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>

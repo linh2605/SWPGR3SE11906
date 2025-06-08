@@ -72,7 +72,7 @@ public class PatientDao {
         patient.setDate_of_birth(rs.getDate("date_of_birth"));
         patient.setAddress(rs.getString("address"));
         patient.setImage_url(rs.getString("image_url"));
-        patient.setCreated_at(rs.getTimestamp("created_at"));
+        patient.setCreated_at(rs.getTimestamp("p.created_at"));
 
         User user = new User();
         user.setUser_id(rs.getInt("user_id"));
@@ -81,7 +81,7 @@ public class PatientDao {
         user.setFullname(rs.getString("full_name"));
         user.setEmail(rs.getString("email"));
         user.setPhone(rs.getString("phone"));
-        user.setCreated_at(rs.getTimestamp("users.created_at"));
+        user.setCreated_at(rs.getTimestamp("u.created_at"));
 
         Role role = new Role();
         role.setName(rs.getString("role_name"));
@@ -107,5 +107,8 @@ public class PatientDao {
         return false;
     }
 }
+    public static void main(String[] args) {
+        System.out.println(getAllPatients().size());
+    }
 
 }

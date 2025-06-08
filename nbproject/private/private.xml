@@ -6,8 +6,13 @@
             <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/web/views/admin/patient_manager.jsp</file>
             <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/src/java/dal/DoctorDao.java</file>
             <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/src/java/controller/PatientDetailServlet.java</file>
+            <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/src/java/dal/AppointmentDao.java</file>
             <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/web/views/admin/patient-detail.jsp</file>
+            <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/src/java/models/User.java</file>
+            <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/src/java/dal/PatientDao.java</file>
+            <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/src/java/dal/RoleDao.java</file>
             <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/src/java/dal/UserDAO.java</file>
+            <file>file:/C:/Users/THANH/Documents/GitHub/SWPGR3SE11906/web/views/admin/doctor-manager.jsp</file>
         </group>
     </open-files>
 </project-private>

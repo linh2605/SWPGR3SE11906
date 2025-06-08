@@ -64,10 +64,10 @@
                 </a>
             </div>
             <div class="col-auto">
-                    <button type="button" class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-                        <i class="bi bi-chat-left-text"></i> Góp ý
-                    </button>
-                </div>
+                <a href="${pageContext.request.contextPath}/views/info/contact_us.jsp" class="btn btn-outline-success me-2">
+                    <i class="bi bi-chat-left-text"></i> Liên hệ
+                </a>
+            </div>
             <div class="col-auto">
                 <a href="#" class="btn btn-outline-success">
                     <i class="bi bi-person-plus"></i> Tìm theo mã bệnh
@@ -132,39 +132,6 @@
         </div>
     </div>
         
-        <!-- Modal Góp ý -->
-    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="feedbackModalLabel">Góp ý</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="feedback" method="post">
-                        <div class="mb-3">
-                            <label for="feedbackName" class="form-label">Họ và tên</label>
-                            <input type="text" class="form-control" id="feedbackName" name="name" placeholder="Nhập họ và tên" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="feedbackEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="feedbackEmail" name="email" placeholder="Nhập email của bạn" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="feedbackPhone" class="form-label">Số điện thoại</label>
-                            <input type="tel" class="form-control" id="feedbackPhone" name="phone" placeholder="Nhập số điện thoại" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="feedbackMessage" class="form-label">Nội dung góp ý</label>
-                            <textarea class="form-control" id="feedbackMessage" name="message" rows="4" placeholder="Nhập nội dung góp ý của bạn" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-custom w-100">Gửi góp ý</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
     <main class="container my-5">
         <!-- Ưu đãi nổi bật -->

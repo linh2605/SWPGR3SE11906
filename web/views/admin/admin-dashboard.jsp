@@ -17,11 +17,7 @@
         <%@ include file="../layouts/header.jsp" %>
         <!-- BODY -->
         <div class="main">
-            <div class="sidebar">
-                <h3>ADMIN DASHBOARD</h3>
-                <a href="doctorManager.jsp">Quản lý bác sĩ</a>
-                <a href="userManager.jsp">Quản lý bệnh nhân</a>
-            </div>
+            <%@include file="../layouts/admin-side-bar.jsp"%>
             <div class="content">
                 <!-- Nội dung chính tại đây -->
                 <h2>Chào mừng đến với bảng điều khiển Admin!</h2>

@@ -294,7 +294,7 @@
                                         aria-selected="false"
                                         data-specialist="1124"
                                         tabindex="-1">
-                                        Khoa Hô hấp
+                                        Khoa Hô Hấp
                                         <div class="-number">6</div>
                                     </button>
 

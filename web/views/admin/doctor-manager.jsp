@@ -235,7 +235,7 @@
                         </div>
                         <div class="col-md-12">
                             <label>Image (Leave empty if not updating)</label>
-                            <input type="file" name="image" class="form-control">
+                            <input required type="file" name="image" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">

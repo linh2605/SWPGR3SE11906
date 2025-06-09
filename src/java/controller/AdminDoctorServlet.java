@@ -22,7 +22,7 @@ import java.util.List;
 @MultipartConfig
 public class AdminDoctorServlet extends HttpServlet{
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {;
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
         req.setAttribute("doctors", doctors);

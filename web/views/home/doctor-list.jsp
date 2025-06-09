@@ -384,7 +384,7 @@
                                         aria-selected="false"
                                         data-specialist="1131"
                                         tabindex="-1">
-                                        Khoa Nội tổng hợp
+                                        Khoa Nội Tổng Hợp
                                         <div class="-number">13</div>
                                     </button>
 

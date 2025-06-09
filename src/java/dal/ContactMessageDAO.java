@@ -156,4 +156,34 @@ public class ContactMessageDAO {
             return false;
         }
     }
+    
+    public ContactMessage getMessageById(int messageId) {
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM contact_messages WHERE message_id = ?"
+            );
+            stmt.setInt(1, messageId);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                ContactMessage message = new ContactMessage();
+                message.setMessage_id(rs.getInt("message_id"));
+                message.setName(rs.getString("name"));
+                message.setEmail(rs.getString("email"));
+                message.setPhone(rs.getString("phone"));
+                message.setSubject(rs.getString("subject"));
+                message.setMessage(rs.getString("message"));
+                message.setStatus(rs.getString("status"));
+                message.setPriority(rs.getString("priority"));
+                message.setAssigned_to(rs.getInt("assigned_to"));
+                message.setCreated_at(rs.getTimestamp("created_at"));
+                message.setUpdated_at(rs.getTimestamp("updated_at"));
+                return message;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

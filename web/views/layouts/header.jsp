@@ -47,7 +47,7 @@
                     <c:choose>
                         <c:when test="${empty sessionScope.user}">
                             <!-- Chưa đăng nhập -->
-                            <a href="${pageContext.request.contextPath}/views/home/login.jsp" class="btn btn-outline-primary">
+                            <a href="${pageContext.request.contextPath}/login" class="btn btn-outline-primary">
                                 Đăng ký / Đăng nhập
                             </a>
                         </c:when>

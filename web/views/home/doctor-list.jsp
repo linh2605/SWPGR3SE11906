@@ -234,7 +234,7 @@
                                         aria-selected="false"
                                         data-specialist="1119"
                                         tabindex="-1">
-                                        Khoa Cấp cứu - Hồi sức tích cực ICU
+                                        Khoa Cấp Cứu - Hồi sức tích cực ICU
                                         <div class="-number">12</div>
                                     </button>
 

@@ -4,8 +4,8 @@
  */
 package controller;
 
-import dal.UserDAO;
-import models.User;
+import dal.DoctorDao;
+import dal.SpecialtyDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,14 +13,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import models.Doctor;
+import models.Specialty;
 
 /**
  *
  * @author New_user
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "DoctorListServlet", urlPatterns = {"/doctors"})
+public class DoctorListServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,10 +41,10 @@ public class LoginServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoginServlet</title>");
+            out.println("<title>Servlet DoctorListServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet LoginServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DoctorListServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,7 +62,13 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
+        // TODO: get by specialties
+        // TODO: paging
+        List<Doctor> doctors = DoctorDao.getAllDoctors();
+        List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
+        request.setAttribute("doctors", doctors);
+        request.setAttribute("specialties", specialties);
+        request.getRequestDispatcher("views/home/doctor-list.jsp").forward(request, response);
     }
 
     /**
@@ -74,25 +82,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        User user = UserDAO.login(username, password);
-
-        if (user != null && user.getUser_id() != 0) {
-            HttpSession session = request.getSession();
-            // Set toàn bộ thông tin user vào session
-            session.setAttribute("user", user);
-            session.setAttribute("user_id", user.getUser_id());
-            session.setAttribute("role_id", user.getRole().getRole_id());
-            session.setAttribute("role", user.getRole().getName());
-
-            // Chuyển về trang chủ sau khi đăng nhập thành công
-            response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
-        } else {
-            // Đăng nhập sai, quay lại login và báo lỗi
-            request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
-            request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**

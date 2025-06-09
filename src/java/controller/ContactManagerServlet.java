@@ -58,7 +58,21 @@ public class ContactManagerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        String viewId = request.getParameter("view");
         ContactMessageDAO dao = new ContactMessageDAO();
+        
+        if (viewId != null) {
+            try {
+                int messageId = Integer.parseInt(viewId);
+                ContactMessage message = dao.getMessageById(messageId);
+                request.setAttribute("message", message);
+                request.getRequestDispatcher("/views/admin/contactDetail.jsp").forward(request, response);
+                return;
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        
         List<ContactMessage> messages = dao.getAllMessages();
         request.setAttribute("messages", messages);
         request.getRequestDispatcher("/views/admin/contactManager.jsp").forward(request, response);

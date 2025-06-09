@@ -4,4 +4,5 @@
     <h3>ADMIN DASHBOARD</h3>
     <a href="${pageContext.request.contextPath}/admin/doctor">Quản lý bác sĩ</a>
     <a href="${pageContext.request.contextPath}/admin/patient">Quản lý bệnh nhân</a>
+    <a href="${pageContext.request.contextPath}/contactManager">Quản lý liên hệ</a>
 </div>

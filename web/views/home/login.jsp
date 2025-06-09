@@ -21,7 +21,7 @@
             <div class="login-box">
                 <h2>ĐĂNG NHẬP</h2>
                 <p>Mời bạn đăng nhập để thực hiện các thao tác quản lý</p>
-                <form action="../../login" method="post">
+                <form action="login" method="post">
                     <input type="text" name="username" placeholder="Email hoặc tên đăng nhập" required>
                     <input type="password" name="password" placeholder="Mật khẩu" required>
                     <div class="checkbox-group">

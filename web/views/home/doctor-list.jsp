@@ -369,7 +369,7 @@
                                         aria-selected="false"
                                         data-specialist="1132"
                                         tabindex="-1">
-                                        Khoa Nội tiết
+                                        Khoa Nội Tiết
                                         <div class="-number">8</div>
                                     </button>
 

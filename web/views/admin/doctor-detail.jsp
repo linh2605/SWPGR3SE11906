@@ -83,7 +83,7 @@
 
     <div class="main">
         <div class="content">
-            <h2>Thông tin chi tiết về bác sĩ <%= user.getFullname() %></h2>
+            <h2>Thông tin chi tiết về bác sĩ <%= user.getFullName() %></h2>
             <div class="container mt-5">
                 <div class="row mt-4">
                     <!-- Professional Info -->
@@ -102,7 +102,7 @@
                     <div class="col-md-6">
                         <div class="info-box">
                             <div class="section-title"><span class="icon-circle icon-green">🧾</span>Thông tin định danh:</div>
-                            <div class="info-item">Họ và tên: <%= user.getFullname() %></div>
+                            <div class="info-item">Họ và tên: <%= user.getFullName() %></div>
                             <div class="info-item">Ngày sinh: <%= sdf.format(doctor.getDob()) %></div>
                             <div class="info-item">Giới tính: <%= doctor.getGender().name() %></div>
                             <div class="info-item">Doctor ID: <%= doctor.getDoctor_id() %></div>

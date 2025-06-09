@@ -32,12 +32,12 @@ public class ReceptionistAppointmentServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("role_id") == null) {
+        if (session == null || session.getAttribute("roleId") == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
             return;
         }
-        int roleId = (int) session.getAttribute("role_id");
-        if (roleId != 3) { // Chỉ cho receptionist (role_id = 3)
+        int roleId = (int) session.getAttribute("roleId");
+        if (roleId != 3) { // Chỉ cho receptionist (roleId = 3)
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }

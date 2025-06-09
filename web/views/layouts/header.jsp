@@ -10,13 +10,13 @@
 <script>
     window.user = {
         <c:if test="${not empty sessionScope.user}">
-            user_id: "${sessionScope.user.user_id}",
+            userId: "${sessionScope.user.userId}",
             username: "${sessionScope.user.username}",
-            fullname: "${sessionScope.user.fullname}",
+            fullName: "${sessionScope.user.fullName}",
             email: "${sessionScope.user.email}",
             phone: "${sessionScope.user.phone}",
-            role_id: "${sessionScope.user.role.role_id}",
-            role_name: "${sessionScope.user.role.name}"
+            roleId: "${sessionScope.user.role.roleId}",
+            roleName: "${sessionScope.user.role.name}"
         </c:if>
     };
     window.roleId = ${sessionScope.role_id != null ? sessionScope.role_id : 'null'};
@@ -60,21 +60,21 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <c:choose>
-                                        <c:when test="${sessionScope.user.role.role_id == 4}">
+                                        <c:when test="${sessionScope.user.role.roleId == 4}">
                                             <!-- Menu cho Admin -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/admin/admin-dashboard.jsp">Dashboard</a></li>
                                         </c:when>
-                                        <c:when test="${sessionScope.user.role.role_id == 2}">
+                                        <c:when test="${sessionScope.user.role.roleId == 2}">
                                             <!-- Menu cho Doctor -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/doctor/dashboard.jsp">Dashboard</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/doctorDashboard.jsp">Lịch hẹn</a></li>
                                         </c:when>
-                                        <c:when test="${sessionScope.user.role.role_id == 3}">
+                                        <c:when test="${sessionScope.user.role.roleId == 3}">
                                             <!-- Menu cho Receptionist -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/receptionist/dashboard.jsp">Dashboard</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/receptionistDashboard.jsp">Quản lý lịch hẹn</a></li>
                                         </c:when>
-                                        <c:when test="${sessionScope.user.role.role_id == 1}">
+                                        <c:when test="${sessionScope.user.role.roleId == 1}">
                                             <!-- Menu cho Patient -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/profile.jsp">Hồ sơ cá nhân</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/appointments.jsp">Lịch hẹn của tôi</a></li>

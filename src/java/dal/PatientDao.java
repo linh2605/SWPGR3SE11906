@@ -54,7 +54,7 @@ public class PatientDao {
                 "VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBContext.makeConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, patient.getUser().getUser_id());
+            ps.setInt(1, patient.getUser().getUserId());
             ps.setString(2, patient.getGender().toString());
             ps.setDate(3, patient.getDate_of_birth());
             ps.setString(4, patient.getAddress());
@@ -75,13 +75,13 @@ public class PatientDao {
         patient.setCreated_at(rs.getTimestamp("p.created_at"));
 
         User user = new User();
-        user.setUser_id(rs.getInt("user_id"));
+        user.setUserId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password"));
-        user.setFullname(rs.getString("full_name"));
+        user.setFullName(rs.getString("full_name"));
         user.setEmail(rs.getString("email"));
         user.setPhone(rs.getString("phone"));
-        user.setCreated_at(rs.getTimestamp("u.created_at"));
+        user.setCreatedAt(rs.getTimestamp("u.created_at"));
 
         Role role = new Role();
         role.setName(rs.getString("role_name"));

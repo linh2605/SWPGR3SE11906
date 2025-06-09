@@ -219,7 +219,7 @@
                                         aria-selected="false"
                                         data-specialist="1128"
                                         tabindex="-1">
-                                        Đơn nguyên Nam khoa &amp; PT Tiết niệu
+                                        Đơn nguyên Nam Khoa &amp; PT Tiết Niệu
                                         <div class="-number">6</div>
                                     </button>
 
@@ -234,7 +234,7 @@
                                         aria-selected="false"
                                         data-specialist="1119"
                                         tabindex="-1">
-                                        Khoa Cấp cứu - Hồi sức tích cực ICU
+                                        Khoa Cấp Cứu - Hồi Sức Tích Cực ICU
                                         <div class="-number">12</div>
                                     </button>
 
@@ -294,7 +294,7 @@
                                         aria-selected="false"
                                         data-specialist="1124"
                                         tabindex="-1">
-                                        Khoa Hô hấp
+                                        Khoa Hô Hấp
                                         <div class="-number">6</div>
                                     </button>
 
@@ -369,7 +369,7 @@
                                         aria-selected="false"
                                         data-specialist="1132"
                                         tabindex="-1">
-                                        Khoa Nội tiết
+                                        Khoa Nội Tiết
                                         <div class="-number">8</div>
                                     </button>
 
@@ -384,7 +384,7 @@
                                         aria-selected="false"
                                         data-specialist="1131"
                                         tabindex="-1">
-                                        Khoa Nội tổng hợp
+                                        Khoa Nội Tổng Hợp
                                         <div class="-number">13</div>
                                     </button>
 
@@ -414,7 +414,7 @@
                                         aria-selected="false"
                                         data-specialist="1134"
                                         tabindex="-1">
-                                        Khoa Sản - Phụ khoa
+                                        Khoa Sản - Phụ Khoa
                                         <div class="-number">16</div>
                                     </button>
                                 </div>
@@ -442,7 +442,7 @@
                                                         <a
                                                             href="${pageContext.request.contextPath}/doctors/${d.doctor_id}"
                                                             class="-link">
-                                                            <h6 class="-name">${d.user.fullname}</h6>
+                                                            <h6 class="-name">${d.user.fullName}</h6>
                                                         </a>
 
                                                         <div class="-des"></div>

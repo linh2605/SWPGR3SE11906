@@ -32,16 +32,16 @@ public class AppointmentServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user_id") == null || session.getAttribute("role_id") == null) {
+        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
             return;
         }
-        int roleId = (int) session.getAttribute("role_id");
-        if (roleId != 1) { // Chỉ cho patient (role_id = 1)
+        int roleId = (int) session.getAttribute("roleId");
+        if (roleId != 1) { // Chỉ cho patient (roleId = 1)
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }
-        int userId = (int) session.getAttribute("user_id");
+        int userId = (int) session.getAttribute("userId");
 
         try (Connection conn = DBContext.makeConnection()) {
             if (conn == null) {
@@ -49,7 +49,7 @@ public class AppointmentServlet extends HttpServlet {
                 return;
             }
 
-            // Tìm patient_id từ user_id
+            // Tìm patientId từ userId
             String patientSql = "SELECT patient_id FROM patients WHERE user_id = ?";
             int patientId = -1;
             try (PreparedStatement stmt = conn.prepareStatement(patientSql)) {

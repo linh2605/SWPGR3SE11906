@@ -219,7 +219,7 @@
                                         aria-selected="false"
                                         data-specialist="1128"
                                         tabindex="-1">
-                                        Đơn nguyên Nam khoa &amp; PT Tiết niệu
+                                        Đơn nguyên Nam Khoa &amp; PT Tiết niệu
                                         <div class="-number">6</div>
                                     </button>
 

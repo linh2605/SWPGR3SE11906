@@ -141,8 +141,8 @@
                                     <input type="text" name="degree" id="degree" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="experience" class="form-label">Kinh nghiệm (năm)</label>
-                                    <input type="number" name="experience" id="experience" class="form-control" required min="0">
+                                    <label for="experience" class="form-label">Kinh nghiệm</label>
+                                    <input type="text" name="experience" id="experience" class="form-control" required min="0">
                                 </div>
                             </div>
                         </div>

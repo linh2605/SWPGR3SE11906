@@ -249,7 +249,7 @@
                                         aria-selected="false"
                                         data-specialist="1120"
                                         tabindex="-1">
-                                        Khoa Chẩn đoán hình ảnh và điện quang can thiệp
+                                        Khoa Chẩn đoán hình ảnh và Điện quang can thiệp
                                         <div class="-number">11</div>
                                     </button>
 

@@ -414,7 +414,7 @@
                                         aria-selected="false"
                                         data-specialist="1134"
                                         tabindex="-1">
-                                        Khoa Sản - Phụ khoa
+                                        Khoa Sản - Phụ Khoa
                                         <div class="-number">16</div>
                                     </button>
                                 </div>

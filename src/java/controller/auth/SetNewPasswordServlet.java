@@ -34,7 +34,7 @@ public class SetNewPasswordServlet extends HttpServlet {
         String password = request.getParameter("newPassword");
         User user = (User) request.getSession().getAttribute("user-resetpassword");
         user.setPassword(Encode.toSHA1(password));
-        new UserDAO().updateUser(user);
+        UserDAO.updateUser(user);
         request.getSession().invalidate();
         response.sendRedirect("auth/login");
     }

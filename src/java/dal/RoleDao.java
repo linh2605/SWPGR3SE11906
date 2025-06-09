@@ -1,4 +1,3 @@
-
 package dal;
 
 import models.Role;
@@ -19,7 +18,7 @@ public class RoleDao {
             if(resultSet.next()){
                 role.setName(resultSet.getString("name"));
                 role.setDescription(resultSet.getString("description"));
-                role.setRole_id(resultSet.getInt("role_id"));
+                role.setRoleId(resultSet.getInt("role_id"));
                 return role;
             }
             return null;

@@ -4,6 +4,12 @@
     Author     : tamthui
 --%>
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%
+    if (session.getAttribute("user") != null) {
+        response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +27,7 @@
             <div class="login-box">
                 <h2>ĐĂNG NHẬP</h2>
                 <p>Mời bạn đăng nhập để thực hiện các thao tác quản lý</p>
-                <form action="login" method="post">
+                <form action="${pageContext.request.contextPath}/login" method="post">
                     <input type="text" name="username" placeholder="Email hoặc tên đăng nhập" required>
                     <input type="password" name="password" placeholder="Mật khẩu" required>
                     <div class="checkbox-group">

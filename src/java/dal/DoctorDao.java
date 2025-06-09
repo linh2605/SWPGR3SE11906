@@ -41,16 +41,16 @@ public class DoctorDao {
         doctor.setStatus(Status.valueOf(resultSet.getString("status")));
         doctor.setCreated_at(resultSet.getTimestamp("doctors.created_at"));
         User user = new User();
-        user.setUser_id(resultSet.getInt("users.user_id"));
+        user.setUserId(resultSet.getInt("users.user_id"));
         user.setUsername(resultSet.getString("username"));
         user.setPassword(resultSet.getString("password"));
-        user.setFullname(resultSet.getString("full_name"));
+        user.setFullName(resultSet.getString("full_name"));
         user.setEmail(resultSet.getString("email"));
         user.setPhone(resultSet.getString("phone"));
+        user.setCreatedAt(resultSet.getTimestamp("users.created_at"));
         Role role = new Role();
         role.setName("doctor");
         user.setRole(role);
-        user.setCreated_at(resultSet.getTimestamp("users.created_at"));
         doctor.setUser(user);
         Specialty specialty = new Specialty();
         specialty.setSpecialty_id(resultSet.getInt("specialties.specialty_id"));
@@ -81,7 +81,7 @@ public class DoctorDao {
         try (Connection connection = DBContext.makeConnection();
              PreparedStatement doctorStmt = connection.prepareStatement(insertDoctorSQL)) {
 
-            doctorStmt.setInt(1, doctor.getUser().getUser_id());
+            doctorStmt.setInt(1, doctor.getUser().getUserId());
             doctorStmt.setString(2, doctor.getGender().toString());
             doctorStmt.setDate(3, doctor.getDob());
             doctorStmt.setString(4, doctor.getImage_url());

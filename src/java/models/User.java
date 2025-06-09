@@ -10,44 +10,35 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @ToString
 public class User {
-    private int user_id;
-    private int RoleID;
+    private int userId;
+    private int roleId;
     private String username;
     private String password;
-    private String fullname;
+    private String fullName;
     private String email;
     private String phone;
     private Role role;
-    private Timestamp created_at;
+    private Timestamp createdAt;
 
-    // Constructing with role
-    public User(String username, String password, String fullname, String email, String phone, Role role) {
+    // Constructor với role
+    public User(String username, String password, String fullName, String email, String phone, Role role) {
         this.username = username;
         this.password = password;
-        this.fullname = fullname;
+        this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.role = role;
     }
-    public User(String username, String password, int user_id, String fullname, String email, String phone, Role role, String email1, Timestamp created_at) {
-        this.user_id = user_id;
+
+    // Constructor đầy đủ
+    public User(String username, String password, int userId, String fullName, String email, String phone, Role role, Timestamp createdAt) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
-        this.fullname = fullname;
+        this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.role = role;
-        this.created_at = created_at;
-    }
-    
-    
-    // Setter for user_id
-    public void setId(int user_id) {
-        this.user_id = user_id;
-    }
-    
-    // Setter for RoleID
-    public void setRoleID(int roleID) {
-        this.RoleID = roleID;
+        this.createdAt = createdAt;
     }
 }

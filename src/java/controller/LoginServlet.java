@@ -78,12 +78,12 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         User user = UserDAO.login(username, password);
 
-        if (user != null && user.getUser_id() != 0) {
+        if (user != null && user.getUserId() != 0) {
             HttpSession session = request.getSession();
             // Set toàn bộ thông tin user vào session
             session.setAttribute("user", user);
-            session.setAttribute("user_id", user.getUser_id());
-            session.setAttribute("role_id", user.getRole().getRole_id());
+            session.setAttribute("userId", user.getUserId());
+            session.setAttribute("roleId", user.getRole().getRoleId());
             session.setAttribute("role", user.getRole().getName());
 
             // Chuyển về trang chủ sau khi đăng nhập thành công

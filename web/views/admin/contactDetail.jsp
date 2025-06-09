@@ -85,6 +85,7 @@
                                 <form method="post" action="${pageContext.request.contextPath}/contactManager" class="d-inline ms-2">
                                     <input type="hidden" name="action" value="updatePriority" />
                                     <input type="hidden" name="id" value="${message.message_id}" />
+                                    <input type="hidden" name="view" value="${message.message_id}" />
                                     <select name="priority" class="form-select d-inline w-auto me-2">
                                         <option value="high" ${message.priority eq 'high' ? 'selected' : ''}>Cao</option>
                                         <option value="medium" ${message.priority eq 'medium' ? 'selected' : ''}>Trung bình</option>

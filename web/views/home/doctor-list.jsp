@@ -442,7 +442,7 @@
                                                         <a
                                                             href="${pageContext.request.contextPath}/doctors/${d.doctor_id}"
                                                             class="-link">
-                                                            <h6 class="-name">${d.user.fullname}</h6>
+                                                            <h6 class="-name">${d.user.fullName}</h6>
                                                         </a>
 
                                                         <div class="-des"></div>

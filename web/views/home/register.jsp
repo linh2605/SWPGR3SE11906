@@ -19,7 +19,7 @@
                 <p>Mời bạn điền thông tin để tạo tài khoản mới</p>
                 <form action="register" method="post">
                     <input type="email" name="email" placeholder="Email" required>
-                    <input type="text" name="fullname" placeholder="Họ tên" required>
+                    <input type="text" name="fullName" placeholder="Họ tên" required>
                     <input type="text" name="address" placeholder="Địa chỉ" required>
                     <input type="text" name="phone" placeholder="Số điện thoại" required>
                     <input type="password" name="password" placeholder="Mật khẩu" required>

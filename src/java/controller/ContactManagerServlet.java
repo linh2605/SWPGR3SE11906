@@ -114,7 +114,12 @@ public class ContactManagerServlet extends HttpServlet {
             e.printStackTrace();
         }
         
-        response.sendRedirect(request.getContextPath() + "/contactManager");
+        String viewId = request.getParameter("view");
+        if (viewId != null) {
+            response.sendRedirect(request.getContextPath() + "/contactManager?view=" + viewId);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/contactManager");
+        }
     }
 
     /** 

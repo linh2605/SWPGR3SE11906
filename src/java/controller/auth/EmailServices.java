@@ -64,8 +64,8 @@ public class EmailServices {
 
     public static String sendOTPResetPassword(User user) {
         String OTP = EmailServices.getOTP();
-        String subject = "Password Reset Request for " + user.getFullname() + "\n";
-        String message = "Dear " + user.getFullname() + ",\n"
+        String subject = "Password Reset Request for " + user.getFullName() + "\n";
+        String message = "Dear " + user.getFullName() + ",\n"
                 + "\n"
                 + "We received a request to reset your password for G3 Hospital.\n"
                 + "\n"
@@ -122,7 +122,7 @@ public class EmailServices {
     public static String SendOTPConfirmEmail(User user) {
         String OTP = EmailServices.getOTP();
         String subject = "Your verify code is " + OTP + "\n";
-        String message = "Dear " + user.getFullname() + ",\n"
+        String message = "Dear " + user.getFullName() + ",\n"
                 + "\n"
                 + "Use this OTP to verify your account in G3 Hospital.\n"
                 + "\n"

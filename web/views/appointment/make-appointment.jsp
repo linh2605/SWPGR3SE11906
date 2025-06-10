@@ -13,7 +13,7 @@
         <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
         <!-- Custom CSS -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
-        
+
         <!--TODO: fix theo role sau-->
         <%
 //            Integer roleId = null;
@@ -37,7 +37,12 @@
                             <label for="fullName" class="form-label">Họ và tên</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="fullName" name="fullName" required>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="fullName" 
+                                   name="fullName"
+                                   value="${patient.fullName}"
+                                   required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -45,7 +50,12 @@
                             <label for="phone" class="form-label">Số điện thoại</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="phone" 
+                                   name="phone"
+                                   value="${patient.user.phone}"
+                                   required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -53,7 +63,12 @@
                             <label for="email" class="form-label">Email</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   value="${patient.user.email}"
+                                   required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -98,7 +113,12 @@
                             <textarea class="form-control" id="note" name="note" rows="3"></textarea>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Đặt lịch</button>
+                    <div class="row mb-3">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-9">
+                            <button type="submit" class="btn btn-primary w-100">Đặt lịch</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </main>

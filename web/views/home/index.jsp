@@ -54,8 +54,13 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-auto">
-                        <a class="btn btn-outline-success me-2"
+<!--                        <a class="btn btn-outline-success me-2"
                            href="${pageContext.request.contextPath}/views/appointment/make-appointment.jsp"
+                           >
+                            <i class="bi bi-calendar-plus"></i> Đặt lịch khám
+                        </a>-->
+                        <a class="btn btn-outline-success me-2"
+                           href="${pageContext.request.contextPath}/appointment"
                            >
                             <i class="bi bi-calendar-plus"></i> Đặt lịch khám
                         </a>

@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -19,4 +19,11 @@ public class Patient {
     private String address;
     private String image_url;
     private Timestamp created_at;
+    public Patient(User user, Gender gender, Date date_of_birth, String address, String image_url) {
+        this.user = user;
+        this.gender = gender;
+        this.date_of_birth = date_of_birth;
+        this.address = address;
+        this.image_url = image_url;
+    }
 }

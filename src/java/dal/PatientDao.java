@@ -1,10 +1,10 @@
 package dal;
 
 import dal.DBContext;
-import model.Gender;
-import model.Patient;
-import model.Role;
-import model.User;
+import models.Gender;
+import models.Patient;
+import models.Role;
+import models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,22 +54,11 @@ public class PatientDao {
                 "VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBContext.makeConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, patient.getUser().getUser_id());
+            ps.setInt(1, patient.getUser().getUserId());
             ps.setString(2, patient.getGender().toString());
             ps.setDate(3, patient.getDate_of_birth());
             ps.setString(4, patient.getAddress());
             ps.setString(5, patient.getImage_url());
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    public static boolean deletePatient(int patient_id) {
-        String sql = "DELETE FROM patients WHERE patient_id = ?";
-        try (Connection conn = DBContext.makeConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, patient_id);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,16 +72,16 @@ public class PatientDao {
         patient.setDate_of_birth(rs.getDate("date_of_birth"));
         patient.setAddress(rs.getString("address"));
         patient.setImage_url(rs.getString("image_url"));
-        patient.setCreated_at(rs.getTimestamp("created_at"));
+        patient.setCreated_at(rs.getTimestamp("p.created_at"));
 
         User user = new User();
-        user.setUser_id(rs.getInt("user_id"));
+        user.setUserId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password"));
-        user.setFullname(rs.getString("full_name"));
+        user.setFullName(rs.getString("full_name"));
         user.setEmail(rs.getString("email"));
         user.setPhone(rs.getString("phone"));
-        user.setCreated_at(rs.getTimestamp("users.created_at"));
+        user.setCreatedAt(rs.getTimestamp("u.created_at"));
 
         Role role = new Role();
         role.setName(rs.getString("role_name"));
@@ -117,6 +106,5 @@ public class PatientDao {
         e.printStackTrace();
         return false;
     }
-}
-
+    }
 }

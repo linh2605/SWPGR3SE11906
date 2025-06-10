@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="patient-auth.jsp" %>
+
 <!DOCTYPE html>
 <html>
     <head>

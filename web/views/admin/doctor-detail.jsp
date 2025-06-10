@@ -1,99 +1,119 @@
+<%@ page import="models.Doctor" %>
+<%@ page import="models.User" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%
+    Doctor doctor = (Doctor) request.getAttribute("doctor");
+    User user = doctor.getUser();
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+%>
+<%@ include file="admin-auth.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Dashboard - G3 Hospital</title>
+    <title>Chi tiết bác sĩ - G3 Hospital</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .card-profile {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        .card-profile img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
+        .info-box {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+        }
+
+        .icon-circle {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            text-align: center;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: #fff;
+            margin-right: 5px;
+        }
+
+        .icon-green {
+            background-color: #28a745;
+        }
+
+        .contact-icon {
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
 <div class="wrapper">
     <%@ include file="../layouts/header.jsp" %>
-    <!-- BODY -->
+
     <div class="main">
-        <div class="sidebar">
-            <h3>ADMIN DASHBOARD</h3>
-            <a href="doctorManager.jsp">Quản lý bác sĩ</a>
-            <a href="userManager.jsp">Quản lý bệnh nhân</a>
-        </div>
         <div class="content">
-            <!-- Nội dung chính tại đây -->
-            <h2>Thông tin chi tiết về bác sĩ XXX</h2>
+            <h2>Thông tin chi tiết về bác sĩ <%= user.getFullName() %></h2>
             <div class="container mt-5">
-                <form>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">ID</label>
-                            <input type="text" class="form-control" value="1" readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-control" value="Dr. Nguyễn Văn A">
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Gender</label>
-                            <select class="form-select">
-                                <option selected>MALE</option>
-                                <option>FEMALE</option>
-                                <option>OTHER</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" value="1980-01-15">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" value="0901234567">
+                <div class="row mt-4">
+                    <!-- Professional Info -->
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="section-title"><span class="icon-circle">👨‍⚕️</span>Thông tin chuyên môn:</div>
+                            <div class="info-item">Chuyên khoa: <%= doctor.getSpecialty().getName() %></div>
+                            <div class="info-item">Bằng cấp: <%= doctor.getDegree() %></div>
+                            <div class="info-item">Kinh nghiệm: <%= doctor.getExperience() %></div>
+                            <div class="info-item">Trạng thái: <%= doctor.getStatus().name() %></div>
+                            <div class="info-item">Ngày thêm vào hệ thống: <%= sdf.format(doctor.getCreated_at()) %></div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Image URL</label>
-                        <input type="text" class="form-control" value="https://via.placeholder.com/100">
-                        <div class="mt-2">
-                            <img src="https://via.placeholder.com/100" alt="Doctor Image" style="width:100px;height:100px;">
+                    <!-- Personal Info -->
+                    <div class="col-md-6">
+                        <div class="info-box">
+                            <div class="section-title"><span class="icon-circle icon-green">🧾</span>Thông tin định danh:</div>
+                            <div class="info-item">Họ và tên: <%= user.getFullName() %></div>
+                            <div class="info-item">Ngày sinh: <%= sdf.format(doctor.getDob()) %></div>
+                            <div class="info-item">Giới tính: <%= doctor.getGender().name() %></div>
+                            <div class="info-item">Doctor ID: <%= doctor.getDoctor_id() %></div>
+                            <div class="info-item">SĐT liên lạc: <%= user.getPhone() %></div>
                         </div>
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Specialization</label>
-                            <input type="text" class="form-control" value="Cardiology">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Degree</label>
-                            <input type="text" class="form-control" value="MD">
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Experience (Years)</label>
-                            <input type="number" class="form-control" value="15">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Working</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" checked id="workingCheck">
-                                <label class="form-check-label" for="workingCheck">
-                                    Currently Working
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">Update Doctor</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
+
     <%@ include file="../layouts/footer.jsp" %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>

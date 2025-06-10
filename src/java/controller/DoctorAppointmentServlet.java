@@ -17,8 +17,11 @@ import jakarta.servlet.http.HttpSession;
 
 import dal.DBContext;
 import dal.AppointmentDao;
-import model.Appointment;
+import models.Appointment;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.time.LocalDateTime;
+import utils.LocalDateTimeAdapter;
 
 @WebServlet("/getDoctorAppointments")
 public class DoctorAppointmentServlet extends HttpServlet {
@@ -29,16 +32,16 @@ public class DoctorAppointmentServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user_id") == null || session.getAttribute("role_id") == null) {
+        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
             return;
         }
-        int roleId = (int) session.getAttribute("role_id");
-        if (roleId != 2) { // Chỉ cho doctor (role_id = 2)
+        int roleId = (int) session.getAttribute("roleId");
+        if (roleId != 2) { // Chỉ cho doctor (roleId = 2)
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }
-        int userId = (int) session.getAttribute("user_id");
+        int userId = (int) session.getAttribute("userId");
 
         try (Connection conn = DBContext.makeConnection()) {
             if (conn == null) {
@@ -46,7 +49,7 @@ public class DoctorAppointmentServlet extends HttpServlet {
                 return;
             }
 
-            // Tìm doctor_id từ user_id
+            // Tìm doctorId từ userId
             String doctorSql = "SELECT doctor_id FROM doctors WHERE user_id = ?";
             int doctorId = -1;
             try (PreparedStatement stmt = conn.prepareStatement(doctorSql)) {
@@ -74,7 +77,9 @@ public class DoctorAppointmentServlet extends HttpServlet {
             }
             
             List<Appointment> appointments = AppointmentDao.getAppointmentsByDoctorId(doctorId, page, size);
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
             response.getWriter().write(gson.toJson(appointments));
         } catch (SQLException e) {
             e.printStackTrace();

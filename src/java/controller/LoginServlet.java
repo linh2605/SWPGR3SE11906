@@ -5,7 +5,7 @@
 package controller;
 
 import dal.UserDAO;
-import model.User;
+import models.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -60,7 +60,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.getWriter().print("hehe");
+        request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
     }
 
     /**
@@ -78,12 +78,12 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         User user = UserDAO.login(username, password);
 
-        if (user != null && user.getUser_id() != 0) {
+        if (user != null && user.getUserId() != 0) {
             HttpSession session = request.getSession();
             // Set toàn bộ thông tin user vào session
             session.setAttribute("user", user);
-            session.setAttribute("user_id", user.getUser_id());
-            session.setAttribute("role_id", user.getRole().getRole_id());
+            session.setAttribute("userId", user.getUserId());
+            session.setAttribute("roleId", user.getRole().getRoleId());
             session.setAttribute("role", user.getRole().getName());
 
             // Chuyển về trang chủ sau khi đăng nhập thành công

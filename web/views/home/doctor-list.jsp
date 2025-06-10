@@ -192,7 +192,22 @@
                                         Tất cả
                                         <div class="-number">100</div>
                                     </div>
-
+                                    <c:forEach var="s" items="${specialties}">
+                                        <button
+                                            class="-itemTab nav-link"
+                                            id="nav-1128-tab"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#nav-1128"
+                                            type="button"
+                                            role="tab"
+                                            aria-controls="nav-1128"
+                                            aria-selected="false"
+                                            data-specialist="1128"
+                                            tabindex="-1">
+                                            ${s.name}
+                                            <!--<div class="-number">6</div>-->
+                                        </button>
+                                    </c:forEach>
                                     <button
                                         class="-itemTab nav-link"
                                         id="nav-1128-tab"
@@ -204,7 +219,7 @@
                                         aria-selected="false"
                                         data-specialist="1128"
                                         tabindex="-1">
-                                        Đơn nguyên Nam khoa &amp; PT Tiết niệu
+                                        Đơn nguyên Nam Khoa &amp; PT Tiết Niệu
                                         <div class="-number">6</div>
                                     </button>
 
@@ -219,7 +234,7 @@
                                         aria-selected="false"
                                         data-specialist="1119"
                                         tabindex="-1">
-                                        Khoa Cấp cứu - Hồi sức tích cực ICU
+                                        Khoa Cấp Cứu - Hồi Sức Tích Cực ICU
                                         <div class="-number">12</div>
                                     </button>
 
@@ -279,7 +294,7 @@
                                         aria-selected="false"
                                         data-specialist="1124"
                                         tabindex="-1">
-                                        Khoa Hô hấp
+                                        Khoa Hô Hấp
                                         <div class="-number">6</div>
                                     </button>
 
@@ -354,7 +369,7 @@
                                         aria-selected="false"
                                         data-specialist="1132"
                                         tabindex="-1">
-                                        Khoa Nội tiết
+                                        Khoa Nội Tiết
                                         <div class="-number">8</div>
                                     </button>
 
@@ -369,7 +384,7 @@
                                         aria-selected="false"
                                         data-specialist="1131"
                                         tabindex="-1">
-                                        Khoa Nội tổng hợp
+                                        Khoa Nội Tổng Hợp
                                         <div class="-number">13</div>
                                     </button>
 
@@ -412,6 +427,53 @@
                                     role="tabpanel"
                                     aria-labelledby="nav-all-tab">
                                     <div class="row">
+                                        <c:forEach var="d" items="${doctors}">
+                                            <div class="col-md-6">
+                                                <div class="itemDoctor">
+                                                    <div class="-img">
+                                                        <img
+                                                            src="${d.image_url}"
+                                                            alt=""
+                                                            title=""
+                                                            class="ls-is-cached lazyloaded" />
+                                                    </div>
+
+                                                    <div class="-txt">
+                                                        <a
+                                                            href="${pageContext.request.contextPath}/doctors/${d.doctor_id}"
+                                                            class="-link">
+                                                            <h6 class="-name">${d.user.fullName}</h6>
+                                                        </a>
+
+                                                        <div class="-des"></div>
+
+                                                        <a
+                                                            href="${pageContext.request.contextPath}/doctors/${d.doctor_id}"
+                                                            class="-viewdetail">
+                                                            Xem chi tiết
+                                                        </a>
+
+                                                        <ul>
+                                                            <li>
+                                                                <img
+                                                                    src="../assets/icon-graduation.svg"
+                                                                    alt=""
+                                                                    class="ls-is-cached lazyloaded" />
+                                                                <span> ${d.degree} </span>
+                                                            </li>
+
+                                                            <li>
+                                                                <img
+                                                                    src="../assets/icon-hospital.svg"
+                                                                    alt=""
+                                                                    class="ls-is-cached lazyloaded" />
+                                                                <span> ${d.experience} </span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
                                         <div class="col-md-6">
                                             <div class="itemDoctor">
                                                 <div class="-img">

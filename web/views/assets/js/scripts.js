@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }).addTo(map);
 
         const marker = L.marker([21.0134, 105.5265]).addTo(map);
+        marker.bindPopup('Đại học FPT, Khu Công nghệ cao Hòa Lạc, Thạch Thất, Hà Nội');
         marker.on('click', function () {
             const lat = 21.0134, lng = 105.5265;
             const label = encodeURIComponent('Đại học FPT, Khu Công nghệ cao Hòa Lạc, Thạch Thất, Hà Nội');
@@ -71,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         success: function(data) {
                             const events = data.map(appt => ({
                                 id: appt.id,
-                                title: `Hẹn với ${appt.doctor} (${appt.patient})`,
+                                title: `Hẹn với ${appt.doctor && appt.doctor.user ? appt.doctor.user.fullName : ''} (${appt.patient && appt.patient.user ? appt.patient.user.fullName : ''})`,
                                 start: appt.dateTime,
                                 className: 'fc-event-' + appt.status
                             }));
@@ -84,7 +85,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 },
                 eventClick: function(info) {
-                    alert(`Chi tiết lịch hẹn:\nID: ${info.event.id}\nTên: ${info.event.title}\nThời gian: ${info.event.start.toLocaleString('vi-VN')}`);
+                    // Lấy tên bác sĩ và bệnh nhân từ event object (nếu có)
+                    const event = info.event;
+                    // Tìm lại dữ liệu gốc từ data nếu cần
+                    let doctorName = '';
+                    let patientName = '';
+                    if (event.extendedProps && event.extendedProps.doctor && event.extendedProps.doctor.user) {
+                        doctorName = event.extendedProps.doctor.user.fullName;
+                    }
+                    if (event.extendedProps && event.extendedProps.patient && event.extendedProps.patient.user) {
+                        patientName = event.extendedProps.patient.user.fullName;
+                    }
+                    // Nếu không có thì fallback lấy từ title
+                    if (!doctorName || !patientName) {
+                        const match = event.title.match(/Hẹn với (.*?) \((.*?)\)/);
+                        if (match) {
+                            doctorName = match[1];
+                            patientName = match[2];
+                        }
+                    }
+                    alert(`Chi tiết lịch hẹn:\nID: ${event.id}\nBác sĩ: ${doctorName}\nBệnh nhân: ${patientName}\nThời gian: ${event.start.toLocaleString('vi-VN')}`);
                 }
             });
             calendar.render();
@@ -123,11 +143,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                     `;
                                 }
                             }
+                            // Thêm log kiểm tra dữ liệu
+                            console.log('Doctor:', appt.doctor, 'Patient:', appt.patient);
                             row.innerHTML = `
                                 <td>${appt.id}</td>
                                 <td>${new Date(appt.dateTime).toLocaleString('vi-VN')}</td>
-                                <td>${appt.doctor}</td>
-                                <td>${appt.patient}</td>
+                                <td>${appt.doctor && appt.doctor.user && typeof appt.doctor.user.fullName === 'string' ? appt.doctor.user.fullName : JSON.stringify(appt.doctor)}</td>
+                                <td>${appt.patient && appt.patient.user && typeof appt.patient.user.fullName === 'string' ? appt.patient.user.fullName : JSON.stringify(appt.patient)}</td>
                                 <td>${appt.status === 'pending' ? 'Đang chờ' : appt.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}</td>
                                 <td>${actions}</td>
                             `;
@@ -173,6 +195,105 @@ document.addEventListener('DOMContentLoaded', function () {
             bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
         });
     }
+
+    // Contact form validation
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value.trim();
+            
+            // Kiểm tra tên
+            if (name.length < 2) {
+                showAlert('Vui lòng nhập họ tên hợp lệ', 'danger');
+                return;
+            }
+            
+            // Kiểm tra email
+            const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                showAlert('Vui lòng nhập email hợp lệ', 'danger');
+                return;
+            }
+            
+            // Kiểm tra số điện thoại
+            const phoneRegex = /^[0-9]{10,15}$/;
+            if (!phoneRegex.test(phone)) {
+                showAlert('Vui lòng nhập số điện thoại hợp lệ (10-15 số)', 'danger');
+                return;
+            }
+            
+            // Kiểm tra mục đích liên hệ
+            if (!subject) {
+                showAlert('Vui lòng chọn mục đích liên hệ', 'danger');
+                return;
+            }
+            
+            // Kiểm tra nội dung
+            if (message.length < 10) {
+                showAlert('Vui lòng nhập nội dung ít nhất 10 ký tự', 'danger');
+                return;
+            }
+            
+            // Hiển thị thông báo đang xử lý
+            showAlert('Đang gửi tin nhắn...', 'info');
+            
+            // Gửi form
+            this.submit();
+        });
+    }
+
+    // Register form validation
+    const registerForm = document.querySelector('form[action="register"]');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            const email = this.querySelector('input[name="email"]').value;
+            const phone = this.querySelector('input[name="phone"]').value;
+            
+            if (!validateEmail(email)) {
+                e.preventDefault();
+                alert('Vui lòng nhập email hợp lệ');
+                return;
+            }
+            
+            if (!validatePhone(phone)) {
+                e.preventDefault();
+                alert('Vui lòng nhập số điện thoại hợp lệ (10-15 số)');
+                return;
+            }
+        });
+    }
+
+    // Doctor/Patient form validation
+    const doctorForm = document.querySelector('form[action*="doctor"]');
+    const patientForm = document.querySelector('form[action*="patient"]');
+    
+    [doctorForm, patientForm].forEach(form => {
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const email = this.querySelector('input[name="email"]')?.value;
+                const phone = this.querySelector('input[name="phone"]')?.value;
+                
+                if (email && !validateEmail(email)) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập email hợp lệ');
+                    return;
+                }
+                
+                if (phone && !validatePhone(phone)) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập số điện thoại hợp lệ (10-15 số)');
+                    return;
+                }
+            });
+        }
+    });
 });
 
 // Điền dữ liệu cho bộ lọc
@@ -360,3 +481,55 @@ function checkLoginStatus() {
         }
     }
 }
+
+// Validation functions
+function validateEmail(email) {
+    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    return regex.test(email);
+}
+
+function validatePhone(phone) {
+    const regex = /^[0-9]{10,15}$/;
+    return regex.test(phone);
+}
+
+// Hàm hiển thị thông báo
+function showAlert(message, type = 'success') {
+    // Xóa thông báo cũ nếu có
+    const existingAlert = document.querySelector('.alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // Tạo thông báo mới
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // Thêm vào form
+    const form = document.getElementById('contactForm');
+    form.insertBefore(alertDiv, form.firstChild);
+    
+    // Tự động ẩn sau 5 giây nếu là thông báo thành công
+    if (type === 'success') {
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+}
+
+// Xử lý thông báo chuyển hướng
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    
+    if (status === 'success') {
+        showAlert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.', 'success');
+    } else if (status === 'error') {
+        showAlert('Có lỗi xảy ra! Vui lòng thử lại sau.', 'danger');
+    }
+});

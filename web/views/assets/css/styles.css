@@ -632,3 +632,31 @@ section p {
 .nav-link.dropdown-toggle img {
     border: 2px solid #004d99;
 }
+
+/* --- Responsive map for Contact Us page --- */
+.contact-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+.contact-form,
+.map-container {
+    height: 100%;
+}
+.map-container {
+    width: 100%;
+    position: relative;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    height: 100%;
+}
+#map {
+    height: 100%;
+    width: 100%;
+    background: #e6f0fa;
+    border-radius: 10px;
+}

@@ -17,8 +17,11 @@ import jakarta.servlet.http.HttpSession;
 
 import dal.DBContext;
 import dal.AppointmentDao;
-import model.Appointment;
+import models.Appointment;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.time.LocalDateTime;
+import utils.LocalDateTimeAdapter;
 
 @WebServlet("/getAllAppointments")
 public class ReceptionistAppointmentServlet extends HttpServlet {
@@ -29,12 +32,12 @@ public class ReceptionistAppointmentServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("role_id") == null) {
+        if (session == null || session.getAttribute("roleId") == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
             return;
         }
-        int roleId = (int) session.getAttribute("role_id");
-        if (roleId != 3) { // Chỉ cho receptionist (role_id = 3)
+        int roleId = (int) session.getAttribute("roleId");
+        if (roleId != 3) { // Chỉ cho receptionist (roleId = 3)
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }
@@ -58,7 +61,9 @@ public class ReceptionistAppointmentServlet extends HttpServlet {
             }
             
             List<Appointment> appointments = AppointmentDao.getAllAppointments(page, size);
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
             response.getWriter().write(gson.toJson(appointments));
         } catch (SQLException e) {
             e.printStackTrace();

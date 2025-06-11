@@ -17,6 +17,7 @@ import java.util.List;
 public class DoctorDao {
 
     public static List<Doctor> getAllDoctors() {
+
         try {
             Connection connection = DBContext.makeConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id");

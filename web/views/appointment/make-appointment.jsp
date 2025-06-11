@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ page session="true" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html lang="vi">
     <head>
-        <title>Lịch hẹn đã đặt - G3 Hospital</title>
+        <title>Đặt lịch khám - G3 Hospital</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Bootstrap CSS -->
@@ -13,15 +13,6 @@
         <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
         <!-- Custom CSS -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
-
-        <!--TODO: fix theo role sau-->
-        <%
-//            Integer roleId = null;
-//            if (session == null || (roleId = (Integer) session.getAttribute("roleId")) == null || roleId != 1) {
-//                response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
-//                return;
-//            }
-        %>
     </head>
     <body id="appointments">
         <!-- Header -->
@@ -29,9 +20,15 @@
         <!-- Main Content -->
         <main class="container my-5">
             <h2 class="section-title text-center mb-4">ĐẶT LỊCH KHÁM</h2>
-
+            <c:if test="${errorMsg != null}">
+                <div class="alert alert-danger fs-5 row mb-3" role="alert">
+                    ${errorMsg}
+                </div>
+            </c:if>
             <div class="">
-                <form id="bookingForm">
+                <form id="bookingForm" 
+                      action="${pageContext.request.contextPath}/appointment" 
+                      method="POST">
                     <div class="row mb-3">
                         <div class="col-md-3">
                             <label for="fullName" class="form-label">Họ và tên</label>
@@ -73,27 +70,18 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="specialty" class="form-label">Chuyên khoa</label>
-                        </div>
-                        <div class="col-md-9">
-                            <select class="form-select" id="specialty" name="specialty" required>
-                                <option value="">Chọn chuyên khoa</option>
-                                <option value="co-xuong-khop">Cơ Xương Khớp</option>
-                                <option value="ngoai-tong-hop">Ngoại Tổng Hợp</option>
-                                <option value="nhi-khoa">Nhi Khoa</option>
-                                <option value="san-khoa">Sản Khoa</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-3">
                             <label for="doctor" class="form-label">Bác sĩ</label>
                         </div>
                         <div class="col-md-9">
                             <select class="form-select" id="doctor" name="doctor" required>
-                                <option value="">Chọn bác sĩ</option>
-                                <option value="dr1">ThS.BSCKI Trịnh Minh Thanh</option>
-                                <option value="dr2">ThS.BS Nguyễn Văn Hải</option>
+                                <option value="" disabled selected>Chọn bác sĩ</option>
+                                <c:forEach var="d" items="${doctors}">
+                                    <option value="${d.doctor_id}" 
+                                            ${doctorId == d.doctor_id ? 'selected' : ''}
+                                            >
+                                        ${d.specialty.name} - ${d.degree} ${d.user.fullName}
+                                    </option>
+                                </c:forEach>
                             </select>
                         </div>
                     </div>
@@ -102,7 +90,12 @@
                             <label for="appointmentDate" class="form-label">Ngày giờ hẹn</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="datetime-local" class="form-control" id="appointmentDate" name="appointmentDate" required>
+                            <input type="datetime-local" 
+                                   class="form-control" 
+                                   id="appointmentDate" 
+                                   name="appointmentDate" 
+                                   value="${appointmentDate}"
+                                   required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -110,7 +103,7 @@
                             <label for="note" class="form-label">Ghi chú</label>
                         </div>
                         <div class="col-md-9">
-                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                            <textarea class="form-control" id="note" name="note" rows="3" required>${note}</textarea>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -119,6 +112,7 @@
                             <button type="submit" class="btn btn-primary w-100">Đặt lịch</button>
                         </div>
                     </div>
+                    <input type="hidden" name="patientId" value ="${patient.patient_id}"/>
                 </form>
             </div>
         </main>

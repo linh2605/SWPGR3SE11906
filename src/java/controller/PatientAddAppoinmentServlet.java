@@ -7,7 +7,6 @@ package controller;
 import dal.AppointmentDao;
 import dal.DoctorDao;
 import dal.PatientDao;
-import dal.SpecialtyDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,15 +16,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import models.Appointment;
 import models.Doctor;
 import models.Patient;
-import models.Specialty;
 import models.User;
 
 /**

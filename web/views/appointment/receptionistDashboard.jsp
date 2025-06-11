@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
     <%
         Integer roleId = null;
-        if (session == null || (roleId = (Integer) session.getAttribute("role_id")) == null || roleId != 3) {
+        if (session == null || (roleId = (Integer) session.getAttribute("roleId")) == null || roleId != 3) {
             response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
             return;
         }

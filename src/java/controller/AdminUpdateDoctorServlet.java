@@ -2,8 +2,9 @@ package controller;
 
 import Util.UploadImage;
 import dal.DoctorDao;
-import dal.SpecialtyDao;
+import dal.RoleDao;
 import dal.UserDAO;
+import dal.SpecialtyDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,21 +23,24 @@ public class AdminUpdateDoctorServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int doctor_id = Integer.parseInt(req.getParameter("doctor_id"));
         Doctor doctor = DoctorDao.getDoctorById(doctor_id);
+        assert doctor != null;
         User user = doctor.getUser();
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        String fullname = req.getParameter("fullname");
+        String fullName = req.getParameter("fullname");
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
         user.setUsername(username);
         user.setPassword(password);
-        user.setFullname(fullname);
+        user.setFullName(fullName);
         user.setEmail(email);
         user.setPhone(phone);
+        user.setRole(RoleDao.getRoleWithName("doctor"));
         UserDAO.updateUser(doctor.getUser());
         Gender gender = Gender.valueOf(req.getParameter("gender"));
         Date dob = Date.valueOf(req.getParameter("dob"));
-        Specialty specialty = SpecialtyDao.getSpecialtyById(Integer.parseInt(req.getParameter("specialty_id")));
+        int specialtyId = Integer.parseInt(req.getParameter("specialty_id"));
+        Specialty specialty = SpecialtyDao.getSpecialtyById(specialtyId);
         String degree = req.getParameter("degree");
         String experience = req.getParameter("experience");
         Status status = Status.valueOf(req.getParameter("status"));

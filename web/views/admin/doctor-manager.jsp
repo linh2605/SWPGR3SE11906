@@ -45,7 +45,7 @@
                 <% for (int i = 0; i < doctors.size(); i++) { %>
                 <tr>
                     <td><%=doctors.get(i).getDoctor_id()%></td>
-                    <td><%=doctors.get(i).getUser().getFullname()%></td>
+                    <td><%=doctors.get(i).getUser().getFullName()%></td>
                     <td><%=doctors.get(i).getGender()%></td>
                     <td><%=doctors.get(i).getDob()%></td>
                     <td><%=doctors.get(i).getUser().getPhone()%></td>
@@ -59,7 +59,7 @@
                            onclick="populateDoctorUpdateForm(
                                    '<%= doctors.get(i).getDoctor_id() %>',
                                    '<%= doctors.get(i).getUser().getUsername() %>',
-                                   '<%= doctors.get(i).getUser().getFullname() %>',
+                                   '<%= doctors.get(i).getUser().getFullName() %>',
                                    '<%= doctors.get(i).getUser().getEmail() %>',
                                    '<%= doctors.get(i).getUser().getPhone() %>',
                                    '<%= doctors.get(i).getGender() %>',
@@ -71,7 +71,7 @@
                                    )">Update</a>
                         |
                         <a href="javascript:void(0)" class="text-danger ms-2"
-                           onclick="showDoctorDeleteModal('<%= doctors.get(i).getUser().getUser_id() %>')">Delete</a>
+                           onclick="showDoctorDeleteModal('<%= doctors.get(i).getUser().getUserId() %>')">Delete</a>
                     </td>
                 </tr>
                 <% } %>
@@ -98,8 +98,8 @@
                                     <input type="password" name="password" id="password" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="fullname" class="form-label">Họ tên</label>
-                                    <input type="text" name="fullname" id="fullname" class="form-control" required>
+                                    <label for="fullName" class="form-label">Họ tên</label>
+                                    <input type="text" name="fullName" id="fullName" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
@@ -141,8 +141,8 @@
                                     <input type="text" name="degree" id="degree" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="experience" class="form-label">Kinh nghiệm (năm)</label>
-                                    <input type="number" name="experience" id="experience" class="form-control" required min="0">
+                                    <label for="experience" class="form-label">Kinh nghiệm</label>
+                                    <input type="text" name="experience" id="experience" class="form-control" required min="0">
                                 </div>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                     </div>
                     <div class="modal-body">
                         Are you sure you want to delete this doctor? All related records will also be deleted.
-                        <input type="hidden" id="deleteDoctorUserId" name="user_id">
+                        <input type="hidden" id="deleteDoctorUserId" name="userId">
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger">Confirm Delete</button>
@@ -187,8 +187,8 @@
                             <input name="username" id="update_username" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label>Fullname</label>
-                            <input name="fullname" id="update_fullname" class="form-control" required>
+                            <label>Full Name</label>
+                            <input name="fullName" id="update_fullName" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Email</label>
@@ -235,7 +235,7 @@
                         </div>
                         <div class="col-md-12">
                             <label>Image (Leave empty if not updating)</label>
-                            <input type="file" name="image" class="form-control">
+                            <input required type="file" name="image" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -262,10 +262,10 @@
         deleteModal.show();
     }
 
-    function populateDoctorUpdateForm(doctorId, username, fullname, email, phone, gender, dob, specialty_id, degree, experience, status) {
+    function populateDoctorUpdateForm(doctorId, username, fullName, email, phone, gender, dob, specialty_id, degree, experience, status) {
         document.getElementById("update_doctor_id").value = doctorId;
         document.getElementById("update_username").value = username;
-        document.getElementById("update_fullname").value = fullname;
+        document.getElementById("update_fullName").value = fullName;
         document.getElementById("update_email").value = email;
         document.getElementById("update_phone").value = phone;
         document.getElementById("update_gender").value = gender;

@@ -18,13 +18,7 @@
 <div class="wrapper">
     <%@ include file="../layouts/header.jsp" %>
     <div class="main">
-        <div class="sidebar">
-            <h3>ADMIN DASHBOARD</h3>
-            <a href="${pageContext.request.contextPath}/admin-dashboard.jsp">Tổng quan</a>
-            <a href="${pageContext.request.contextPath}/doctorManager.jsp">Quản lý bác sĩ</a>
-            <a href="${pageContext.request.contextPath}/userManager.jsp">Quản lý bệnh nhân</a>
-            <a href="${pageContext.request.contextPath}/contactManager" class="active">Quản lý liên hệ</a>
-        </div>
+<%@include file="../layouts/admin-side-bar.jsp"%>
         <div class="content">
             <h2 class="mb-4">Quản lý liên hệ (Contact Us)</h2>
             <c:if test="${not empty messages}">
@@ -47,10 +41,10 @@
                         <tbody>
                         <c:forEach var="msg" items="${messages}" varStatus="loop">
                             <tr>
-                                <td>${loop.index + 1}</td>
-                                <td>${msg.name}</td>
-                                <td>${msg.email}</td>
-                                <td>${msg.phone}</td>
+                                <td><c:out value="${loop.index + 1}"/></td>
+                                <td><c:out value="${msg.name}"/></td>
+                                <td><c:out value="${msg.email}"/></td>
+                                <td><c:out value="${msg.phone}"/></td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${msg.subject eq 'service_feedback'}">Góp ý dịch vụ</c:when>
@@ -60,7 +54,7 @@
                                         <c:otherwise>Khác</c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td><span title="${msg.message}">${fn:length(msg.message) > 40 ? fn:substring(msg.message, 0, 40) + '...' : msg.message}</span></td>
+                                <td><c:out value="${fn:length(msg.message) > 40 ? fn:substring(msg.message, 0, 40) : msg.message}"/><c:if test="${fn:length(msg.message) > 40}">...</c:if></td>
                                 <td>
                                     <form method="post" action="${pageContext.request.contextPath}/contactManager" style="display:inline;">
                                         <input type="hidden" name="action" value="updateStatus" />
@@ -83,10 +77,10 @@
                                         </select>
                                     </form>
                                 </td>
-                                <td>${msg.created_at}</td>
+                                <td><c:out value="${msg.created_at}"/></td>
                                 <td>
-                                    <a href="contactManager.jsp?view=${msg.message_id}" class="btn btn-sm btn-info mb-1">Xem</a>
-                                    <form method="post" action="${pageContext.request.contextPath}/contactManager" style="display:inline;">
+                                    <a href="${pageContext.request.contextPath}/contactManager?view=${msg.message_id}" class="btn btn-sm btn-info mb-1">Xem</a>
+                                    <form method="post" action="${pageContext.request.contextPath}/contactDetail" style="display:inline;">
                                         <input type="hidden" name="action" value="delete" />
                                         <input type="hidden" name="id" value="${msg.message_id}" />
                                         <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Xóa tin nhắn này?')">Xóa</button>

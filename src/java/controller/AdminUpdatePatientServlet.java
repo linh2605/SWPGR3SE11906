@@ -28,12 +28,12 @@ public class AdminUpdatePatientServlet extends HttpServlet {
         User user = patient.getUser();
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        String fullname = req.getParameter("fullname");
+        String fullName = req.getParameter("fullname");
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
         user.setUsername(username);
         user.setPassword(password);
-        user.setFullname(fullname);
+        user.setFullName(fullName);
         user.setEmail(email);
         user.setPhone(phone);
         user.setRole(RoleDao.getRoleWithName("patient"));

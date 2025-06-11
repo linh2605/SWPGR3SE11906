@@ -174,16 +174,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Form đặt lịch
-    if (document.getElementById('bookingForm')) {
-        const bookingForm = document.getElementById('bookingForm');
-        bookingForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Đặt lịch thành công! Chúng tôi sẽ liên hệ để xác nhận.');
-            this.reset();
-            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
-        });
-    }
+//    // Form đặt lịch
+//    if (document.getElementById('bookingForm')) {
+//        const bookingForm = document.getElementById('bookingForm');
+//        bookingForm.addEventListener('submit', function (e) {
+//            e.preventDefault();
+//            alert('Đặt lịch thành công! Chúng tôi sẽ liên hệ để xác nhận.');
+//            this.reset();
+//            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+//        });
+//    }
 
     // Form góp ý
     const feedbackForm = document.querySelector('form[action="feedback"]');

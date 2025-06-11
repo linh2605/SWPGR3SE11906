@@ -14,15 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PatientDao {
+
     public static List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
-        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description " +
-                "FROM patients p " +
-                "JOIN users u ON p.user_id = u.user_id " +
-                "JOIN roles r ON u.role_id = r.role_id";
-        try (Connection conn = DBContext.makeConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description "
+                + "FROM patients p "
+                + "JOIN users u ON p.user_id = u.user_id "
+                + "JOIN roles r ON u.role_id = r.role_id";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 patients.add(mappingPatient(rs));
             }
@@ -31,14 +30,14 @@ public class PatientDao {
         }
         return patients;
     }
+
     public static Patient getPatientById(int patient_id) {
-        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description " +
-                "FROM patients p " +
-                "JOIN users u ON p.user_id = u.user_id " +
-                "JOIN roles r ON u.role_id = r.role_id " +
-                "WHERE p.patient_id = ?";
-        try (Connection conn = DBContext.makeConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description "
+                + "FROM patients p "
+                + "JOIN users u ON p.user_id = u.user_id "
+                + "JOIN roles r ON u.role_id = r.role_id "
+                + "WHERE p.patient_id = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, patient_id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -49,11 +48,53 @@ public class PatientDao {
         }
         return null;
     }
+
+    public static Patient getPatientByUserId(int userId) {
+        String sql = "SELECT patient_id\n"
+                + "	 , p.user_id\n"
+                + "	 , u.full_name\n"
+                + "	 , u.email\n"
+                + "	 , u.phone\n"
+                + "	 , gender\n"
+                + "	 , date_of_birth\n"
+                + "	 , address\n"
+                + "	 , image_url\n"
+                + "	 , p.created_at\n"
+                + "  FROM patients p\n"
+                + "	       JOIN users u\n"
+                + "	       ON p.user_id = u.user_id\n"
+                + " WHERE p.user_id = ?;";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Patient p = new Patient();
+                p.setPatient_id(rs.getInt("patient_id"));
+                p.setFullName(rs.getString("full_name"));
+                User u = new User();
+                u.setUserId(userId);
+                u.setFullName(rs.getString("full_name"));
+                u.setEmail(rs.getString("email"));
+                u.setPhone(rs.getString("phone"));
+                p.setUser(u);
+                p.setGender(Gender.valueOf(rs.getString("gender")));
+                p.setDate_of_birth(rs.getDate("date_of_birth"));
+                p.setAddress(rs.getString("address"));
+                p.setImage_url(rs.getString("image_url"));
+                p.setCreated_at(rs.getTimestamp("p.created_at"));
+                
+                return p;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static boolean createPatient(Patient patient) {
-        String sql = "INSERT INTO patients (user_id, gender, date_of_birth, address, image_url) " +
-                "VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = DBContext.makeConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String sql = "INSERT INTO patients (user_id, gender, date_of_birth, address, image_url) "
+                + "VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, patient.getUser().getUserId());
             ps.setString(2, patient.getGender().toString());
             ps.setDate(3, patient.getDate_of_birth());
@@ -65,6 +106,7 @@ public class PatientDao {
             return false;
         }
     }
+
     private static Patient mappingPatient(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
         patient.setPatient_id(rs.getInt("patient_id"));
@@ -91,20 +133,20 @@ public class PatientDao {
         patient.setUser(user);
         return patient;
     }
+
     public static boolean updatePatient(Patient patient) {
-    String sql = "UPDATE patients SET gender = ?, date_of_birth = ?, address = ?, image_url = ? " +
-                 "WHERE patient_id = ?";
-    try (Connection conn = DBContext.makeConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setString(1, patient.getGender().toString());
-        ps.setDate(2, patient.getDate_of_birth());
-        ps.setString(3, patient.getAddress());
-        ps.setString(4, patient.getImage_url());
-        ps.setInt(5, patient.getPatient_id());
-        return ps.executeUpdate() > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
-    }
+        String sql = "UPDATE patients SET gender = ?, date_of_birth = ?, address = ?, image_url = ? "
+                + "WHERE patient_id = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, patient.getGender().toString());
+            ps.setDate(2, patient.getDate_of_birth());
+            ps.setString(3, patient.getAddress());
+            ps.setString(4, patient.getImage_url());
+            ps.setInt(5, patient.getPatient_id());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

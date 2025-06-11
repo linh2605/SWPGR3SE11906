@@ -67,17 +67,17 @@
                                         <c:when test="${sessionScope.user.role.roleId == 2}">
                                             <!-- Menu cho Doctor -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/doctor/dashboard.jsp">Dashboard</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/doctorDashboard.jsp">Lịch hẹn</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/doctorDashboard.jsp">Lịch hẹn</a></li>
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 3}">
                                             <!-- Menu cho Receptionist -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/receptionist/dashboard.jsp">Dashboard</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/receptionistDashboard.jsp">Quản lý lịch hẹn</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/receptionistDashboard.jsp">Quản lý lịch hẹn</a></li>
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 1}">
                                             <!-- Menu cho Patient -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/profile.jsp">Hồ sơ cá nhân</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appoinment/appointments.jsp">Lịch hẹn của tôi</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/appointments.jsp">Lịch hẹn của tôi</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/medical-records.jsp">Hồ sơ bệnh án</a></li>
                                         </c:when>
                                     </c:choose>

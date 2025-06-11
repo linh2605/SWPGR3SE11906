@@ -505,7 +505,7 @@
                                                                 src="../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
-                                                            <span> Phó giáo sư, Tiến sĩ </span>
+                                                            <span> Phó Giáo sư, Tiến sĩ </span>
                                                         </li>
 
                                                         <li>

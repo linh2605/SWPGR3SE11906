@@ -13,7 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 public class DoctorDao {
+
     public static List<Doctor> getAllDoctors() {
 
         try {
@@ -31,6 +33,61 @@ public class DoctorDao {
             return new ArrayList<>();
         }
     }
+
+    // sort theo số appoinment đang pending hiện tại của bác sĩ tăng dần
+    public static List<Doctor> getDoctorsBySpecialityId(int specialityId) {
+        List<Doctor> doctors = new ArrayList<>();
+        String sql = "  WITH booked_doctors\n"
+                + "	       AS (SELECT doctor_id\n"
+                + "	                , COUNT(doctor_id) AS appointment_count\n"
+                + "	             FROM (SELECT doctor_id\n"
+                + "	                     FROM appointments\n"
+                + "	                    WHERE appointment_date >= NOW()\n"
+                + "	                      AND status = 'pending'\n"
+                + "	                  ) AS pending_appointments\n"
+                + "	            GROUP BY doctor_id\n"
+                + "	  )\n"
+                + "SELECT d.doctor_id\n"
+                + "	 , d.user_id\n"
+                + "	 , u.full_name\n"
+                + "	 , specialty_id\n"
+                + "	 , degree\n"
+                + "	 , experience\n"
+                + "  FROM doctors d\n"
+                + "	       JOIN users u\n"
+                + "	       ON d.user_id = u.user_id\n"
+                + "	       LEFT JOIN booked_doctors bd\n"
+                + "	       ON d.doctor_id = bd.doctor_id\n"
+                + " WHERE d.status = 'active'\n"
+                + "   AND specialty_id = ?\n"
+                + "  ORDER BY appointment_count ASC;";
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, specialityId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Doctor d = new Doctor();
+                d.setDoctor_id(rs.getInt("doctor_id"));
+                User u = new User();
+                u.setUserId(rs.getInt("user_id"));
+                u.setFullName(rs.getString("full_name"));
+                d.setUser(u);
+                d.setFullName(rs.getString("full_name"));
+                Specialty s = new Specialty();
+                s.setSpecialty_id(rs.getInt("specialty_id"));
+                d.setSpecialty(s);
+                d.setDegree(rs.getString("degree"));
+                d.setExperience(rs.getString("experience"));
+                doctors.add(d);
+            }
+            return doctors;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     private static Doctor mappingDoctor(ResultSet resultSet) throws SQLException {
         Doctor doctor = new Doctor();
         doctor.setDoctor_id(resultSet.getInt("doctor_id"));
@@ -60,6 +117,7 @@ public class DoctorDao {
         doctor.setSpecialty(specialty);
         return doctor;
     }
+
     public static Doctor getDoctorById(int doctor_id) {
         try {
             Connection connection = DBContext.makeConnection();
@@ -76,11 +134,11 @@ public class DoctorDao {
             return new Doctor();
         }
     }
+
     public static boolean insertDoctor(Doctor doctor) {
         String insertDoctorSQL = "INSERT INTO doctors (user_id, gender, dob, image_url, specialty_id, degree, experience, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection connection = DBContext.makeConnection();
-             PreparedStatement doctorStmt = connection.prepareStatement(insertDoctorSQL)) {
+        try (Connection connection = DBContext.makeConnection(); PreparedStatement doctorStmt = connection.prepareStatement(insertDoctorSQL)) {
 
             doctorStmt.setInt(1, doctor.getUser().getUserId());
             doctorStmt.setString(2, doctor.getGender().toString());
@@ -99,11 +157,11 @@ public class DoctorDao {
             return false;
         }
     }
+
     public static boolean updateDoctor(Doctor doctor) {
         String updateDoctorSQL = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ? WHERE doctor_id = ?";
 
-        try (Connection connection = DBContext.makeConnection();
-             PreparedStatement doctorStmt = connection.prepareStatement(updateDoctorSQL)) {
+        try (Connection connection = DBContext.makeConnection(); PreparedStatement doctorStmt = connection.prepareStatement(updateDoctorSQL)) {
 
             doctorStmt.setString(1, doctor.getGender().toString());
             doctorStmt.setDate(2, doctor.getDob());
@@ -121,6 +179,7 @@ public class DoctorDao {
             return false;
         }
     }
+
     public static void main(String[] args) {
         System.out.println(getAllDoctors().size());
     }

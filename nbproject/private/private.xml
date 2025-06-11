@@ -3,22 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/controller/AppointmentServlet.java</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/admin/admin-dashboard.jsp</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/dal/UserDAO.java</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/models/Specialty.java</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/dal/DoctorDao.java</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/home/index.jsp</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/home/login.jsp</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/appoinment/doctorDashboard.jsp</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/controller/LoginServlet.java</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/layouts/admin-side-bar.jsp</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/assets/js/scripts.js</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/appoinment/appointments.jsp</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/layouts/header.jsp</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/WEB-INF/web.xml</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/dal/PatientDao.java</file>
-            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/appoinment/receptionistDashboard.jsp</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/web/views/admin/admin-dashboard.jsp</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/web/views/admin/contactDetail.jsp</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/web/views/admin/admin-auth.jsp</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/web/views/admin/patient_manager.jsp</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/web/views/admin/doctor-manager.jsp</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/src/java/controller/DoctorListServlet.java</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/src/java/controller/AdminDoctorServlet.java</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/src/java/dal/DoctorDao.java</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/web/views/layouts/admin-side-bar.jsp</file>
+            <file>file:/C:/Users/tamthui/Documents/GitHub/SWPGR3SE11906/web/views/admin/contactManager.jsp</file>
         </group>
     </open-files>
 </project-private>

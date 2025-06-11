@@ -18,13 +18,7 @@
 <div class="wrapper">
     <%@ include file="../layouts/header.jsp" %>
     <div class="main">
-        <div class="sidebar">
-            <h3>ADMIN DASHBOARD</h3>
-            <a href="${pageContext.request.contextPath}/admin-dashboard.jsp">Tổng quan</a>
-            <a href="${pageContext.request.contextPath}/doctorManager.jsp">Quản lý bác sĩ</a>
-            <a href="${pageContext.request.contextPath}/userManager.jsp">Quản lý bệnh nhân</a>
-            <a href="${pageContext.request.contextPath}/contactManager" class="active">Quản lý liên hệ</a>
-        </div>
+<%@include file="../layouts/admin-side-bar.jsp"%>
         <div class="content">
             <h2 class="mb-4">Quản lý liên hệ (Contact Us)</h2>
             <c:if test="${not empty messages}">

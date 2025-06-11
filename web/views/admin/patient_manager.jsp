@@ -29,7 +29,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Username</th>
-                    <th>Fullname</th>
+                    <th>Full Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
                     <th>Gender</th>
@@ -42,9 +42,9 @@
                 <tbody>
                 <% for (int i = 0; i < patients.size(); i++) { %>
                 <tr>
-                    <td><%=patients.get(i).getUser().getUser_id()%></td>
+                    <td><%=patients.get(i).getUser().getUserId()%></td>
                     <td><%=patients.get(i).getUser().getUsername()%></td>
-                    <td><%=patients.get(i).getUser().getFullname()%></td>
+                    <td><%=patients.get(i).getUser().getFullName()%></td>
                     <td><%=patients.get(i).getUser().getEmail()%></td>
                     <td><%=patients.get(i).getUser().getPhone()%></td>
                     <td><%=patients.get(i).getGender()%></td>
@@ -56,7 +56,7 @@
                            onclick="populateUpdateForm(
                                    '<%=patients.get(i).getPatient_id()%>',
                                    '<%=patients.get(i).getUser().getUsername()%>',
-                                   '<%=patients.get(i).getUser().getFullname()%>',
+                                   '<%=patients.get(i).getUser().getFullName()%>',
                                    '<%=patients.get(i).getUser().getEmail()%>',
                                    '<%=patients.get(i).getUser().getPhone()%>',
                                    '<%=patients.get(i).getGender()%>',
@@ -66,7 +66,7 @@
                             Update
                         </a>
                         |
-                        <a href="javascript:void(0)" class="text-danger ms-2" onclick="showDeleteModal('<%=patients.get(i).getUser().getUser_id()%>')">
+                        <a href="javascript:void(0)" class="text-danger ms-2" onclick="showDeleteModal('<%=patients.get(i).getUser().getUserId()%>')">
                             Delete
                         </a>
                     </td>
@@ -93,8 +93,8 @@
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="fullname" class="form-label">Full Name</label>
-                            <input class="form-control" id="fullname" name="fullname" required>
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input class="form-control" id="fullName" name="fullName" required>
                         </div>
                         <div class="col-md-6">
                             <label for="email" class="form-label">Email</label>
@@ -144,7 +144,7 @@
                     </div>
                     <div class="modal-body">
                         Are you sure you want to delete this patient? All related records will also be deleted.
-                        <input type="hidden" id="deleteUserId" name="user_id">
+                        <input type="hidden" id="deleteUserId" name="userId">
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger">Confirm Delete</button>
@@ -172,8 +172,8 @@
                             <input type="password" class="form-control" id="update_password" name="password">
                         </div>
                         <div class="col-md-6">
-                            <label for="update_fullname" class="form-label">Full Name</label>
-                            <input class="form-control" id="update_fullname" name="fullname" required>
+                            <label for="update_fullName" class="form-label">Full Name</label>
+                            <input class="form-control" id="update_fullName" name="fullName" required>
                         </div>
                         <div class="col-md-6">
                             <label for="update_email" class="form-label">Email</label>
@@ -230,10 +230,10 @@
         deleteModal.show();
     }
 
-    function populateUpdateForm(userId, username, fullname, email, phone, gender, dob, address) {
+    function populateUpdateForm(userId, username, fullName, email, phone, gender, dob, address) {
         document.getElementById("update_patient_id").value = userId;
         document.getElementById("update_username").value = username;
-        document.getElementById("update_fullname").value = fullname;
+        document.getElementById("update_fullName").value = fullName;
         document.getElementById("update_email").value = email;
         document.getElementById("update_phone").value = phone;
         document.getElementById("update_gender").value = gender;

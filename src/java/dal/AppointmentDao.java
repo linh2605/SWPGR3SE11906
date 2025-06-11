@@ -127,14 +127,14 @@ public class AppointmentDao {
         // Doctor
         models.Doctor doctor = new models.Doctor();
         models.User doctorUser = new models.User();
-        doctorUser.setFullname(rs.getString("doctor_name"));
+        doctorUser.setFullName(rs.getString("doctor_name"));
         doctor.setUser(doctorUser);
         appt.setDoctor(doctor);
 
         // Patient
         models.Patient patient = new models.Patient();
         models.User patientUser = new models.User();
-        patientUser.setFullname(rs.getString("patient_name"));
+        patientUser.setFullName(rs.getString("patient_name"));
         patient.setUser(patientUser);
         appt.setPatient(patient);
 

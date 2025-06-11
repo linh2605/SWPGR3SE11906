@@ -1,12 +1,8 @@
-<% 
-    out.println("user_id: " + session.getAttribute("user_id"));
-    out.println("role_id: " + session.getAttribute("role_id"));
-%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page session="true" %>
 <html lang="vi">
 <head>
-    <title>Lịch hẹn đã đặt - G3 Hospital</title>
+    <title>Bảng điều khiển bác sĩ - G3 Hospital</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
@@ -19,7 +15,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
     <%
         Integer roleId = null;
-        if (session == null || (roleId = (Integer) session.getAttribute("role_id")) == null || roleId != 1) {
+        if (session == null || (roleId = (Integer) session.getAttribute("roleId")) == null || roleId != 2) {
             response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
             return;
         }
@@ -29,13 +25,13 @@
         window.contextPath = '<%= request.getContextPath() %>';
     </script>
 </head>
-<body id="appointments">
+  <body id="doctorDashboard">
     <!-- Header -->
     <%@ include file="../layouts/header.jsp" %>
 
     <!-- Main Content -->
     <main class="container my-5">
-        <h2 class="section-title text-center mb-4">LỊCH HẸN ĐÃ ĐẶT</h2>
+        <h2 class="section-title text-center mb-4">LỊCH HẸN CỦA BÁC SĨ</h2>
 
         <!-- Nút đồng bộ -->
         <div class="text-end mb-3">
@@ -53,8 +49,8 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="filterDoctor" class="form-label">Lọc theo bác sĩ</label>
-                <select id="filterDoctor" class="form-select">
+                <label for="filterPatient" class="form-label">Lọc theo bệnh nhân</label>
+                <select id="filterPatient" class="form-select">
                     <option value="">Tất cả</option>
                 </select>
             </div>
@@ -69,7 +65,7 @@
             </div>
             <div class="col-md-3">
                 <label for="search" class="form-label">Tìm kiếm</label>
-                <input type="text" id="search" class="form-control" placeholder="Tìm theo bác sĩ...">
+                <input type="text" id="search" class="form-control" placeholder="Tìm theo bệnh nhân...">
             </div>
             <div class="col-md-12 text-end">
                 <button class="btn btn-primary mt-3" id="filterButton">

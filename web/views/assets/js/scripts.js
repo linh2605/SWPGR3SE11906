@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         success: function(data) {
                             const events = data.map(appt => ({
                                 id: appt.id,
-                                title: `Hẹn với ${appt.doctor && appt.doctor.user ? appt.doctor.user.fullname : ''} (${appt.patient && appt.patient.user ? appt.patient.user.fullname : ''})`,
+                                title: `Hẹn với ${appt.doctor && appt.doctor.user ? appt.doctor.user.fullName : ''} (${appt.patient && appt.patient.user ? appt.patient.user.fullName : ''})`,
                                 start: appt.dateTime,
                                 className: 'fc-event-' + appt.status
                             }));
@@ -91,10 +91,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     let doctorName = '';
                     let patientName = '';
                     if (event.extendedProps && event.extendedProps.doctor && event.extendedProps.doctor.user) {
-                        doctorName = event.extendedProps.doctor.user.fullname;
+                        doctorName = event.extendedProps.doctor.user.fullName;
                     }
                     if (event.extendedProps && event.extendedProps.patient && event.extendedProps.patient.user) {
-                        patientName = event.extendedProps.patient.user.fullname;
+                        patientName = event.extendedProps.patient.user.fullName;
                     }
                     // Nếu không có thì fallback lấy từ title
                     if (!doctorName || !patientName) {
@@ -148,8 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             row.innerHTML = `
                                 <td>${appt.id}</td>
                                 <td>${new Date(appt.dateTime).toLocaleString('vi-VN')}</td>
-                                <td>${appt.doctor && appt.doctor.user && typeof appt.doctor.user.fullname === 'string' ? appt.doctor.user.fullname : JSON.stringify(appt.doctor)}</td>
-                                <td>${appt.patient && appt.patient.user && typeof appt.patient.user.fullname === 'string' ? appt.patient.user.fullname : JSON.stringify(appt.patient)}</td>
+                                <td>${appt.doctor && appt.doctor.user && typeof appt.doctor.user.fullName === 'string' ? appt.doctor.user.fullName : JSON.stringify(appt.doctor)}</td>
+                                <td>${appt.patient && appt.patient.user && typeof appt.patient.user.fullName === 'string' ? appt.patient.user.fullName : JSON.stringify(appt.patient)}</td>
                                 <td>${appt.status === 'pending' ? 'Đang chờ' : appt.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}</td>
                                 <td>${actions}</td>
                             `;
@@ -174,16 +174,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Form đặt lịch
-    if (document.getElementById('bookingForm')) {
-        const bookingForm = document.getElementById('bookingForm');
-        bookingForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Đặt lịch thành công! Chúng tôi sẽ liên hệ để xác nhận.');
-            this.reset();
-            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
-        });
-    }
+//    // Form đặt lịch
+//    if (document.getElementById('bookingForm')) {
+//        const bookingForm = document.getElementById('bookingForm');
+//        bookingForm.addEventListener('submit', function (e) {
+//            e.preventDefault();
+//            alert('Đặt lịch thành công! Chúng tôi sẽ liên hệ để xác nhận.');
+//            this.reset();
+//            bootstrap.Modal.getInstance(document.getElementById('bookingModal')).hide();
+//        });
+//    }
 
     // Form góp ý
     const feedbackForm = document.querySelector('form[action="feedback"]');

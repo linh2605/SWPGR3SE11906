@@ -20,7 +20,7 @@ public class DBContext {
     private final static String dbName = "swp_db";  // Database 
     private final static String portNumber = "3306"; // Cổng mặc định của MySQL
     private final static String userID = "root";    // Tài khoản MySQL
-    private final static String password = "1234";  // Mật khẩu 
+    private final static String password = "123456";  // Mật khẩu 
     
     private static HikariDataSource dataSource;
     

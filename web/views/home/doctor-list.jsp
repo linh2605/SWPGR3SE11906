@@ -16,10 +16,10 @@
         <!-- Bootstrap Icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <!-- Custom CSS (đã bao gồm Leaflet CSS) -->
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 
-        <link rel="icon" type="image/png" href="../assets/favicon.svg" />
-        <link href="../assets/css/doctor-list.css" media="screen" rel="stylesheet" type="text/css" />
+        <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/favicon.svg" />
+        <link href="${pageContext.request.contextPath}/assets/css/doctor-list.css" media="screen" rel="stylesheet" type="text/css" />
 
         <title>Danh sách bác sĩ</title>
 
@@ -1016,6 +1016,6 @@
         <!-- Leaflet JS cho OpenStreetMap -->
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <!-- Custom JS (đã bao gồm script khởi tạo bản đồ) -->
-        <script src="${pageContext.request.contextPath}/views/assets/js/scripts.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
     </body>
 </html>

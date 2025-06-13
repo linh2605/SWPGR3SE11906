@@ -26,7 +26,7 @@
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/views/home/index.jsp">
-                <img src="${pageContext.request.contextPath}/views/assets/FAUGET MEDICAL.png" alt="G3 Hospital Logo">
+                <img src="${pageContext.request.contextPath}/assets/FAUGET MEDICAL.png" alt="G3 Hospital Logo">
 
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -55,7 +55,7 @@
                             <!-- Đã đăng nhập -->
                             <div class="dropdown">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="${pageContext.request.contextPath}/views/assets/default-avatar.jpg" alt="Avatar" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                    <img src="${pageContext.request.contextPath}/assets/default-avatar.jpg" alt="Avatar" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
                                     <span class="text-dark">${sessionScope.user.username}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">

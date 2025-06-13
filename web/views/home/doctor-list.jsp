@@ -35,7 +35,7 @@
                 <div class="Banner">
                     <div class="-img">
                         <img
-                            src="../assets/pexels-photo-5327590.png"
+                            src="../../assets/pexels-photo-5327590.png"
                             alt=""
                             title=""
                             class="ls-is-cached lazyloaded"/>
@@ -64,87 +64,6 @@
 
                 <div class="doctorFilter">
                     <div class="container-fluid" id="doctoFilterAjax">
-                        <div class="-filter">
-                            <div class="-name">
-                                <img src="../assets/filter.svg" alt="" />
-                                Bộ lọc
-                            </div>
-
-                            <div class="-button">
-                                <div class="dropdown" id="dropdownRoomList">
-                                    <button
-                                        class="dropdown-toggle"
-                                        type="button"
-                                        id="dropdownRoom"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Tìm theo cơ sở
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownRoom">
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Tất cả
-                                        </div>
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Phòng khám Đa khoa A
-                                        </div>
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Phòng khám Đa khoa B
-                                        </div>
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Bệnh viện Đa Khoa C
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="dropdown" id="dropdownServiceList">
-                                    <button
-                                        class="dropdown-toggle"
-                                        type="button"
-                                        id="dropdownService"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Dịch vụ
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownService">
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Tất cả
-                                        </div>
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Khám tổng quát
-                                        </div>
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Dịch vụ A
-                                        </div>
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Dịch vụ B
-                                        </div>
-                                        <div
-                                            class="dropdown-item"
-                                            onclick="">
-                                            Dịch vụ C
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="row">
                             <div class="col-md-3">
@@ -156,7 +75,7 @@
                                         data-bs-target="#multifilter"
                                         aria-expanded="false"
                                         aria-controls="multiCollapseExample2">
-                                        <img src="../assets/filter.svg" alt="" />
+                                        <img src="../../assets/filter.svg" alt="" />
                                         <span>Bộ lọc</span>
                                     </button>
 
@@ -173,7 +92,7 @@
                                             value="vi"
                                             hidden="" />
                                         <div class="-icon">
-                                            <img src="../assets/icon-search.svg" alt="" />
+                                            <img src="../../assets/icon-search.svg" alt="" />
                                         </div>
                                     </form>
                                 </div>
@@ -456,7 +375,7 @@
                                                         <ul>
                                                             <li>
                                                                 <img
-                                                                    src="../assets/icon-graduation.svg"
+                                                                    src="../../assets/icon-graduation.svg"
                                                                     alt=""
                                                                     class="ls-is-cached lazyloaded" />
                                                                 <span> ${d.degree} </span>
@@ -464,7 +383,7 @@
 
                                                             <li>
                                                                 <img
-                                                                    src="../assets/icon-hospital.svg"
+                                                                    src="../../assets/icon-hospital.svg"
                                                                     alt=""
                                                                     class="ls-is-cached lazyloaded" />
                                                                 <span> ${d.experience} </span>
@@ -478,7 +397,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -502,7 +421,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Phó Giáo sư, Tiến sĩ </span>
@@ -510,7 +429,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bệnh viện Đa khoa A </span>
@@ -523,7 +442,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -547,7 +466,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Thạc sĩ, Bác sĩ Chuyên khoa II </span>
@@ -555,7 +474,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bệnh viện Đa khoa A </span>
@@ -568,7 +487,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -592,7 +511,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Phó Giáo sư, Tiến sĩ </span>
@@ -600,7 +519,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bệnh viện Đa khoa A </span>
@@ -613,7 +532,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -639,7 +558,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span>
@@ -649,7 +568,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bệnh viện Đa khoa A </span>
@@ -662,7 +581,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -686,7 +605,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bác sĩ, Thạc sĩ </span>
@@ -694,7 +613,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span>
@@ -709,7 +628,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -733,7 +652,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Tiến sĩ, Bác sĩ </span>
@@ -741,7 +660,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bệnh viện Đa khoa A </span>
@@ -754,7 +673,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -776,7 +695,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Tiến sĩ, Bác sĩ </span>
@@ -784,7 +703,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span>
@@ -801,7 +720,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -825,7 +744,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Phó Giáo sư, Tiến sĩ, Bác sĩ </span>
@@ -833,7 +752,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bệnh viện Đa khoa A </span>
@@ -846,7 +765,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -870,7 +789,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Phó giáo sư, Tiến sĩ </span>
@@ -878,7 +797,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span>
@@ -893,7 +812,7 @@
                                             <div class="itemDoctor">
                                                 <div class="-img">
                                                     <img
-                                                        src="../assets/doctor-image.png"
+                                                        src="../../assets/doctor-image.png"
                                                         alt=""
                                                         title=""
                                                         class="ls-is-cached lazyloaded" />
@@ -917,7 +836,7 @@
                                                     <ul>
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-graduation.svg"
+                                                                src="../../assets/icon-graduation.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span> Bác sĩ Chuyên khoa II </span>
@@ -925,7 +844,7 @@
 
                                                         <li>
                                                             <img
-                                                                src="../assets/icon-hospital.svg"
+                                                                src="../../assets/icon-hospital.svg"
                                                                 alt=""
                                                                 class="ls-is-cached lazyloaded" />
                                                             <span>

@@ -21,7 +21,7 @@ import models.Specialty;
  *
  * @author New_user
  */
-@WebServlet(name = "DoctorListServlet", urlPatterns = {"/doctors"})
+@WebServlet(name = "DoctorListServlet", urlPatterns = {"/views/home/doctors"})
 public class DoctorListServlet extends HttpServlet {
 
     /**
@@ -68,7 +68,7 @@ public class DoctorListServlet extends HttpServlet {
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
         request.setAttribute("doctors", doctors);
         request.setAttribute("specialties", specialties);
-        request.getRequestDispatcher("views/home/doctor-list.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/home/doctor-list.jsp").forward(request, response);
     }
 
     /**

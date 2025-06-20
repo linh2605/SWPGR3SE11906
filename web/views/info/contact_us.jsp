@@ -13,7 +13,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
     <%@ include file="../layouts/header.jsp" %>
@@ -133,6 +133,6 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Custom JS -->
-    <script src="${pageContext.request.contextPath}/views/assets/js/scripts.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 </body>
 </html>

@@ -254,6 +254,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
 </body>
+<%@include file="../layouts/toastr.jsp"%>
 <script>
     new DataTable("#table")
     function showDoctorDeleteModal(userId) {

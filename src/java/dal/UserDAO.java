@@ -196,4 +196,36 @@ public class UserDAO {
             return false;
         }
     }
+    public static boolean doesUsernameExistExcept(int userId, String username) {
+        String sql = "SELECT 1 FROM users WHERE username = ? AND user_id != ?";
+        try (
+                Connection conn = DBContext.makeConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+            ps.setString(1, username);
+            ps.setInt(2, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static boolean doesEmailExistExcept(int userId, String email) {
+        String sql = "SELECT 1 FROM users WHERE email = ? AND user_id != ?";
+        try (
+                Connection conn = DBContext.makeConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)
+        ) {
+            ps.setString(1, email);
+            ps.setInt(2, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

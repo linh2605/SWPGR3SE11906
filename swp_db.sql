@@ -262,6 +262,117 @@ VALUES
 (3,'Lê Văn C','levanc@email.com','0987654323','improvement_suggestion','Nên thêm dịch vụ gửi xe miễn phí cho bệnh nhân','pending','low',NULL,'2025-05-31 16:00:00','2025-05-31 16:00:00'),
 (4,'Phạm Thị D','phamthid@email.com','0987654324','cooperation','Công ty chúng tôi muốn hợp tác về dịch vụ bảo hiểm y tế','pending','high',NULL,'2025-05-31 17:00:00','2025-05-31 17:00:00');
 
+--
+-- Table structure for table `shifts`
+--
+
+DROP TABLE IF EXISTS `shifts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `shifts` (
+  `shift_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`shift_id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shifts`
+--
+
+INSERT INTO `shifts` VALUES 
+(1,'Sáng','08:00:00','12:00:00','Ca làm việc buổi sáng'),
+(2,'Chiều','13:00:00','17:00:00','Ca làm việc buổi chiều'),
+(3,'Tối','17:30:00','21:30:00','Ca làm việc buổi tối');
+
+--
+-- Table structure for table `working_schedules`
+--
+
+DROP TABLE IF EXISTS `working_schedules`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `working_schedules` (
+  `schedule_id` int NOT NULL AUTO_INCREMENT,
+  `doctor_id` int NOT NULL,
+  `week_day` enum('Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `shift_id` int NOT NULL,
+  `max_patients` int DEFAULT 10,
+  `is_active` boolean DEFAULT true,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`schedule_id`),
+  UNIQUE KEY `unique_doctor_shift` (`doctor_id`, `week_day`, `shift_id`),
+  KEY `fk_schedule_doctor` (`doctor_id`),
+  KEY `fk_schedule_shift` (`shift_id`),
+  CONSTRAINT `fk_schedule_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_schedule_shift` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `working_schedules`
+--
+
+INSERT INTO `working_schedules` (`schedule_id`, `doctor_id`, `week_day`, `shift_id`, `max_patients`, `is_active`, `created_at`, `updated_at`) VALUES 
+(1,1,'Thứ 2',1,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(2,1,'Thứ 2',2,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(3,1,'Thứ 3',1,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(4,1,'Thứ 3',2,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(5,1,'Thứ 4',1,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(6,1,'Thứ 4',2,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(7,1,'Thứ 5',1,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(8,1,'Thứ 5',2,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(9,1,'Thứ 6',1,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(10,1,'Thứ 6',2,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(11,2,'Thứ 2',1,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(12,2,'Thứ 2',2,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(13,2,'Thứ 3',1,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(14,2,'Thứ 3',2,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(15,2,'Thứ 4',1,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(16,2,'Thứ 4',2,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(17,2,'Thứ 5',1,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(18,2,'Thứ 5',2,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(19,2,'Thứ 6',1,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
+(20,2,'Thứ 6',2,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00');
+
+--
+-- Table structure for table `schedule_exceptions`
+--
+
+DROP TABLE IF EXISTS `schedule_exceptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `schedule_exceptions` (
+  `exception_id` int NOT NULL AUTO_INCREMENT,
+  `doctor_id` int NOT NULL,
+  `exception_date` date NOT NULL,
+  `exception_type` enum('Nghỉ phép','Thay đổi giờ làm','Khẩn cấp') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `new_shift_id` int DEFAULT NULL,
+  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` enum('Chờ duyệt','Đã duyệt','Đã từ chối') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Chờ duyệt',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`exception_id`),
+  UNIQUE KEY `unique_doctor_date` (`doctor_id`, `exception_date`),
+  KEY `fk_exception_doctor` (`doctor_id`),
+  KEY `fk_exception_new_shift` (`new_shift_id`),
+  CONSTRAINT `fk_exception_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_exception_new_shift` FOREIGN KEY (`new_shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `schedule_exceptions`
+--
+
+INSERT INTO `schedule_exceptions` (`exception_id`, `doctor_id`, `exception_date`, `exception_type`, `new_shift_id`, `reason`, `status`, `created_at`) VALUES
+(1, 1, '2025-06-02', 'Nghỉ phép', NULL, 'Nghỉ lễ', 'Chờ duyệt', '2025-05-31 12:00:00'),
+(2, 2, '2025-06-03', 'Thay đổi giờ làm', 3, 'Họp khoa', 'Chờ duyệt', '2025-05-31 12:00:00');
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

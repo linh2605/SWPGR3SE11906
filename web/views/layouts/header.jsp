@@ -68,6 +68,7 @@
                                             <!-- Menu cho Doctor -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/doctor/dashboard.jsp">Dashboard</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/doctorDashboard.jsp">Lịch hẹn</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/doctor-schedule">Lịch làm việc</a></li>
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 3}">
                                             <!-- Menu cho Receptionist -->

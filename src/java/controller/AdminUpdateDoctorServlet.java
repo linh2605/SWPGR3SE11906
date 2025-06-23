@@ -29,13 +29,13 @@ public class AdminUpdateDoctorServlet extends HttpServlet {
         String email = req.getParameter("email");
 
         if (UserDAO.doesUsernameExistExcept(user_id, username)) {
-            req.getSession().setAttribute("error", "Username đang được sử dụng bởi user khác.");
+            req.getSession().setAttribute("flash_error", "Username đang được sử dụng bởi user khác.");
             resp.sendRedirect(req.getContextPath() + "/admin/doctor");
             return;
         }
 
         if (UserDAO.doesEmailExistExcept(user_id, email)) {
-            req.getSession().setAttribute("error", "Email đang được sử dụng bởi user khác.");
+            req.getSession().setAttribute("flash_error", "Email đang được sử dụng bởi user khác.");
             resp.sendRedirect(req.getContextPath() + "/admin/doctor");
             return;
         }
@@ -72,7 +72,7 @@ public class AdminUpdateDoctorServlet extends HttpServlet {
 
         DoctorDao.updateDoctor(doctor);
 
-        req.getSession().setAttribute("success", "Cập nhật bác sĩ thành công.");
+        req.getSession().setAttribute("flash_success", "Cập nhật bác sĩ thành công.");
         resp.sendRedirect(req.getContextPath() + "/admin/doctor");
     }
 

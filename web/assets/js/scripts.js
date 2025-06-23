@@ -418,41 +418,6 @@ function updateStatus(id, status) {
     }
 }
 
-// Initialize WebSocket connection
-const ws = new WebSocket('ws://' + window.location.host + '/websocket');
-
-ws.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    if (data.type === 'appointment_update') {
-        // Update appointment status in UI
-        const appointmentRow = document.querySelector(`tr[data-appointment-id="${data.appointmentId}"]`);
-        if (appointmentRow) {
-            const statusCell = appointmentRow.querySelector('.status-cell');
-            if (statusCell) {
-                statusCell.textContent = data.status;
-                // Update status class for styling
-                statusCell.className = 'status-cell ' + data.status.toLowerCase();
-            }
-        }
-        
-        // Show notification
-        showNotification(`Appointment #${data.appointmentId} has been ${data.status}`);
-    }
-};
-
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    // Remove notification after 5 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
-}
-
 // Hàm kiểm tra trạng thái đăng nhập
 function checkLoginStatus() {
     const userDropdown = document.querySelector('.dropdown');

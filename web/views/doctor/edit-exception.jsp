@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
+    <script>
+        window.contextPath = '${pageContext.request.contextPath}';
+    </script>
     <div class="wrapper">
         <%@ include file="../layouts/header.jsp" %>
         <%@ include file="doctor-auth.jsp" %>
@@ -96,34 +99,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set minimum date to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('exceptionDate').min = today;
-        
-        const exceptionType = document.getElementById('exceptionType');
-        const newShiftSection = document.getElementById('newShiftSection');
-        const newShiftId = document.getElementById('newShiftId');
-        
-        function toggleShiftSection() {
-            if (exceptionType.value === 'Thay đổi giờ làm') {
-                newShiftSection.style.display = 'block';
-                newShiftId.required = true;
-            } else {
-                newShiftSection.style.display = 'none';
-                newShiftId.required = false;
-                newShiftId.value = '';
-            }
-        }
-        
-        // Check on page load
-        toggleShiftSection();
-        
-        // Add event listener
-        exceptionType.addEventListener('change', toggleShiftSection);
-    });
-    </script>
 </body>
 </html> 

@@ -86,8 +86,13 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("roleId", user.getRole().getRoleId());
             session.setAttribute("role", user.getRole().getName());
 
-            // Chuyển về trang chủ sau khi đăng nhập thành công
-            response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+            // Chỉ điều hướng cho admin
+            String role = user.getRole().getName();
+            if ("admin".equalsIgnoreCase(role)) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+            }
         } else {
             // Đăng nhập sai, quay lại login và báo lỗi
             request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");

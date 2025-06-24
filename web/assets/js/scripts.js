@@ -294,6 +294,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
+
+    // --- FORCE SHOW ALL VIEW DETAIL BUTTONS (SHIFT PAGE) ---
+    document.querySelectorAll('.btn-view-detail').forEach(btn => {
+        btn.style.display = 'inline-block';
+        btn.style.visibility = 'visible';
+        btn.classList.remove('d-none');
+    });
 });
 
 // Điền dữ liệu cho bộ lọc
@@ -498,3 +505,137 @@ document.addEventListener('DOMContentLoaded', function() {
         showAlert('Có lỗi xảy ra! Vui lòng thử lại sau.', 'danger');
     }
 });
+
+// ===== SHIFT MANAGEMENT FUNCTIONS =====
+function viewShiftDetail(shiftId) {
+    // Load shift detail via AJAX
+    fetch(getContextPath() + '/admin/shifts?action=detail&id=' + shiftId)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('shiftDetailContent').innerHTML = data;
+            new bootstrap.Modal(document.getElementById('shiftDetailModal')).show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin ca làm việc');
+        });
+}
+
+function editShift(shiftId) {
+    // Load shift data via AJAX
+    fetch(getContextPath() + '/admin/shifts?action=get&id=' + shiftId)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('editShiftId').value = data.shiftId;
+            document.getElementById('editName').value = data.name;
+            document.getElementById('editStartTime').value = data.startTime;
+            document.getElementById('editEndTime').value = data.endTime;
+            document.getElementById('editDescription').value = data.description || '';
+            new bootstrap.Modal(document.getElementById('editShiftModal')).show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải thông tin ca làm việc');
+        });
+}
+
+function deleteShift(shiftId) {
+    const button = event.target.closest('button');
+    const shiftName = button.getAttribute('data-shift-name');
+    if (confirm('Bạn có chắc chắn muốn xóa ca làm việc "' + shiftName + '"?')) {
+        window.location.href = getContextPath() + '/admin/shifts?action=delete&id=' + shiftId;
+    }
+}
+
+function validateTime() {
+    const startTime = document.getElementById('startTime')?.value;
+    const endTime = document.getElementById('endTime')?.value;
+    
+    if (startTime && endTime && startTime >= endTime) {
+        alert('Giờ bắt đầu phải nhỏ hơn giờ kết thúc!');
+        return false;
+    }
+    return true;
+}
+
+// ===== EXCEPTION FORM HANDLING =====
+function initializeExceptionForm() {
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    const exceptionDateInput = document.getElementById('exceptionDate');
+    if (exceptionDateInput) {
+        exceptionDateInput.min = today;
+    }
+    
+    const exceptionType = document.getElementById('exceptionType');
+    const newShiftSection = document.getElementById('newShiftSection');
+    const newShiftId = document.getElementById('newShiftId');
+    
+    if (exceptionType && newShiftSection && newShiftId) {
+        function toggleShiftSection() {
+            if (exceptionType.value === 'Thay đổi giờ làm') {
+                newShiftSection.style.display = 'block';
+                newShiftId.required = true;
+            } else {
+                newShiftSection.style.display = 'none';
+                newShiftId.required = false;
+                newShiftId.value = '';
+            }
+        }
+        
+        // Check on page load
+        toggleShiftSection();
+        
+        // Add event listener
+        exceptionType.addEventListener('change', toggleShiftSection);
+    }
+}
+
+// ===== SHIFT FORM VALIDATION =====
+function initializeShiftForms() {
+    // Validation cho form thêm mới
+    const addShiftModal = document.getElementById('addShiftModal');
+    if (addShiftModal) {
+        addShiftModal.addEventListener('show.bs.modal', function () {
+            const nameInput = document.getElementById('name');
+            const startTimeInput = document.getElementById('startTime');
+            const endTimeInput = document.getElementById('endTime');
+            const descriptionInput = document.getElementById('description');
+            
+            if (nameInput) nameInput.value = '';
+            if (startTimeInput) startTimeInput.value = '';
+            if (endTimeInput) endTimeInput.value = '';
+            if (descriptionInput) descriptionInput.value = '';
+        });
+    }
+
+    // Validation thời gian
+    const timeInputs = ['startTime', 'endTime', 'editStartTime', 'editEndTime'];
+    timeInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('change', validateTime);
+        }
+    });
+}
+
+// ===== INITIALIZE ALL SHIFT-RELATED FUNCTIONALITY =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize exception forms
+    initializeExceptionForm();
+    
+    // Initialize shift forms
+    initializeShiftForms();
+    
+    // Force show all view detail buttons (already added above)
+    document.querySelectorAll('.btn-view-detail').forEach(btn => {
+        btn.style.display = 'inline-block';
+        btn.style.visibility = 'visible';
+        btn.classList.remove('d-none');
+    });
+});
+
+// Helper function to get context path
+function getContextPath() {
+    return window.contextPath || '';
+}

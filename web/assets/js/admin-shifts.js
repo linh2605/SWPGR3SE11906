@@ -199,7 +199,8 @@ function loadShiftDetail(shiftId) {
         });
 }
 
-function deleteShift(shiftId, shiftName) {
+function deleteShift(shiftId, btn) {
+    const shiftName = btn.getAttribute('data-shift-name');
     if (confirm(`Bạn có chắc chắn muốn xóa ca làm việc "${shiftName}"?`)) {
         window.location.href = `${getContextPath()}/admin/shifts?action=delete&id=${shiftId}`;
     }
@@ -234,8 +235,22 @@ function viewShiftDetail(shiftId) {
 function populateEditForm(data) {
     document.getElementById('editShiftId').value = data.shiftId;
     document.getElementById('editName').value = data.name;
-    document.getElementById('editStartTime').value = data.startTime;
-    document.getElementById('editEndTime').value = data.endTime;
+
+    // Xử lý startTime, endTime về dạng HH:mm (24h)
+    let start = '';
+    let end = '';
+    if (data.startTime) {
+        // Lấy đúng HH:mm từ HH:mm:ss hoặc HH:mm:ss.SSS
+        const match = data.startTime.match(/^([0-9]{2}):([0-9]{2})/);
+        start = match ? `${match[1]}:${match[2]}` : '';
+    }
+    if (data.endTime) {
+        const match = data.endTime.match(/^([0-9]{2}):([0-9]{2})/);
+        end = match ? `${match[1]}:${match[2]}` : '';
+    }
+
+    document.getElementById('editStartTime').value = start;
+    document.getElementById('editEndTime').value = end;
     document.getElementById('editDescription').value = data.description || '';
 }
 

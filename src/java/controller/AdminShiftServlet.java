@@ -10,15 +10,19 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
+import java.io.PrintWriter;
 
 @WebServlet(name="AdminShiftServlet", urlPatterns={"/admin/shifts"})
 public class AdminShiftServlet extends HttpServlet {
     
     private ShiftDAO shiftDAO;
+    private Gson gson;
     
     @Override
     public void init() {
         shiftDAO = new ShiftDAO();
+        gson = new Gson();
     }
     
     @Override
@@ -32,8 +36,8 @@ public class AdminShiftServlet extends HttpServlet {
         }
         
         switch (action) {
-            case "edit":
-                showEditForm(request, response);
+            case "get":
+                getShiftData(request, response);
                 break;
             case "delete":
                 deleteShift(request, response);
@@ -81,17 +85,38 @@ public class AdminShiftServlet extends HttpServlet {
         request.getRequestDispatcher("/views/admin/shifts.jsp").forward(request, response);
     }
     
-    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
+    private void getShiftData(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        int shiftId = Integer.parseInt(request.getParameter("id"));
-        Shift shift = shiftDAO.getShiftById(shiftId);
-        
-        if (shift != null) {
-            request.setAttribute("shift", shift);
-            request.getRequestDispatcher("/views/admin/edit-shift.jsp").forward(request, response);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Shift not found");
+        try {
+            int shiftId = Integer.parseInt(request.getParameter("id"));
+            Shift shift = shiftDAO.getShiftById(shiftId);
+            
+            if (shift != null) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                
+                // Ép về 24h
+                String startTime24 = shift.getStartTime() != null ? shift.getStartTime().toString() : ""; // "13:00:00"
+                String endTime24 = shift.getEndTime() != null ? shift.getEndTime().toString() : "";     // "17:00:00"
+
+                String json = String.format(
+                    "{\"shiftId\":%d,\"name\":\"%s\",\"startTime\":\"%s\",\"endTime\":\"%s\",\"description\":\"%s\"}",
+                    shift.getShiftId(),
+                    shift.getName() == null ? "" : shift.getName().replace("\"", "\\\""),
+                    startTime24,
+                    endTime24,
+                    shift.getDescription() == null ? "" : shift.getDescription().replace("\"", "\\\"")
+                );
+                response.getWriter().write(json);
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.getWriter().write("{\"error\": \"Shift not found\"}");
+            }
+            
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\": \"Invalid shift ID\"}");
         }
     }
     
@@ -113,6 +138,24 @@ public class AdminShiftServlet extends HttpServlet {
             if (startTimeStr == null || endTimeStr == null) {
                 response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Start time and end time are required");
                 return;
+            }
+            
+            // Fix time format - ensure it's in HH:mm:ss format
+            if (!startTimeStr.contains(":")) {
+                response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid start time format");
+                return;
+            }
+            if (!endTimeStr.contains(":")) {
+                response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid end time format");
+                return;
+            }
+            
+            // Add seconds if not present
+            if (startTimeStr.split(":").length == 2) {
+                startTimeStr += ":00";
+            }
+            if (endTimeStr.split(":").length == 2) {
+                endTimeStr += ":00";
             }
             
             Time startTime = Time.valueOf(startTimeStr);
@@ -145,7 +188,7 @@ public class AdminShiftServlet extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid data format");
+            response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid data format: " + e.getMessage());
         }
     }
     
@@ -168,6 +211,24 @@ public class AdminShiftServlet extends HttpServlet {
             if (startTimeStr == null || endTimeStr == null) {
                 response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Start time and end time are required");
                 return;
+            }
+            
+            // Fix time format - ensure it's in HH:mm:ss format
+            if (!startTimeStr.contains(":")) {
+                response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid start time format");
+                return;
+            }
+            if (!endTimeStr.contains(":")) {
+                response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid end time format");
+                return;
+            }
+            
+            // Add seconds if not present
+            if (startTimeStr.split(":").length == 2) {
+                startTimeStr += ":00";
+            }
+            if (endTimeStr.split(":").length == 2) {
+                endTimeStr += ":00";
             }
             
             Time startTime = Time.valueOf(startTimeStr);
@@ -201,7 +262,7 @@ public class AdminShiftServlet extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid data format");
+            response.sendRedirect(request.getContextPath() + "/admin/shifts?error=Invalid data format: " + e.getMessage());
         }
     }
     

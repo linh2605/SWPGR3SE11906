@@ -83,7 +83,7 @@
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
                                                 <button class="btn btn-sm btn-outline-danger" 
-                                                        onclick="deleteShift(${shift.shiftId})" 
+                                                        onclick="deleteShift(${shift.shiftId}, this)" 
                                                         data-shift-name="${shift.name}">
                                                     <i class="bi bi-trash"></i>
                                                 </button>

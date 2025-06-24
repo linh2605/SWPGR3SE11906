@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 import models.Doctor;
 import models.Specialty;
@@ -21,7 +22,7 @@ import models.Specialty;
  *
  * @author New_user
  */
-@WebServlet(name = "DoctorListServlet", urlPatterns = {"/views/home/doctors"})
+@WebServlet(name = "DoctorListServlet", urlPatterns = {"/doctors"})
 public class DoctorListServlet extends HttpServlet {
 
     /**
@@ -66,8 +67,10 @@ public class DoctorListServlet extends HttpServlet {
         // TODO: paging
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
+        HashMap<Specialty, Integer> specialtiesCount = SpecialtyDao.getSpecialtiesWithDoctorCount();
         request.setAttribute("doctors", doctors);
-        request.setAttribute("specialties", specialties);
+        request.setAttribute("countAllSpecialties", specialties.size());
+        request.setAttribute("specialties", specialtiesCount);
         request.getRequestDispatcher("/views/home/doctor-list.jsp").forward(request, response);
     }
 

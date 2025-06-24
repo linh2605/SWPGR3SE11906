@@ -7,34 +7,34 @@ package dal;
 import models.Role;
 import models.User;
 import java.sql.*;
+import models.UserRegister;
 
 /**
  * User Data Access Object
  */
 public class UserDAO {
 
-    public static User login(String username, String password) {
-        try (Connection connection = DBContext.makeConnection();
-             PreparedStatement stmt = connection.prepareStatement(
-                     "SELECT user_id, username, password, full_name, email, phone, u.role_id, " +
-                             "r.name AS role_name, r.description AS role_description, created_at " +
-                             "FROM users u JOIN roles r ON u.role_id = r.role_id " +
-                             "WHERE username = ? OR email = ?")) {
-            stmt.setString(1, username);
-            stmt.setString(2, username);
-            ResultSet resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-                // Assuming password is hashed
-                if (resultSet.getString("password").equals(password)) {
-                    return mappingUser(resultSet);
-                }
+    public static User login(String usernameOrEmail, String passwordHashed) {
+    try (Connection connection = DBContext.makeConnection();
+         PreparedStatement stmt = connection.prepareStatement(
+                 "SELECT user_id, username, password, full_name, email, phone, u.role_id, " +
+                         "r.name AS role_name, r.description AS role_description, created_at " +
+                         "FROM users u JOIN roles r ON u.role_id = r.role_id " +
+                         "WHERE username = ? OR email = ?")) {
+        stmt.setString(1, usernameOrEmail);
+        stmt.setString(2, usernameOrEmail);
+        ResultSet resultSet = stmt.executeQuery();
+        if (resultSet.next()) {
+            if (resultSet.getString("password").equals(passwordHashed)) {
+                return mappingUser(resultSet);
             }
-            return new User(); // Return empty User for wrong credentials
-        } catch (SQLException e) {
-            e.printStackTrace(); // Consider using a logger
-            return new User();
         }
+        return null;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return null;
     }
+}
 
     private static User mappingUser(ResultSet resultSet) throws SQLException {
         User user = new User();
@@ -228,4 +228,144 @@ public class UserDAO {
             return false;
         }
     }
+    
+   public boolean checkUserExist(String username, String email) {
+    String sql = "SELECT * FROM users WHERE username = ? OR email = ?";
+    try (Connection con = DBContext.makeConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, username);
+        ps.setString(2, email);
+        ResultSet rs = ps.executeQuery();
+        return rs.next();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+public int registerNewUser(UserRegister reg) {
+    String sql = "INSERT INTO users (username, password, full_name, email, phone, role_id) VALUES (?, ?, ?, ?, ?, 1)";
+    try (Connection conn = DBContext.makeConnection();
+         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+        ps.setString(1, reg.getUsername());
+        ps.setString(2, reg.getPassword());
+        ps.setString(3, reg.getFullName());
+        ps.setString(4, reg.getEmail());
+        ps.setString(5, reg.getPhone());
+        ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return -1;
+}
+
+public void insertPatient(int userId) {
+    String sql = "INSERT INTO patients (user_id) VALUES (?)";
+    try (Connection conn = DBContext.makeConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+
+
+public User findByEmail(String email) {
+    String sql = "SELECT * FROM users WHERE email = ?";
+    try (Connection con = DBContext.makeConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, email);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return new User(
+                rs.getInt("user_id"),
+                rs.getInt("role_id"),
+                rs.getString("username"),
+                rs.getString("password"),
+                rs.getString("full_name"),
+                rs.getString("email"),
+                rs.getString("phone"),
+                null,
+                rs.getTimestamp("created_at")
+            );
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+public void updatePasswordByEmail(String email, String newPassword) {
+    String sql = "UPDATE users SET password = ? WHERE email = ?";
+    try (Connection con = DBContext.makeConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, newPassword);
+        ps.setString(2, email);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+public void updateOtp(String email, String otp) {
+    String sql = "INSERT INTO otp_verification (email, otp, expiry, is_verified) " +
+                 "VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 5 MINUTE), 0)";
+    try (Connection con = DBContext.makeConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, email);
+        ps.setString(2, otp);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+public boolean verifyOTP(String email, String otp) {
+    String sql = "SELECT * FROM otp_verification WHERE email = ? AND otp = ? AND expiry > NOW() AND is_verified = 0";
+    try (Connection con = DBContext.makeConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, email);
+        ps.setString(2, otp);
+        ResultSet rs = ps.executeQuery();
+        return rs.next(); // true nếu có dòng thỏa mãn
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+
+public void activateUser(String email) {
+    String sql = "UPDATE otp_verification SET is_verified = 1 WHERE email = ?";
+    try (Connection con = DBContext.makeConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, email);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+public void saveOtpOnly(String email, String otp) {
+    String sql = "INSERT INTO otp_verification (email, otp, expiry, is_verified) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 5 MINUTE), 0)";
+    try (Connection conn = DBContext.makeConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, email);
+        ps.setString(2, otp);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+
+
+
+
+
+ 
 }

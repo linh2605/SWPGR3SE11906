@@ -3724,8 +3724,12 @@ html {
   padding-left: 20px;
 }
 
-.doctorFilter .-listdoctor .col-md-6:nth-child(n+3) {
+/*.doctorFilter .-listdoctor .col-md-6:nth-child(n+3) {
   margin-top: 40px;
+}*/
+
+.doctorFilter .-listdoctor .col-md-6 {
+  margin-bottom: 30px;
 }
 
 .doctorFilter .pagination {

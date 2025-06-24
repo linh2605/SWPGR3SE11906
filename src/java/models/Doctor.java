@@ -2,6 +2,7 @@ package models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 import lombok.*;
 
 @Getter
@@ -22,6 +23,8 @@ public class Doctor {
     private String experience;
     private Status status;
     private Timestamp created_at;
+    private List<Service> services;
+    
     public Doctor(User user, Gender gender, Date dob, String image_url, Specialty specialty, String degree, String experience, Status status) {
         this.user = user;
         this.gender = gender;

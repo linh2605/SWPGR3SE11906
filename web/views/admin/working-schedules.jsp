@@ -24,6 +24,13 @@
                     </button>
                 </div>
 
+                <!-- Loading indicator -->
+                <div id="loading" class="text-center" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                </div>
+
                 <!-- Thông báo -->
                 <c:if test="${param.success != null}">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -43,17 +50,14 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <label for="filterDoctor" class="form-label">Bác sĩ</label>
-                                <select class="form-select" id="filterDoctor">
+                                <label for="doctorFilter" class="form-label">Bác sĩ</label>
+                                <select class="form-select" id="doctorFilter">
                                     <option value="">Tất cả bác sĩ</option>
-                                    <c:forEach var="doctor" items="${doctors}">
-                                        <option value="${doctor.doctorId}">${doctor.user.fullName}</option>
-                                    </c:forEach>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="filterWeekDay" class="form-label">Thứ</label>
-                                <select class="form-select" id="filterWeekDay">
+                                <label for="dayFilter" class="form-label">Thứ</label>
+                                <select class="form-select" id="dayFilter">
                                     <option value="">Tất cả</option>
                                     <option value="Thứ 2">Thứ 2</option>
                                     <option value="Thứ 3">Thứ 3</option>
@@ -65,31 +69,14 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="filterShift" class="form-label">Ca làm việc</label>
-                                <select class="form-select" id="filterShift">
+                                <label for="shiftFilter" class="form-label">Ca làm việc</label>
+                                <select class="form-select" id="shiftFilter">
                                     <option value="">Tất cả ca</option>
-                                    <c:forEach var="shift" items="${shifts}">
-                                        <option value="${shift.shiftId}">${shift.name}</option>
-                                    </c:forEach>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="filterStatus" class="form-label">Trạng thái</label>
-                                <select class="form-select" id="filterStatus">
-                                    <option value="">Tất cả</option>
-                                    <option value="true">Hoạt động</option>
-                                    <option value="false">Tạm dừng</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <button class="btn btn-primary" onclick="filterSchedules()">
-                                    <i class="bi bi-funnel"></i> Lọc
-                                </button>
-                                <button class="btn btn-secondary" onclick="resetFilters()">
-                                    <i class="bi bi-arrow-clockwise"></i> Làm mới
-                                </button>
+                                <label for="searchInput" class="form-label">Tìm kiếm</label>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm...">
                             </div>
                         </div>
                     </div>
@@ -102,56 +89,21 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover" id="schedulesTable">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>Bác sĩ</th>
                                         <th>Thứ</th>
                                         <th>Ca làm việc</th>
-                                        <th>Giờ làm việc</th>
-                                        <th>Số BN tối đa</th>
+                                        <th>Giờ bắt đầu</th>
+                                        <th>Giờ kết thúc</th>
                                         <th>Trạng thái</th>
+                                        <th>Ngày tạo</th>
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
-                                <tbody id="scheduleTableBody">
-                                    <c:forEach var="schedule" items="${schedules}">
-                                        <tr data-schedule-id="${schedule.scheduleId}">
-                                            <td>${schedule.scheduleId}</td>
-                                            <td>${schedule.doctorName}</td>
-                                            <td>${schedule.weekDay}</td>
-                                            <td>${schedule.shift.name}</td>
-                                            <td>${schedule.shift.startTime} - ${schedule.shift.endTime}</td>
-                                            <td>${schedule.maxPatients}</td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${schedule.active}">
-                                                        <span class="badge bg-success">Hoạt động</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="badge bg-secondary">Tạm dừng</span>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary" onclick="viewScheduleDetail(${schedule.scheduleId})">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-warning" onclick="editSchedule(${schedule.scheduleId})">
-                                                    <i class="bi bi-pencil"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteSchedule(${schedule.scheduleId})">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                    <c:if test="${empty schedules}">
-                                        <tr>
-                                            <td colspan="8" class="text-center">Chưa có lịch làm việc nào</td>
-                                        </tr>
-                                    </c:if>
+                                <tbody>
+                                    <!-- Data will be loaded by JavaScript -->
                                 </tbody>
                             </table>
                         </div>
@@ -179,16 +131,13 @@
                                     <label for="doctorId" class="form-label">Bác sĩ *</label>
                                     <select class="form-select" id="doctorId" name="doctorId" required>
                                         <option value="">Chọn bác sĩ</option>
-                                        <c:forEach var="doctor" items="${doctors}">
-                                            <option value="${doctor.doctorId}">${doctor.user.fullName} - ${doctor.specialty.name}</option>
-                                        </c:forEach>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="weekDay" class="form-label">Thứ *</label>
-                                    <select class="form-select" id="weekDay" name="weekDay" required>
+                                    <label for="dayOfWeek" class="form-label">Thứ *</label>
+                                    <select class="form-select" id="dayOfWeek" name="dayOfWeek" required>
                                         <option value="">Chọn thứ</option>
                                         <option value="Thứ 2">Thứ 2</option>
                                         <option value="Thứ 3">Thứ 3</option>
@@ -206,27 +155,20 @@
                                 <div class="mb-3">
                                     <label for="shiftId" class="form-label">Ca làm việc *</label>
                                     <select class="form-select" id="shiftId" name="shiftId" required>
-                                        <option value="">Chọn ca làm việc</option>
-                                        <c:forEach var="shift" items="${shifts}">
-                                            <option value="${shift.shiftId}">${shift.name} (${shift.startTime} - ${shift.endTime})</option>
-                                        </c:forEach>
+                                        <option value="">Chọn ca</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="maxPatients" class="form-label">Số bệnh nhân tối đa *</label>
-                                    <input type="number" class="form-control" id="maxPatients" name="maxPatients" 
-                                           min="1" max="50" value="10" required>
+                                    <label for="isActive" class="form-label">Trạng thái</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
+                                        <label class="form-check-label" for="isActive">
+                                            Hoạt động
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
-                                <label class="form-check-label" for="isActive">
-                                    Kích hoạt lịch làm việc
-                                </label>
                             </div>
                         </div>
                     </div>
@@ -256,16 +198,13 @@
                                     <label for="editDoctorId" class="form-label">Bác sĩ *</label>
                                     <select class="form-select" id="editDoctorId" name="doctorId" required>
                                         <option value="">Chọn bác sĩ</option>
-                                        <c:forEach var="doctor" items="${doctors}">
-                                            <option value="${doctor.doctorId}">${doctor.user.fullName} - ${doctor.specialty.name}</option>
-                                        </c:forEach>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="editWeekDay" class="form-label">Thứ *</label>
-                                    <select class="form-select" id="editWeekDay" name="weekDay" required>
+                                    <label for="editDayOfWeek" class="form-label">Thứ *</label>
+                                    <select class="form-select" id="editDayOfWeek" name="dayOfWeek" required>
                                         <option value="">Chọn thứ</option>
                                         <option value="Thứ 2">Thứ 2</option>
                                         <option value="Thứ 3">Thứ 3</option>
@@ -283,27 +222,20 @@
                                 <div class="mb-3">
                                     <label for="editShiftId" class="form-label">Ca làm việc *</label>
                                     <select class="form-select" id="editShiftId" name="shiftId" required>
-                                        <option value="">Chọn ca làm việc</option>
-                                        <c:forEach var="shift" items="${shifts}">
-                                            <option value="${shift.shiftId}">${shift.name} (${shift.startTime} - ${shift.endTime})</option>
-                                        </c:forEach>
+                                        <option value="">Chọn ca</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="editMaxPatients" class="form-label">Số bệnh nhân tối đa *</label>
-                                    <input type="number" class="form-control" id="editMaxPatients" name="maxPatients" 
-                                           min="1" max="50" required>
+                                    <label for="editIsActive" class="form-label">Trạng thái</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="editIsActive" name="isActive">
+                                        <label class="form-check-label" for="editIsActive">
+                                            Hoạt động
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="editIsActive" name="isActive">
-                                <label class="form-check-label" for="editIsActive">
-                                    Kích hoạt lịch làm việc
-                                </label>
                             </div>
                         </div>
                     </div>
@@ -324,8 +256,24 @@
                     <h5 class="modal-title">Chi tiết lịch làm việc</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="scheduleDetailContent">
-                    <!-- Nội dung sẽ được load động -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Bác sĩ:</strong> <span id="detailDoctorName"></span></p>
+                            <p><strong>Thứ:</strong> <span id="detailDayOfWeek"></span></p>
+                            <p><strong>Ca:</strong> <span id="detailShiftName"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Giờ bắt đầu:</strong> <span id="detailStartTime"></span></p>
+                            <p><strong>Giờ kết thúc:</strong> <span id="detailEndTime"></span></p>
+                            <p><strong>Trạng thái:</strong> <span id="detailIsActive"></span></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <p><strong>Ngày tạo:</strong> <span id="detailCreatedDate"></span></p>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -334,9 +282,8 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/admin-schedules.js"></script>
 </body>
 </html> 

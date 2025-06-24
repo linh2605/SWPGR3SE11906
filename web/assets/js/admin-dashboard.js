@@ -1,206 +1,360 @@
 // Admin Dashboard JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    // Load dashboard statistics
-    loadDashboardStatistics();
+    // Load dashboard data on page load
+    loadDashboardData();
     
-    // Load recent activities
-    // loadRecentActivities(); // Tạm thời vô hiệu hóa để gỡ lỗi
+    // Event listeners
+    setupEventListeners();
     
-    // Auto refresh every 30 seconds
-    setInterval(loadDashboardStatistics, 30000);
+    // Initialize animations
+    initializeAnimations();
 });
 
-// Load dashboard statistics
-function loadDashboardStatistics() {
-    // This will be replaced with actual API calls when backend is ready
-    console.log('Loading dashboard statistics...');
+function setupEventListeners() {
+    // Quick action buttons
+    const quickActions = document.querySelectorAll('.quick-action-btn');
+    quickActions.forEach(btn => {
+        btn.addEventListener('click', handleQuickAction);
+    });
     
-    // For now, show mock data
-    updateStatisticsDisplay({
-        totalSchedules: 24,
-        activeSchedules: 20,
-        pendingExceptions: 3,
-        totalDoctors: 8
+    // Recent activities refresh
+    const refreshBtn = document.getElementById('refreshActivities');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadRecentActivities);
+    }
+}
+
+function loadDashboardData() {
+    // Hiển thị loading
+    showLoading();
+    
+    // Gọi API để lấy dữ liệu dashboard
+    fetch(`${window.contextPath}/admin/dashboard?action=data`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayStatistics(data.statistics || {});
+        displayRecentActivities(data.recentActivities || []);
+        displayQuickStats(data.quickStats || {});
+    })
+    .catch(error => {
+        console.error('Error loading dashboard data:', error);
+        // Fallback to mock data for now
+        displayStatistics(getMockStatistics());
+        displayRecentActivities(getMockRecentActivities());
+        displayQuickStats(getMockQuickStats());
+    })
+    .finally(() => {
+        hideLoading();
     });
 }
 
-// Update statistics display
-function updateStatisticsDisplay(stats) {
-    const totalSchedulesElement = document.getElementById('totalSchedules');
-    const activeSchedulesElement = document.getElementById('activeSchedules');
-    const pendingExceptionsElement = document.getElementById('pendingExceptions');
-    const totalDoctorsElement = document.getElementById('totalDoctors');
+function displayStatistics(statistics) {
+    // Cập nhật số liệu thống kê
+    updateStatCard('totalSchedules', statistics.totalSchedules || 0);
+    updateStatCard('activeSchedules', statistics.activeSchedules || 0);
+    updateStatCard('pendingExceptions', statistics.pendingExceptions || 0);
+    updateStatCard('totalDoctors', statistics.totalDoctors || 0);
     
-    if (totalSchedulesElement) {
-        totalSchedulesElement.textContent = stats.totalSchedules;
-        animateNumber(totalSchedulesElement, stats.totalSchedules);
+    // Cập nhật biểu đồ nếu có
+    if (statistics.scheduleChart) {
+        updateScheduleChart(statistics.scheduleChart);
     }
     
-    if (activeSchedulesElement) {
-        activeSchedulesElement.textContent = stats.activeSchedules;
-        animateNumber(activeSchedulesElement, stats.activeSchedules);
+    if (statistics.exceptionChart) {
+        updateExceptionChart(statistics.exceptionChart);
+    }
+}
+
+function displayRecentActivities(activities) {
+    const container = document.getElementById('recentActivities');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (activities.length === 0) {
+        container.innerHTML = '<p class="text-muted">Không có hoạt động gần đây</p>';
+        return;
     }
     
-    if (pendingExceptionsElement) {
-        pendingExceptionsElement.textContent = stats.pendingExceptions;
-        animateNumber(pendingExceptionsElement, stats.pendingExceptions);
+    activities.forEach(activity => {
+        const activityElement = document.createElement('div');
+        activityElement.className = 'activity-item';
+        activityElement.innerHTML = `
+            <div class="activity-icon ${getActivityIconClass(activity.type)}">
+                <i class="bi ${getActivityIcon(activity.type)}"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">${activity.title}</div>
+                <div class="activity-time">${activity.time}</div>
+            </div>
+        `;
+        container.appendChild(activityElement);
+    });
+}
+
+function displayQuickStats(quickStats) {
+    // Cập nhật thống kê nhanh
+    const quickStatsContainer = document.getElementById('quickStats');
+    if (!quickStatsContainer) return;
+    
+    quickStatsContainer.innerHTML = `
+        <div class="row">
+            <div class="col-md-3">
+                <div class="quick-stat-card">
+                    <div class="stat-icon bg-primary">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>${quickStats.todayAppointments || 0}</h4>
+                        <p>Lịch hẹn hôm nay</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="quick-stat-card">
+                    <div class="stat-icon bg-success">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>${quickStats.availableDoctors || 0}</h4>
+                        <p>Bác sĩ có sẵn</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="quick-stat-card">
+                    <div class="stat-icon bg-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>${quickStats.urgentExceptions || 0}</h4>
+                        <p>Ngoại lệ khẩn cấp</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="quick-stat-card">
+                    <div class="stat-icon bg-info">
+                        <i class="bi bi-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h4>${quickStats.avgResponseTime || '0h'}</h4>
+                        <p>Thời gian phản hồi TB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function updateStatCard(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        // Animate the number
+        animateNumber(element, 0, value, 1000);
+    }
+}
+
+function animateNumber(element, start, end, duration) {
+    const startTime = performance.now();
+    const difference = end - start;
+    
+    function updateNumber(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
         
-        // Add warning indicator if there are pending exceptions
-        if (stats.pendingExceptions > 0) {
-            pendingExceptionsElement.parentElement.parentElement.style.boxShadow = '0 0 10px rgba(255, 193, 7, 0.5)';
-        } else {
-            pendingExceptionsElement.parentElement.parentElement.style.boxShadow = 'none';
+        const current = Math.floor(start + (difference * progress));
+        element.textContent = current.toLocaleString();
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateNumber);
         }
     }
     
-    if (totalDoctorsElement) {
-        totalDoctorsElement.textContent = stats.totalDoctors;
-        animateNumber(totalDoctorsElement, stats.totalDoctors);
+    requestAnimationFrame(updateNumber);
+}
+
+function getActivityIconClass(type) {
+    switch (type) {
+        case 'schedule':
+            return 'bg-primary';
+        case 'exception':
+            return 'bg-warning';
+        case 'doctor':
+            return 'bg-success';
+        case 'system':
+            return 'bg-info';
+        default:
+            return 'bg-secondary';
     }
 }
 
-// Animate number counting
-function animateNumber(element, targetNumber) {
-    const currentNumber = parseInt(element.textContent) || 0;
-    const increment = (targetNumber - currentNumber) / 20;
-    let current = currentNumber;
-    
-    const timer = setInterval(() => {
-        current += increment;
-        if ((increment > 0 && current >= targetNumber) || (increment < 0 && current <= targetNumber)) {
-            element.textContent = targetNumber;
-            clearInterval(timer);
-        } else {
-            element.textContent = Math.floor(current);
-        }
-    }, 50);
+function getActivityIcon(type) {
+    switch (type) {
+        case 'schedule':
+            return 'bi-calendar-plus';
+        case 'exception':
+            return 'bi-exclamation-triangle';
+        case 'doctor':
+            return 'bi-person-plus';
+        case 'system':
+            return 'bi-gear';
+        default:
+            return 'bi-info-circle';
+    }
 }
 
-// Load recent activities
+function handleQuickAction(event) {
+    const action = event.currentTarget.dataset.action;
+    
+    switch (action) {
+        case 'add-schedule':
+            window.location.href = `${window.contextPath}/views/admin/working-schedules.jsp`;
+            break;
+        case 'manage-exceptions':
+            window.location.href = `${window.contextPath}/views/admin/schedule-exceptions.jsp`;
+            break;
+        case 'manage-shifts':
+            window.location.href = `${window.contextPath}/admin/shifts`;
+            break;
+        case 'manage-doctors':
+            window.location.href = `${window.contextPath}/admin/doctor`;
+            break;
+        default:
+            console.log('Unknown action:', action);
+    }
+}
+
 function loadRecentActivities() {
-    // This will be replaced with actual API calls when backend is ready
-    console.log('Loading recent activities...');
+    // Gọi API để lấy hoạt động gần đây
+    fetch(`${window.contextPath}/admin/dashboard?action=activities`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayRecentActivities(data.activities || []);
+        showAlert('Đã cập nhật hoạt động gần đây!', 'success');
+    })
+    .catch(error => {
+        console.error('Error loading recent activities:', error);
+        showAlert('Có lỗi xảy ra khi tải hoạt động gần đây', 'error');
+    });
+}
+
+function initializeAnimations() {
+    // Animate stat cards on scroll
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -50px 0px'
+    };
     
-    const activities = [
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, observerOptions);
+    
+    // Observe stat cards
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach(card => observer.observe(card));
+    
+    // Observe activity items
+    const activityItems = document.querySelectorAll('.activity-item');
+    activityItems.forEach(item => observer.observe(item));
+}
+
+// Utility functions
+function showAlert(message, type) {
+    // Sử dụng toastr nếu có
+    if (typeof toastr !== 'undefined') {
+        toastr[type](message);
+    } else {
+        alert(message);
+    }
+}
+
+function showLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'block';
+    }
+}
+
+function hideLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'none';
+    }
+}
+
+// Mock data functions (fallback)
+function getMockStatistics() {
+    return {
+        totalSchedules: 45,
+        activeSchedules: 38,
+        pendingExceptions: 7,
+        totalDoctors: 12,
+        scheduleChart: {
+            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+            data: [8, 7, 9, 6, 8, 5, 3]
+        },
+        exceptionChart: {
+            labels: ['Chờ duyệt', 'Đã duyệt', 'Từ chối'],
+            data: [7, 15, 3]
+        }
+    };
+}
+
+function getMockRecentActivities() {
+    return [
         {
-            title: 'Bác sĩ Nguyễn Văn A gửi yêu cầu nghỉ phép',
-            time: '3 phút trước',
-            description: 'Ngày: 02/06/2025 - Lý do: Nghỉ lễ gia đình',
-            type: 'exception'
+            type: 'schedule',
+            title: 'Thêm lịch làm việc cho Dr. Nguyễn Văn A',
+            time: '2 phút trước'
         },
         {
-            title: 'Cập nhật lịch làm việc bác sĩ Trần Thị B',
-            time: '1 giờ trước',
-            description: 'Thêm ca tối cho thứ 3 và thứ 5',
-            type: 'schedule'
+            type: 'exception',
+            title: 'Duyệt yêu cầu ngoại lệ của Dr. Trần Thị B',
+            time: '15 phút trước'
         },
         {
-            title: 'Duyệt yêu cầu thay đổi giờ làm',
-            time: '2 giờ trước',
-            description: 'Bác sĩ Lê Văn C - Chuyển từ ca sáng sang ca chiều',
-            type: 'approval'
+            type: 'doctor',
+            title: 'Cập nhật thông tin Dr. Lê Văn C',
+            time: '1 giờ trước'
+        },
+        {
+            type: 'system',
+            title: 'Sao lưu dữ liệu hệ thống',
+            time: '2 giờ trước'
         }
     ];
-    
-    updateActivitiesDisplay(activities);
 }
 
-// Update activities display
-function updateActivitiesDisplay(activities) {
-    const activitiesContainer = document.getElementById('recentActivities');
-    if (!activitiesContainer) return;
-    
-    // Clear existing activities
-    activitiesContainer.innerHTML = '';
-    
-    // Add new activities
-    activities.forEach(activity => {
-        const activityElement = createActivityElement(activity);
-        activitiesContainer.appendChild(activityElement);
-    });
-}
-
-// Create activity element
-function createActivityElement(activity) {
-    const listGroupItem = document.createElement('div');
-    listGroupItem.className = 'list-group-item';
-    
-    // Add animation class
-    listGroupItem.classList.add('fade-in');
-    
-    // Set icon based on activity type
-    let icon = 'bi-activity';
-    let iconColor = 'text-primary';
-    
-    switch (activity.type) {
-        case 'exception':
-            icon = 'bi-exclamation-triangle';
-            iconColor = 'text-warning';
-            break;
-        case 'schedule':
-            icon = 'bi-calendar-check';
-            iconColor = 'text-success';
-            break;
-        case 'approval':
-            icon = 'bi-check-circle';
-            iconColor = 'text-info';
-            break;
-    }
-    
-    listGroupItem.innerHTML = `
-        <div class="d-flex w-100 justify-content-between">
-            <h6 class="mb-1">
-                <i class="bi ${icon} ${iconColor} me-2"></i>
-                ${activity.title}
-            </h6>
-            <small class="text-muted">${activity.time}</small>
-        </div>
-        <p class="mb-1">${activity.description}</p>
-    `;
-    
-    return listGroupItem;
-}
-
-/* Tạm thời vô hiệu hóa việc thêm CSS động để gỡ lỗi
-// Add CSS for animations
-const style = document.createElement('style');
-style.textContent = `
-    .fade-in {
-        animation: fadeInUp 0.5s ease-out;
-    }
-    
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .card {
-        transition: all 0.3s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-    
-    .btn {
-        transition: all 0.3s ease;
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-`;
-document.head.appendChild(style);
-*/
-
-// Export functions for global access
-window.loadDashboardStatistics = loadDashboardStatistics;
-window.loadRecentActivities = loadRecentActivities; 
+function getMockQuickStats() {
+    return {
+        todayAppointments: 23,
+        availableDoctors: 8,
+        urgentExceptions: 2,
+        avgResponseTime: '1.5h'
+    };
+} 

@@ -21,6 +21,13 @@
         <div class="main">
             <%@include file="../layouts/admin-side-bar.jsp"%>
             <div class="content">
+                <!-- Loading indicator -->
+                <div id="loading" class="text-center" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                </div>
+
                 <!-- Nội dung chính tại đây -->
                 <h2>Chào mừng đến với bảng điều khiển Admin!</h2>
                 <p>Chọn một mục từ thanh bên để bắt đầu quản lý.</p>
@@ -28,7 +35,7 @@
                     <div class="row g-4">
                         <!-- Working Schedules -->
                         <div class="col-md-3">
-                            <div class="card text-white" style="background-color: #17a2b8;">
+                            <div class="card text-white stat-card" style="background-color: #17a2b8;">
                                 <div class="card-header fw-bold">
                                     <i class="bi bi-calendar-check"></i> Lịch làm việc
                                 </div>
@@ -41,7 +48,7 @@
 
                         <!-- Active Schedules -->
                         <div class="col-md-3">
-                            <div class="card text-white" style="background-color: #28a745;">
+                            <div class="card text-white stat-card" style="background-color: #28a745;">
                                 <div class="card-header fw-bold">
                                     <i class="bi bi-calendar-plus"></i> Đang hoạt động
                                 </div>
@@ -54,7 +61,7 @@
 
                         <!-- Pending Exceptions -->
                         <div class="col-md-3">
-                            <div class="card text-dark" style="background-color: #ffc107;">
+                            <div class="card text-dark stat-card" style="background-color: #ffc107;">
                                 <div class="card-header fw-bold">
                                     <i class="bi bi-clock"></i> Chờ duyệt
                                 </div>
@@ -67,7 +74,7 @@
 
                         <!-- Total Doctors -->
                         <div class="col-md-3">
-                            <div class="card text-white" style="background-color: #6f42c1;">
+                            <div class="card text-white stat-card" style="background-color: #6f42c1;">
                                 <div class="card-header fw-bold">
                                     <i class="bi bi-people"></i> Bác sĩ
                                 </div>
@@ -78,37 +85,34 @@
                             </div>
                         </div>
 
-                        <!-- Recent Activities -->
-                        <div class="col-md-8">
+                        <!-- Quick Stats -->
+                        <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="mb-0">
-                                        <i class="bi bi-activity"></i> Hoạt động gần đây
+                                        <i class="bi bi-graph-up"></i> Thống kê nhanh
                                     </h5>
                                 </div>
+                                <div class="card-body" id="quickStats">
+                                    <!-- Quick stats will be loaded by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activities -->
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-activity"></i> Hoạt động gần đây
+                                    </h5>
+                                    <button class="btn btn-sm btn-outline-primary" id="refreshActivities">
+                                        <i class="bi bi-arrow-clockwise"></i> Làm mới
+                                    </button>
+                                </div>
                                 <div class="card-body">
-                                    <div class="list-group list-group-flush" id="recentActivities">
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">Bác sĩ Nguyễn Văn A gửi yêu cầu nghỉ phép</h6>
-                                                <small class="text-muted">3 phút trước</small>
-                                            </div>
-                                            <p class="mb-1">Ngày: 02/06/2025 - Lý do: Nghỉ lễ gia đình</p>
-                                        </div>
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">Cập nhật lịch làm việc bác sĩ Trần Thị B</h6>
-                                                <small class="text-muted">1 giờ trước</small>
-                                            </div>
-                                            <p class="mb-1">Thêm ca tối cho thứ 3 và thứ 5</p>
-                                        </div>
-                                        <div class="list-group-item">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">Duyệt yêu cầu thay đổi giờ làm</h6>
-                                                <small class="text-muted">2 giờ trước</small>
-                                            </div>
-                                            <p class="mb-1">Bác sĩ Lê Văn C - Chuyển từ ca sáng sang ca chiều</p>
-                                        </div>
+                                    <div id="recentActivities">
+                                        <!-- Activities will be loaded by JavaScript -->
                                     </div>
                                 </div>
                             </div>
@@ -124,18 +128,18 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-grid gap-2">
-                                        <a href="${pageContext.request.contextPath}/admin/working-schedules" class="btn btn-primary">
+                                        <button class="btn btn-primary quick-action-btn" data-action="add-schedule">
                                             <i class="bi bi-calendar-plus"></i> Quản lý lịch làm việc
-                                        </a>
-                                        <a href="${pageContext.request.contextPath}/admin/schedule-exceptions" class="btn btn-warning">
+                                        </button>
+                                        <button class="btn btn-warning quick-action-btn" data-action="manage-exceptions">
                                             <i class="bi bi-clock"></i> Duyệt yêu cầu ngoại lệ
-                                        </a>
-                                        <a href="${pageContext.request.contextPath}/admin/doctor" class="btn btn-info">
+                                        </button>
+                                        <button class="btn btn-info quick-action-btn" data-action="manage-shifts">
+                                            <i class="bi bi-clock-history"></i> Quản lý ca làm việc
+                                        </button>
+                                        <button class="btn btn-success quick-action-btn" data-action="manage-doctors">
                                             <i class="bi bi-people"></i> Quản lý bác sĩ
-                                        </a>
-                                        <a href="${pageContext.request.contextPath}/admin/patient" class="btn btn-success">
-                                            <i class="bi bi-person"></i> Quản lý bệnh nhân
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -148,7 +152,6 @@
         <%@ include file="../layouts/footer.jsp" %>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/admin-dashboard.js"></script>
 </body>
 </html>

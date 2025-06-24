@@ -1,297 +1,343 @@
 // Admin Schedule Exceptions Management JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize event listeners
-    initializeEventListeners();
+    // Load exceptions on page load
+    loadExceptions();
     
-    // Update statistics
-    updateStatistics();
+    // Event listeners
+    setupEventListeners();
 });
 
-function initializeEventListeners() {
-    // Reject form
-    const rejectForm = document.getElementById('rejectForm');
-    if (rejectForm) {
-        rejectForm.addEventListener('submit', handleRejectException);
+function setupEventListeners() {
+    // Filter inputs
+    const doctorFilter = document.getElementById('doctorFilter');
+    if (doctorFilter) {
+        doctorFilter.addEventListener('change', filterExceptions);
     }
     
-    // Filter events
-    document.getElementById('filterDoctor')?.addEventListener('change', filterExceptions);
-    document.getElementById('filterType')?.addEventListener('change', filterExceptions);
-    document.getElementById('filterStatus')?.addEventListener('change', filterExceptions);
-    document.getElementById('filterDate')?.addEventListener('change', filterExceptions);
-}
-
-// View exception detail
-function viewExceptionDetail(exceptionId) {
-    // Load exception detail (will be handled by backend later)
-    console.log('Viewing exception detail:', exceptionId);
-    
-    // For now, show mock data
-    const content = `
-        <div class="row">
-            <div class="col-md-6">
-                <h6>Thông tin yêu cầu</h6>
-                <p><strong>ID:</strong> ${exceptionId}</p>
-                <p><strong>Bác sĩ:</strong> Dr. Nguyễn Văn A</p>
-                <p><strong>Ngày ngoại lệ:</strong> 02/06/2025</p>
-                <p><strong>Loại yêu cầu:</strong> <span class="badge bg-info">Nghỉ phép</span></p>
-                <p><strong>Giờ làm việc mới:</strong> Nghỉ cả ngày</p>
-                <p><strong>Trạng thái:</strong> <span class="badge bg-warning text-dark">Chờ duyệt</span></p>
-            </div>
-            <div class="col-md-6">
-                <h6>Chi tiết</h6>
-                <p><strong>Lý do:</strong> Nghỉ lễ gia đình</p>
-                <p><strong>Ngày tạo:</strong> 31/05/2025 12:00:00</p>
-                <p><strong>Ngày cập nhật:</strong> 31/05/2025 12:00:00</p>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <h6>Lịch làm việc bị ảnh hưởng</h6>
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Thứ</th>
-                                <th>Ca làm việc</th>
-                                <th>Giờ làm việc</th>
-                                <th>Số BN đã đặt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Thứ 2</td>
-                                <td>Sáng</td>
-                                <td>08:00 - 12:00</td>
-                                <td>5</td>
-                            </tr>
-                            <tr>
-                                <td>Thứ 2</td>
-                                <td>Chiều</td>
-                                <td>13:00 - 17:00</td>
-                                <td>3</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('exceptionDetailContent').innerHTML = content;
-    
-    // Show action buttons if status is pending
-    const actionButtons = document.getElementById('actionButtons');
-    if (actionButtons) {
-        actionButtons.style.display = 'block';
-        
-        // Set up action button handlers
-        document.getElementById('approveBtn').onclick = () => approveException(exceptionId);
-        document.getElementById('rejectBtn').onclick = () => showRejectModal(exceptionId);
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', filterExceptions);
     }
     
-    new bootstrap.Modal(document.getElementById('exceptionDetailModal')).show();
-}
-
-// Approve exception
-function approveException(exceptionId) {
-    if (confirm('Bạn có chắc chắn muốn duyệt yêu cầu này không?')) {
-        // Approve exception (will be handled by backend later)
-        console.log('Approving exception:', exceptionId);
-        
-        // For now, show success message
-        showAlert('Duyệt yêu cầu thành công!', 'success');
-        
-        // Update row status
-        updateExceptionStatus(exceptionId, 'Đã duyệt', 'bg-success');
-        
-        // Close modal
-        bootstrap.Modal.getInstance(document.getElementById('exceptionDetailModal')).hide();
-        
-        // Update statistics
-        updateStatistics();
+    const dateFilter = document.getElementById('dateFilter');
+    if (dateFilter) {
+        dateFilter.addEventListener('change', filterExceptions);
+    }
+    
+    // Search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', filterExceptions);
     }
 }
 
-// Show reject modal
-function showRejectModal(exceptionId) {
-    document.getElementById('rejectExceptionId').value = exceptionId;
-    document.getElementById('rejectReason').value = '';
+function loadExceptions() {
+    // Hiển thị loading
+    showLoading();
     
-    // Close detail modal and open reject modal
-    bootstrap.Modal.getInstance(document.getElementById('exceptionDetailModal')).hide();
-    new bootstrap.Modal(document.getElementById('rejectModal')).show();
+    // Gọi API để lấy danh sách ngoại lệ
+    fetch(`${window.contextPath}/admin/schedule-exceptions?action=list`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayExceptions(data.exceptions || []);
+        loadDoctors(data.doctors || []);
+    })
+    .catch(error => {
+        console.error('Error loading exceptions:', error);
+        // Fallback to mock data for now
+        displayExceptions(getMockExceptions());
+        loadDoctors(getMockDoctors());
+    })
+    .finally(() => {
+        hideLoading();
+    });
 }
 
-// Handle reject form
-function handleRejectException(e) {
-    e.preventDefault();
+function displayExceptions(exceptions) {
+    const tbody = document.querySelector('#exceptionsTable tbody');
+    if (!tbody) return;
     
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
+    tbody.innerHTML = '';
     
-    if (!data.rejectReason.trim()) {
-        showAlert('Vui lòng nhập lý do từ chối!', 'danger');
+    if (exceptions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có yêu cầu ngoại lệ nào</td></tr>';
         return;
     }
     
-    // Show loading
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
-    submitBtn.disabled = true;
-    
-    // Reject exception (will be handled by backend later)
-    console.log('Rejecting exception:', data);
-    
-    // For now, show success message
-    setTimeout(() => {
-        showAlert('Từ chối yêu cầu thành công!', 'success');
-        bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+    exceptions.forEach(exception => {
+        const row = document.createElement('tr');
+        const statusBadge = getStatusBadge(exception.status);
         
-        // Update row status
-        updateExceptionStatus(data.exceptionId, 'Đã từ chối', 'bg-danger');
-        
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        
-        // Update statistics
-        updateStatistics();
-    }, 1000);
+        row.innerHTML = `
+            <td>${exception.doctorName || 'N/A'}</td>
+            <td>${exception.exceptionDate || 'N/A'}</td>
+            <td>${exception.exceptionType || 'N/A'}</td>
+            <td>${exception.newShiftName || 'N/A'}</td>
+            <td>${exception.reason || 'N/A'}</td>
+            <td>${statusBadge}</td>
+            <td>${exception.submittedDate || 'N/A'}</td>
+            <td>
+                <button class="btn btn-sm btn-info" onclick="viewExceptionDetail(${exception.exceptionId})">
+                    <i class="bi bi-eye"></i>
+                </button>
+                ${exception.status === 'Chờ duyệt' ? `
+                    <button class="btn btn-sm btn-success" onclick="approveException(${exception.exceptionId})">
+                        <i class="bi bi-check"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="rejectException(${exception.exceptionId})">
+                        <i class="bi bi-x"></i>
+                    </button>
+                ` : ''}
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
 }
 
-// Update exception status in table
-function updateExceptionStatus(exceptionId, newStatus, badgeClass) {
-    const row = document.querySelector(`tr[data-exception-id="${exceptionId}"]`);
-    if (row) {
-        // Update status cell
-        const statusCell = row.cells[6];
-        statusCell.innerHTML = `<span class="badge ${badgeClass}">${newStatus}</span>`;
+function getStatusBadge(status) {
+    switch (status) {
+        case 'Chờ duyệt':
+            return '<span class="badge bg-warning">Chờ duyệt</span>';
+        case 'Đã duyệt':
+            return '<span class="badge bg-success">Đã duyệt</span>';
+        case 'Từ chối':
+            return '<span class="badge bg-danger">Từ chối</span>';
+        default:
+            return '<span class="badge bg-secondary">Không xác định</span>';
+    }
+}
+
+function loadDoctors(doctors) {
+    const doctorFilter = document.getElementById('doctorFilter');
+    
+    if (doctorFilter) {
+        doctorFilter.innerHTML = '<option value="">Tất cả bác sĩ</option>';
+        doctors.forEach(doctor => {
+            doctorFilter.innerHTML += `<option value="${doctor.doctorId}">${doctor.fullName}</option>`;
+        });
+    }
+}
+
+function approveException(exceptionId) {
+    if (confirm('Bạn có chắc chắn muốn duyệt yêu cầu ngoại lệ này?')) {
+        fetch(`${window.contextPath}/admin/schedule-exceptions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'approve',
+                exceptionId: exceptionId
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.success) {
+                showAlert('Duyệt yêu cầu ngoại lệ thành công!', 'success');
+                loadExceptions();
+            } else {
+                showAlert(result.message || 'Có lỗi xảy ra', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error approving exception:', error);
+            showAlert('Có lỗi xảy ra khi duyệt yêu cầu ngoại lệ', 'error');
+        });
+    }
+}
+
+function rejectException(exceptionId) {
+    const reason = prompt('Lý do từ chối (không bắt buộc):');
+    
+    if (confirm('Bạn có chắc chắn muốn từ chối yêu cầu ngoại lệ này?')) {
+        fetch(`${window.contextPath}/admin/schedule-exceptions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'reject',
+                exceptionId: exceptionId,
+                rejectReason: reason
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.success) {
+                showAlert('Từ chối yêu cầu ngoại lệ thành công!', 'success');
+                loadExceptions();
+            } else {
+                showAlert(result.message || 'Có lỗi xảy ra', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error rejecting exception:', error);
+            showAlert('Có lỗi xảy ra khi từ chối yêu cầu ngoại lệ', 'error');
+        });
+    }
+}
+
+function viewExceptionDetail(exceptionId) {
+    // Gọi API để lấy chi tiết ngoại lệ
+    fetch(`${window.contextPath}/admin/schedule-exceptions?action=detail&id=${exceptionId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(exception => {
+        // Hiển thị thông tin trong modal
+        document.getElementById('detailDoctorName').textContent = exception.doctorName;
+        document.getElementById('detailExceptionDate').textContent = exception.exceptionDate;
+        document.getElementById('detailExceptionType').textContent = exception.exceptionType;
+        document.getElementById('detailNewShiftName').textContent = exception.newShiftName;
+        document.getElementById('detailReason').textContent = exception.reason;
+        document.getElementById('detailStatus').innerHTML = getStatusBadge(exception.status);
+        document.getElementById('detailSubmittedDate').textContent = exception.submittedDate;
         
-        // Update data attribute
-        row.setAttribute('data-status', newStatus);
-        
-        // Update action buttons
-        const actionCell = row.cells[8];
-        if (newStatus === 'Chờ duyệt') {
-            actionCell.innerHTML = `
-                <button class="btn btn-sm btn-outline-primary" onclick="viewExceptionDetail(${exceptionId})">
-                    <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-success" onclick="approveException(${exceptionId})">
-                    <i class="bi bi-check-circle"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="rejectException(${exceptionId})">
-                    <i class="bi bi-x-circle"></i>
-                </button>
-            `;
+        if (exception.adminComment) {
+            document.getElementById('detailAdminComment').textContent = exception.adminComment;
+            document.getElementById('adminCommentSection').style.display = 'block';
         } else {
-            actionCell.innerHTML = `
-                <button class="btn btn-sm btn-outline-primary" onclick="viewExceptionDetail(${exceptionId})">
-                    <i class="bi bi-eye"></i>
-                </button>
-            `;
+            document.getElementById('adminCommentSection').style.display = 'none';
+        }
+        
+        openModal('exceptionDetailModal');
+    })
+    .catch(error => {
+        console.error('Error loading exception detail:', error);
+        showAlert('Có lỗi xảy ra khi tải thông tin chi tiết', 'error');
+    });
+}
+
+function filterExceptions() {
+    const doctorFilter = document.getElementById('doctorFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const dateFilter = document.getElementById('dateFilter').value;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('#exceptionsTable tbody tr');
+    
+    rows.forEach(row => {
+        const doctorName = row.cells[0].textContent.toLowerCase();
+        const exceptionDate = row.cells[1].textContent.toLowerCase();
+        const exceptionType = row.cells[2].textContent.toLowerCase();
+        const status = row.cells[5].textContent.toLowerCase();
+        
+        const matchesDoctor = !doctorFilter || doctorName.includes(doctorFilter.toLowerCase());
+        const matchesStatus = !statusFilter || status.includes(statusFilter.toLowerCase());
+        const matchesDate = !dateFilter || exceptionDate.includes(dateFilter.toLowerCase());
+        const matchesSearch = !searchTerm || 
+            doctorName.includes(searchTerm) || 
+            exceptionType.includes(searchTerm) || 
+            status.includes(searchTerm);
+        
+        if (matchesDoctor && matchesStatus && matchesDate && matchesSearch) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Utility functions
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        const bootstrapModal = bootstrap.Modal.getInstance(modal);
+        if (bootstrapModal) {
+            bootstrapModal.hide();
         }
     }
 }
 
-// Filter exceptions
-function filterExceptions() {
-    const doctorFilter = document.getElementById('filterDoctor').value;
-    const typeFilter = document.getElementById('filterType').value;
-    const statusFilter = document.getElementById('filterStatus').value;
-    const dateFilter = document.getElementById('filterDate').value;
-    
-    const rows = document.querySelectorAll('#exceptionTableBody tr');
-    
-    rows.forEach(row => {
-        if (row.cells.length < 9) return; // Skip empty rows
-        
-        const doctor = row.cells[1].textContent.trim();
-        const date = row.cells[2].textContent.trim();
-        const type = row.cells[3].textContent.trim();
-        const status = row.cells[6].textContent.trim();
-        
-        const matchesDoctor = !doctorFilter || doctor.includes(doctorFilter);
-        const matchesType = !typeFilter || type.includes(typeFilter);
-        const matchesStatus = !statusFilter || status.includes(statusFilter);
-        const matchesDate = !dateFilter || date.includes(dateFilter);
-        
-        row.style.display = (matchesDoctor && matchesType && matchesStatus && matchesDate) ? '' : 'none';
-    });
+function showAlert(message, type) {
+    // Sử dụng toastr nếu có
+    if (typeof toastr !== 'undefined') {
+        toastr[type](message);
+    } else {
+        alert(message);
+    }
 }
 
-// Reset filters
-function resetFilters() {
-    document.getElementById('filterDoctor').value = '';
-    document.getElementById('filterType').value = '';
-    document.getElementById('filterStatus').value = '';
-    document.getElementById('filterDate').value = '';
-    
-    const rows = document.querySelectorAll('#exceptionTableBody tr');
-    rows.forEach(row => {
-        row.style.display = '';
-    });
+function showLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'block';
+    }
 }
 
-// Update statistics
-function updateStatistics() {
-    const rows = document.querySelectorAll('#exceptionTableBody tr');
-    let pendingCount = 0;
-    let approvedCount = 0;
-    let rejectedCount = 0;
-    
-    rows.forEach(row => {
-        if (row.cells.length >= 9) {
-            const status = row.cells[6].textContent.trim();
-            if (status.includes('Chờ duyệt')) {
-                pendingCount++;
-            } else if (status.includes('Đã duyệt')) {
-                approvedCount++;
-            } else if (status.includes('Đã từ chối')) {
-                rejectedCount++;
-            }
+function hideLoading() {
+    const loading = document.getElementById('loading');
+    if (loading) {
+        loading.style.display = 'none';
+    }
+}
+
+// Mock data functions (fallback)
+function getMockExceptions() {
+    return [
+        {
+            exceptionId: 1,
+            doctorName: 'Dr. Nguyễn Văn A',
+            exceptionDate: '2024-01-20',
+            exceptionType: 'Nghỉ phép',
+            newShiftName: 'Không có',
+            reason: 'Bị ốm, cần nghỉ ngơi',
+            status: 'Chờ duyệt',
+            submittedDate: '2024-01-18'
+        },
+        {
+            exceptionId: 2,
+            doctorName: 'Dr. Trần Thị B',
+            exceptionDate: '2024-01-22',
+            exceptionType: 'Đổi ca',
+            newShiftName: 'Ca tối',
+            reason: 'Có việc gia đình vào buổi sáng',
+            status: 'Đã duyệt',
+            submittedDate: '2024-01-19'
         }
-    });
-    
-    // Update statistics display
-    const pendingElement = document.getElementById('pendingCount');
-    const approvedElement = document.getElementById('approvedCount');
-    const rejectedElement = document.getElementById('rejectedCount');
-    
-    if (pendingElement) pendingElement.textContent = pendingCount;
-    if (approvedElement) approvedElement.textContent = approvedCount;
-    if (rejectedElement) rejectedElement.textContent = rejectedCount;
+    ];
 }
 
-// Show alert
-function showAlert(message, type = 'success') {
-    // Remove existing alerts
-    const existingAlerts = document.querySelectorAll('.alert');
-    existingAlerts.forEach(alert => alert.remove());
-    
-    // Create new alert
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-    alertDiv.role = 'alert';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    // Insert at the top of content
-    const content = document.querySelector('.content');
-    content.insertBefore(alertDiv, content.firstChild);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
-}
-
-// Export functions for global access
-window.viewExceptionDetail = viewExceptionDetail;
-window.approveException = approveException;
-window.rejectException = showRejectModal;
-window.filterExceptions = filterExceptions;
-window.resetFilters = resetFilters; 
+function getMockDoctors() {
+    return [
+        { doctorId: 1, fullName: 'Dr. Nguyễn Văn A' },
+        { doctorId: 2, fullName: 'Dr. Trần Thị B' },
+        { doctorId: 3, fullName: 'Dr. Lê Văn C' }
+    ];
+} 

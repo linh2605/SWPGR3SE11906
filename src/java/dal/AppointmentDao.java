@@ -8,13 +8,15 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import models.PaymentStatus;
+import models.Service;
 
 public class AppointmentDao {
 
     public static List<Appointment> getAppointmentsByPatientId(int patientId, int page, int size) {
         System.out.println("[DEBUG] getAppointmentsByPatientId: patientId=" + patientId + ", page=" + page + ", size=" + size);
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status "
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status, a.service_id, a.payment_status "
                 + "FROM appointments a "
                 + "JOIN doctors d ON a.doctor_id = d.doctor_id "
                 + "JOIN users ud ON d.user_id = ud.user_id "
@@ -43,7 +45,7 @@ public class AppointmentDao {
 
     public static List<Appointment> getAppointmentsByDoctorId(int doctorId, int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status "
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status, a.service_id, a.payment_status "
                 + "FROM appointments a "
                 + "JOIN doctors d ON a.doctor_id = d.doctor_id "
                 + "JOIN users ud ON d.user_id = ud.user_id "
@@ -67,9 +69,50 @@ public class AppointmentDao {
         return appointments;
     }
 
+    public static Appointment getAppointmentById(int id) {
+        String sql = "SELECT appointment_id\n"
+                + " , patient_id\n"
+                + " , doctor_id\n"
+                + " , appointment_date\n"
+                + " , status\n"
+                + " , note\n"
+                + " , created_at\n"
+                + " , updated_at\n"
+                + " , service_id\n"
+                + " , payment_status\n"
+                + "FROM appointments\n"
+                + "WHERE appointment_id = ?";
+        System.out.println(sql);
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Appointment appt = new Appointment();
+                    appt.setId(rs.getInt("appointment_id"));
+                    appt.setDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
+                    appt.setStatus(rs.getString("status"));
+
+                    models.Doctor doctor = new models.Doctor();
+                    doctor.setDoctor_id(rs.getInt("doctor_id"));
+                    appt.setDoctor(doctor);
+                    models.Patient patient = new models.Patient();
+                    patient.setPatient_id(rs.getInt("patient_id"));
+                    appt.setPatient(patient);
+
+                    appt.setService(ServiceDAO.getServiceById(rs.getInt("service_id")));
+                    appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
+                    return appt;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static List<Appointment> getAllAppointments(int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status "
+        String sql = "SELECT a.appointment_id, a.appointment_date, ud.full_name AS doctor_name, up.full_name AS patient_name, a.status, a.service_id, a.payment_status "
                 + "FROM appointments a "
                 + "JOIN doctors d ON a.doctor_id = d.doctor_id "
                 + "JOIN users ud ON d.user_id = ud.user_id "
@@ -117,8 +160,8 @@ public class AppointmentDao {
             return false;
         }
     }
-    
-    private static Appointment mappingAppointment(ResultSet rs) throws SQLException { 
+
+    private static Appointment mappingAppointment(ResultSet rs) throws SQLException {
         Appointment appt = new Appointment();
         appt.setId(rs.getInt("appointment_id"));
         appt.setDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
@@ -138,6 +181,23 @@ public class AppointmentDao {
         patient.setUser(patientUser);
         appt.setPatient(patient);
 
+        appt.setService(ServiceDAO.getServiceById(rs.getInt("service_id")));
+        appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
+
         return appt;
+    }
+
+    public static boolean updateAppointmentPaymentStatus(int id, PaymentStatus status) {
+        String sql = "UPDATE appointments\n"
+                + "   SET payment_status = ?\n"
+                + " WHERE appointment_id = ?;";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status.toString());
+            stmt.setInt(2, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

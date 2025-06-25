@@ -20,6 +20,8 @@ public class Appointment {
     private String note;
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
+    private Service service;
+    private PaymentStatus paymentStatus;
 
     public void setDateTime(java.time.LocalDateTime dateTime) { // không cần
         this.dateTime = dateTime.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME);

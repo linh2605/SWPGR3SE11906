@@ -14,9 +14,6 @@
     <div class="wrapper">
         <%@ include file="../layouts/header.jsp" %>
 
-        <div class="main">
-            <%@ include file="../layouts/admin-side-bar.jsp" %>
-
             <div class="content">
                 <div class="container mt-5">
                     <h2 class="mb-4"> Danh sách bệnh nhân cần xét nghiệm / chụp chiếu</h2>

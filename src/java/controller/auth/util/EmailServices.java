@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controller.auth.util;
 
 import java.util.Properties;
@@ -13,11 +9,8 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility; // ✅ Thêm dòng này để mã hóa tiêu đề
 
-/**
- *
- * @author auiri
- */
 public class EmailServices {
 
     private static final String FROM = "G3Hospitalgroup6@gmail.com";
@@ -42,10 +35,17 @@ public class EmailServices {
             Message msg = new MimeMessage(getSession());
             msg.setFrom(new InternetAddress(FROM));
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-            msg.setSubject(subject);
-            msg.setText(content);
+
+            // ✅ Sửa chỗ này: mã hóa subject để hỗ trợ tiếng Việt
+            msg.setSubject(MimeUtility.encodeText(subject, "UTF-8", "B"));
+
+            // ✅ Gửi nội dung với charset UTF-8
+            msg.setContent(content, "text/plain; charset=UTF-8");
+
             Transport.send(msg);
         } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {  // Bắt thêm Exception cho MimeUtility.encodeText
             e.printStackTrace();
         }
     }

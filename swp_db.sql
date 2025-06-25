@@ -15,9 +15,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
 DROP DATABASE IF EXISTS swp_db;
 CREATE DATABASE swp_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE swp_db;
+
 --
 -- Table structure for table `appointments`
 --
@@ -34,19 +36,23 @@ CREATE TABLE `appointments` (
   `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `service_id` int DEFAULT NULL,
+  `payment_status` enum('PENDING','PAID') COLLATE utf8mb4_unicode_ci DEFAULT 'PENDING',
   PRIMARY KEY (`appointment_id`),
   KEY `fk_appointment_patient` (`patient_id`),
   KEY `fk_appointment_doctor` (`doctor_id`),
+  KEY `appointments_services_service_id_fk` (`service_id`),
+  CONSTRAINT `appointments_services_service_id_fk` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`),
   CONSTRAINT `fk_appointment_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_appointment_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` VALUES (1,1,1,'2025-06-01 10:00:00','pending','Đau khớp gối, cần khám','2025-05-31 12:00:00','2025-05-31 12:00:00'),(2,2,2,'2025-06-01 11:00:00','pending','Đau bụng, nghi viêm ruột','2025-05-31 12:00:00','2025-05-31 12:00:00');
+INSERT INTO `appointments` VALUES (1,1,1,'2025-06-01 10:00:00','pending','Đau khớp gối, cần khám','2025-05-31 12:00:00','2025-06-25 08:19:06',2,'PENDING'),(2,2,2,'2025-06-01 11:00:00','pending','Đau bụng, nghi viêm ruột','2025-05-31 12:00:00','2025-06-25 08:19:06',3,'PENDING'),(3,1,2,'2025-06-04 10:00:00','completed','Đau khớp gối, cần khám','2025-05-31 12:00:00','2025-05-31 12:00:00',12,'PENDING'),(4,1,1,'2025-06-06 10:00:00','completed','Đau khớp gối, cần khám','2025-05-31 12:00:00','2025-06-25 08:19:11',4,'PENDING');
 
 --
 -- Table structure for table `contact_messages`
@@ -391,4 +397,4 @@ INSERT INTO `working_schedules` VALUES (1,1,'Thứ 2',1,15,1,'2025-05-31 12:00:0
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-25  6:27:50
+-- Dump completed on 2025-06-25  9:19:24

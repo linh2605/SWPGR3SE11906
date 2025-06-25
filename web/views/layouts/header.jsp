@@ -55,18 +55,13 @@
                             <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Thư viện media</a></li>
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/appointments.jsp">Lịch hẹn của tôi</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/medical-records.jsp">Hồ sơ bệnh án</a></li>
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 2}">
                             <!-- Doctor -->
-                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/doctor/dashboard.jsp">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctorupdate">Dashboard</a></li>
                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/doctorupdate">Danh sách bệnh nhân chờ</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctor-schedule">Lịch làm việc</a></li>
-                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/appointment/doctorDashboard.jsp">Lịch hẹn</a></li>
-                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctor-schedule?action=exceptions">Ngoại lệ</a></li>
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 3}">
                             <!-- Receptionist -->
@@ -125,7 +120,7 @@
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 2}">
                                             <!-- Menu cho Doctor -->
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/doctor/dashboard.jsp">Dashboard</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/doctorupdate">Dashboard</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/doctorDashboard.jsp">Lịch hẹn</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/doctor-schedule">Lịch làm việc</a></li>
                                         </c:when>
@@ -136,7 +131,7 @@
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 1}">
                                             <!-- Menu cho Patient -->
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/profile.jsp">Hồ sơ cá nhân</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/appointments.jsp">Lịch hẹn của tôi</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/medical-records.jsp">Hồ sơ bệnh án</a></li>
                                         </c:when>

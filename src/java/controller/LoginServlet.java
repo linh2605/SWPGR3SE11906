@@ -76,20 +76,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("roleId", user.getRole().getRoleId());
             session.setAttribute("role", user.getRole().getName());
-            int roleId = user.getRole().getRoleId();
-            if (roleId == 1) {
-                response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
-            } else if (roleId == 2) {
-                response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
-            } else if (roleId == 3) {
-                response.sendRedirect(request.getContextPath() + "/receptionist/dashboard");
-            } else if (roleId == 5) {
-                response.sendRedirect(request.getContextPath() + "/technician/dashboard");
-            } else if (roleId == 4) { // admin
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-            } else {
-                response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
-            }
+            response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
         } else {
             request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
             request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);

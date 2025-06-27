@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ include file="doctor-auth.jsp" %>
+<%@ page session="true" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -15,120 +15,123 @@
 <body>
     <div class="wrapper">
         <%@ include file="../layouts/header.jsp" %>
-        <div class="main">
-            <%@include file="../layouts/doctor-side-bar.jsp"%>
-            <div class="content">
-                <h2 class="section-title">Quản lý yêu cầu ngoại lệ</h2>
-                
-                <!-- Thông báo -->
-                <c:if test="${param.success == 'added'}">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Gửi yêu cầu thành công!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <%@ include file="doctor-auth.jsp" %>
+
+        <main class="container my-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="section-title">Quản lý yêu cầu ngoại lệ</h2>
+                    
+                    <!-- Thông báo -->
+                    <c:if test="${param.success == 'added'}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Gửi yêu cầu thành công!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </c:if>
+                    <c:if test="${param.success == 'updated'}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Cập nhật yêu cầu thành công!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </c:if>
+                    <c:if test="${param.success == 'deleted'}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Xóa yêu cầu thành công!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </c:if>
+                    <c:if test="${param.error != null}">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Có lỗi xảy ra: ${param.error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </c:if>
+                    
+                    <!-- Nút thao tác -->
+                    <div class="mb-3">
+                        <a href="${pageContext.request.contextPath}/doctor-schedule" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Quay lại lịch làm việc
+                        </a>
+                        <a href="${pageContext.request.contextPath}/doctor-schedule?action=add-exception" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Tạo yêu cầu mới
+                        </a>
                     </div>
-                </c:if>
-                <c:if test="${param.success == 'updated'}">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Cập nhật yêu cầu thành công!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                </c:if>
-                <c:if test="${param.success == 'deleted'}">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Xóa yêu cầu thành công!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                </c:if>
-                <c:if test="${param.error != null}">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Có lỗi xảy ra: ${param.error}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                </c:if>
-                
-                <!-- Nút thao tác -->
-                <div class="mb-3">
-                    <a href="${pageContext.request.contextPath}/doctor-schedule" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Quay lại lịch làm việc
-                    </a>
-                    <a href="${pageContext.request.contextPath}/doctor-schedule?action=add-exception" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Tạo yêu cầu mới
-                    </a>
-                </div>
-                
-                <!-- Bảng ngoại lệ -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Danh sách yêu cầu</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Ngày</th>
-                                        <th>Loại</th>
-                                        <th>Giờ làm việc</th>
-                                        <th>Lý do</th>
-                                        <th>Trạng thái</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="exception" items="${exceptions}">
+                    
+                    <!-- Bảng ngoại lệ -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Danh sách yêu cầu</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
                                         <tr>
-                                            <td>${exception.exceptionDate}</td>
-                                            <td>${exception.exceptionType}</td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${exception.exceptionType == 'Thay đổi giờ làm' && exception.newShift != null}">
-                                                        ${exception.newShift.name} (${exception.newShift.startTime} - ${exception.newShift.endTime})
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        Nghỉ cả ngày
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td>${exception.reason}</td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${exception.status == 'Chờ duyệt'}">
-                                                        <span class="badge bg-warning text-dark">Chờ duyệt</span>
-                                                    </c:when>
-                                                    <c:when test="${exception.status == 'Đã duyệt'}">
-                                                        <span class="badge bg-success">Đã duyệt</span>
-                                                    </c:when>
-                                                    <c:when test="${exception.status == 'Đã từ chối'}">
-                                                        <span class="badge bg-danger">Đã từ chối</span>
-                                                    </c:when>
-                                                </c:choose>
-                                            </td>
-                                            <td>
-                                                <c:if test="${exception.status == 'Chờ duyệt'}">
-                                                    <a href="${pageContext.request.contextPath}/doctor-schedule?action=edit-exception&id=${exception.exceptionId}" 
-                                                       class="btn btn-sm btn-outline-primary">
-                                                        <i class="bi bi-pencil"></i> Sửa
-                                                    </a>
-                                                    <button class="btn btn-sm btn-outline-danger" 
-                                                            onclick="deleteException(${exception.exceptionId})">
-                                                        <i class="bi bi-trash"></i> Xóa
-                                                    </button>
-                                                </c:if>
-                                            </td>
+                                            <th>Ngày</th>
+                                            <th>Loại</th>
+                                            <th>Giờ làm việc</th>
+                                            <th>Lý do</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
                                         </tr>
-                                    </c:forEach>
-                                    <c:if test="${empty exceptions}">
-                                        <tr>
-                                            <td colspan="6" class="text-center">Chưa có yêu cầu ngoại lệ nào</td>
-                                        </tr>
-                                    </c:if>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="exception" items="${exceptions}">
+                                            <tr>
+                                                <td>${exception.exceptionDate}</td>
+                                                <td>${exception.exceptionType}</td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${exception.exceptionType == 'Thay đổi giờ làm' && exception.newShift != null}">
+                                                            ${exception.newShift.name} (${exception.newShift.startTime} - ${exception.newShift.endTime})
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            Nghỉ cả ngày
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td>${exception.reason}</td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${exception.status == 'Chờ duyệt'}">
+                                                            <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                                        </c:when>
+                                                        <c:when test="${exception.status == 'Đã duyệt'}">
+                                                            <span class="badge bg-success">Đã duyệt</span>
+                                                        </c:when>
+                                                        <c:when test="${exception.status == 'Đã từ chối'}">
+                                                            <span class="badge bg-danger">Đã từ chối</span>
+                                                        </c:when>
+                                                    </c:choose>
+                                                </td>
+                                                <td>
+                                                    <c:if test="${exception.status == 'Chờ duyệt'}">
+                                                        <a href="${pageContext.request.contextPath}/doctor-schedule?action=edit-exception&id=${exception.exceptionId}" 
+                                                           class="btn btn-sm btn-outline-primary">
+                                                            <i class="bi bi-pencil"></i> Sửa
+                                                        </a>
+                                                        <button class="btn btn-sm btn-outline-danger" 
+                                                                onclick="deleteException(${exception.exceptionId})">
+                                                            <i class="bi bi-trash"></i> Xóa
+                                                        </button>
+                                                    </c:if>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                        <c:if test="${empty exceptions}">
+                                            <tr>
+                                                <td colspan="6" class="text-center">Chưa có yêu cầu ngoại lệ nào</td>
+                                            </tr>
+                                        </c:if>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
         
         <%@ include file="../layouts/footer.jsp" %>
     </div>

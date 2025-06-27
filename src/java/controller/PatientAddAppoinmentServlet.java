@@ -126,8 +126,8 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
         d.setDoctor_id(doctorId);
         appointment.setPatient(p);
         appointment.setDoctor(d);
-        appointment.setAppointmentDate(appointmentDate);
-        appointment.setNote(note);
+        appointment.setAppointmentDate(appointmentDate.toString());
+        appointment.setNotes(note);
         boolean isSuccess = AppointmentDao.createAppointment(appointment);
         if (isSuccess) {
             request.setAttribute("successMsg", "Đặt lịch khám thành công!");

@@ -266,4 +266,28 @@ public class ScheduleChangeDAO extends DBContext {
         
         return change;
     }
+    
+    public List<ScheduleChange> getAll() {
+        return getAllScheduleChanges();
+    }
+    
+    public ScheduleChange getById(int changeId) {
+        return getScheduleChangeById(changeId);
+    }
+    
+    public boolean update(ScheduleChange change) {
+        String sql = "UPDATE schedule_changes SET status = ?, updated_at = NOW() WHERE change_id = ?";
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, change.getStatus());
+            ps.setInt(2, change.getChangeId());
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 } 

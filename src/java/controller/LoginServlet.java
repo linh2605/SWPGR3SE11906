@@ -76,7 +76,18 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("roleId", user.getRole().getRoleId());
             session.setAttribute("role", user.getRole().getName());
-            response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+            int roleId = user.getRole().getRoleId();
+            if (roleId == 4) { // admin
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else if (roleId == 2) { // doctor
+                // Set doctorId for doctor users
+                dal.WorkingScheduleDAO workingScheduleDAO = new dal.WorkingScheduleDAO();
+                int doctorId = workingScheduleDAO.getDoctorIdByUserId(user.getUserId());
+                session.setAttribute("doctorId", doctorId);
+                response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+            }
         } else {
             request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
             request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);

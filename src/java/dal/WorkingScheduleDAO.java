@@ -252,4 +252,53 @@ public class WorkingScheduleDAO extends DBContext {
         
         return false;
     }
+    
+    // Method để cập nhật working schedule cho schedule change
+    public boolean updateScheduleChangeForDoctor(int doctorId, int newShiftId, String effectiveDate, String endDate) {
+        // Cập nhật tất cả working schedules của bác sĩ từ effectiveDate đến endDate
+        String sql = "UPDATE working_schedules SET shift_id = ?, updated_at = NOW() " +
+                     "WHERE doctor_id = ? AND week_day IN (1,2,3,4,5,6,7)";
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, newShiftId);
+            ps.setInt(2, doctorId);
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public int countSchedulesByDoctor(int doctorId) {
+        String sql = "SELECT COUNT(*) FROM working_schedules WHERE doctor_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public int countActiveSchedulesByDoctor(int doctorId) {
+        String sql = "SELECT COUNT(*) FROM working_schedules WHERE doctor_id = ? AND is_active = 1";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 } 

@@ -1,6 +1,11 @@
 package dal;
 
 import models.Appointment;
+import models.Doctor;
+import models.Patient;
+import models.Specialty;
+import models.Status;
+import models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,7 +38,7 @@ public class AppointmentDao {
                     appointments.add(mappingAppointment(rs));
                     count++;
                 }
-                System.out.println("[DEBUG] Số dòng trả về: " + count);
+                System.out.println("[DEBUG] Number of rows returned: " + count);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,7 +115,7 @@ public class AppointmentDao {
             ps.setInt(1, appointment.getPatient().getPatient_id());
             ps.setInt(2, appointment.getDoctor().getDoctor_id());
             ps.setTimestamp(3, Timestamp.valueOf(appointment.getAppointmentDate()));
-            ps.setString(4, appointment.getNote());
+            ps.setString(4, appointment.getNotes());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,5 +144,166 @@ public class AppointmentDao {
         appt.setPatient(patient);
 
         return appt;
+    }
+
+    // Find all appointments of a doctor in date range
+    public List<Appointment> findAppointmentsByDoctorAndDateRange(int doctorId, String startDate, String endDate) {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = "SELECT a.*, p.*, u.*, d.*, du.*, s.*, st.* FROM appointments a "
+                + "INNER JOIN patients p ON a.patient_id = p.patient_id "
+                + "INNER JOIN users u ON p.user_id = u.user_id "
+                + "INNER JOIN doctors d ON a.doctor_id = d.doctor_id "
+                + "INNER JOIN users du ON d.user_id = du.user_id "
+                + "INNER JOIN specialties s ON d.specialty_id = s.specialty_id "
+                + "INNER JOIN status st ON a.status_id = st.id "
+                + "WHERE a.doctor_id = ? AND a.appointment_date >= ? AND a.appointment_date <= ? "
+                + "AND a.status_id IN (1, 2) " // Chỉ lấy lịch hẹn đã xác nhận hoặc đang chờ
+                + "ORDER BY a.appointment_date, a.appointment_time";
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ps.setString(2, startDate);
+            ps.setString(3, endDate);
+            
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                appointments.add(mapResultSetToAppointment(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
+    // Tìm bác sĩ có thể thay thế cho một lịch hẹn
+    public Doctor findAvailableDoctorForAppointment(int specialtyId, String appointmentDate, String appointmentTime, int excludeDoctorId) {
+        String sql = "SELECT d.*, u.*, s.* FROM doctors d "
+                + "INNER JOIN users u ON d.user_id = u.user_id "
+                + "INNER JOIN specialties s ON d.specialty_id = s.specialty_id "
+                + "INNER JOIN working_schedules ws ON d.doctor_id = ws.doctor_id "
+                + "INNER JOIN shifts sh ON ws.shift_id = sh.shift_id "
+                + "WHERE d.specialty_id = ? AND d.doctor_id != ? "
+                + "AND ws.week_day = DAYOFWEEK(?) "
+                + "AND ? BETWEEN sh.start_time AND sh.end_time "
+                + "AND d.status = 'active' "
+                + "AND NOT EXISTS (SELECT 1 FROM schedule_exceptions se WHERE se.doctor_id = d.doctor_id AND se.exception_date = ?) "
+                + "LIMIT 1";
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, specialtyId);
+            ps.setInt(2, excludeDoctorId);
+            ps.setString(3, appointmentDate);
+            ps.setString(4, appointmentTime);
+            ps.setString(5, appointmentDate);
+            
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToDoctor(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Cập nhật bác sĩ cho lịch hẹn
+    public boolean updateAppointmentDoctor(int appointmentId, int newDoctorId) {
+        String sql = "UPDATE appointments SET doctor_id = ? WHERE appointment_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newDoctorId);
+            ps.setInt(2, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Huỷ lịch hẹn
+    public boolean cancelAppointment(int appointmentId) {
+        String sql = "UPDATE appointments SET status_id = 4 WHERE appointment_id = ?"; // 4 = Cancelled
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, appointmentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Helper method để map ResultSet thành Doctor object
+    private Doctor mapResultSetToDoctor(ResultSet rs) throws SQLException {
+        Doctor doctor = new Doctor();
+        doctor.setDoctor_id(rs.getInt("d.doctor_id"));
+        
+        User user = new User();
+        user.setUserId(rs.getInt("u.user_id"));
+        user.setUsername(rs.getString("u.username"));
+        user.setEmail(rs.getString("u.email"));
+        user.setFullName(rs.getString("u.full_name"));
+        user.setPhone(rs.getString("u.phone"));
+        user.setCreatedAt(rs.getTimestamp("u.created_at"));
+        
+        Specialty specialty = new Specialty();
+        specialty.setSpecialty_id(rs.getInt("s.specialty_id"));
+        specialty.setName(rs.getString("s.name"));
+        specialty.setDescription(rs.getString("s.description"));
+        
+        doctor.setUser(user);
+        doctor.setSpecialty(specialty);
+        
+        return doctor;
+    }
+
+    // Helper method để map ResultSet thành Appointment object
+    private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
+        Appointment appointment = new Appointment();
+        appointment.setId(rs.getInt("a.appointment_id"));
+        appointment.setAppointmentDate(rs.getString("a.appointment_date"));
+        appointment.setAppointmentTime(rs.getString("a.appointment_time"));
+        appointment.setNotes(rs.getString("a.note"));
+        
+        // Map Patient
+        Patient patient = new Patient();
+        patient.setPatient_id(rs.getInt("p.patient_id"));
+        
+        User patientUser = new User();
+        patientUser.setUserId(rs.getInt("u.user_id"));
+        patientUser.setUsername(rs.getString("u.username"));
+        patientUser.setEmail(rs.getString("u.email"));
+        patientUser.setFullName(rs.getString("u.full_name"));
+        patientUser.setPhone(rs.getString("u.phone"));
+        patientUser.setCreatedAt(rs.getTimestamp("u.created_at"));
+        
+        patient.setUser(patientUser);
+        appointment.setPatient(patient);
+        
+        // Map Doctor
+        Doctor doctor = mapResultSetToDoctor(rs);
+        appointment.setDoctor(doctor);
+        
+        // Map Status
+        appointment.setStatus(rs.getString("st.name"));
+        
+        return appointment;
+    }
+
+    public int countAppointmentsByDoctor(int doctorId) {
+        String sql = "SELECT COUNT(*) FROM appointments WHERE doctor_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

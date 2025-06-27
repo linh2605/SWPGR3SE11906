@@ -13,6 +13,14 @@ body {
     min-height: 100vh;
 }
 
+/* Layout cho admin và doctor pages */
+.wrapper .container {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    padding: 20px;
+}
+
 /* HEADER (Bootstrap style) */
 .header {
     position: sticky;
@@ -393,10 +401,10 @@ footer a:hover {
     background-color: #e6f0fa;
     width: 250px;
     padding: 20px;
-    height: auto;
+    height: fit-content;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-right: 20px;
+    flex-shrink: 0;
 }
 
 .sidebar h3 {
@@ -921,14 +929,13 @@ section p {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 20px;
+    .wrapper .container {
+        flex-direction: column;
     }
     
-    .main {
-        flex-direction: column;
+    .sidebar {
+        width: 100%;
+        margin-bottom: 20px;
     }
     
     .stats-card .card-title {

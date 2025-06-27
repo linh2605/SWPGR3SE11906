@@ -19,66 +19,81 @@
             <div class="content">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="section-title">Quản lý lịch làm việc</h2>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+                    <a href="${pageContext.request.contextPath}/admin/working-schedules?action=add" class="btn btn-primary">
                         <i class="bi bi-plus-circle"></i> Thêm lịch làm việc
-                    </button>
-                </div>
-
-                <!-- Loading indicator -->
-                <div id="loading" class="text-center" style="display: none;">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Đang tải...</span>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- Thông báo -->
-                <c:if test="${param.success != null}">
+                <c:if test="${sessionScope.success != null}">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Thao tác thành công!
+                        ${sessionScope.success}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                    <% session.removeAttribute("success"); %>
                 </c:if>
-                <c:if test="${param.error != null}">
+                <c:if test="${sessionScope.error != null}">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Có lỗi xảy ra: ${param.error}
+                        ${sessionScope.error}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                    <% session.removeAttribute("error"); %>
                 </c:if>
 
                 <!-- Bộ lọc -->
                 <div class="card mb-4">
                     <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label for="doctorFilter" class="form-label">Bác sĩ</label>
-                                <select class="form-select" id="doctorFilter">
-                                    <option value="">Tất cả bác sĩ</option>
-                                </select>
+                        <form method="GET" action="${pageContext.request.contextPath}/admin/working-schedules">
+                            <input type="hidden" name="action" value="list">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="doctorFilter" class="form-label">Bác sĩ</label>
+                                    <select class="form-select" id="doctorFilter" name="doctorFilter">
+                                        <option value="">Tất cả bác sĩ</option>
+                                        <c:forEach var="doctor" items="${doctors}">
+                                            <option value="${doctor.doctor_id}" ${param.doctorFilter == doctor.doctor_id ? 'selected' : ''}>
+                                                ${doctor.user.fullName}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="dayFilter" class="form-label">Thứ</label>
+                                    <select class="form-select" id="dayFilter" name="dayFilter">
+                                        <option value="">Tất cả</option>
+                                        <option value="Thứ 2" ${param.dayFilter == 'Thứ 2' ? 'selected' : ''}>Thứ 2</option>
+                                        <option value="Thứ 3" ${param.dayFilter == 'Thứ 3' ? 'selected' : ''}>Thứ 3</option>
+                                        <option value="Thứ 4" ${param.dayFilter == 'Thứ 4' ? 'selected' : ''}>Thứ 4</option>
+                                        <option value="Thứ 5" ${param.dayFilter == 'Thứ 5' ? 'selected' : ''}>Thứ 5</option>
+                                        <option value="Thứ 6" ${param.dayFilter == 'Thứ 6' ? 'selected' : ''}>Thứ 6</option>
+                                        <option value="Thứ 7" ${param.dayFilter == 'Thứ 7' ? 'selected' : ''}>Thứ 7</option>
+                                        <option value="Chủ nhật" ${param.dayFilter == 'Chủ nhật' ? 'selected' : ''}>Chủ nhật</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="shiftFilter" class="form-label">Ca làm việc</label>
+                                    <select class="form-select" id="shiftFilter" name="shiftFilter">
+                                        <option value="">Tất cả ca</option>
+                                        <c:forEach var="shift" items="${shifts}">
+                                            <option value="${shift.shiftId}" ${param.shiftFilter == shift.shiftId ? 'selected' : ''}>
+                                                ${shift.name}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-search"></i> Lọc
+                                        </button>
+                                        <a href="${pageContext.request.contextPath}/admin/working-schedules" class="btn btn-secondary">
+                                            <i class="bi bi-arrow-clockwise"></i> Làm mới
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <label for="dayFilter" class="form-label">Thứ</label>
-                                <select class="form-select" id="dayFilter">
-                                    <option value="">Tất cả</option>
-                                    <option value="Thứ 2">Thứ 2</option>
-                                    <option value="Thứ 3">Thứ 3</option>
-                                    <option value="Thứ 4">Thứ 4</option>
-                                    <option value="Thứ 5">Thứ 5</option>
-                                    <option value="Thứ 6">Thứ 6</option>
-                                    <option value="Thứ 7">Thứ 7</option>
-                                    <option value="Chủ nhật">Chủ nhật</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="shiftFilter" class="form-label">Ca làm việc</label>
-                                <select class="form-select" id="shiftFilter">
-                                    <option value="">Tất cả ca</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="searchInput" class="form-label">Tìm kiếm</label>
-                                <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm...">
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
 
@@ -89,7 +104,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover" id="schedulesTable">
+                            <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>Bác sĩ</th>
@@ -97,13 +112,59 @@
                                         <th>Ca làm việc</th>
                                         <th>Giờ bắt đầu</th>
                                         <th>Giờ kết thúc</th>
+                                        <th>Số bệnh nhân tối đa</th>
                                         <th>Trạng thái</th>
                                         <th>Ngày tạo</th>
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Data will be loaded by JavaScript -->
+                                    <c:forEach var="schedule" items="${schedules}">
+                                        <tr>
+                                            <td>
+                                                <c:forEach var="doctor" items="${doctors}">
+                                                    <c:if test="${doctor.doctor_id == schedule.doctorId}">
+                                                        ${doctor.user.fullName}
+                                                    </c:if>
+                                                </c:forEach>
+                                            </td>
+                                            <td>${schedule.weekDay}</td>
+                                            <td>${schedule.shift.name}</td>
+                                            <td>${schedule.shift.startTime}</td>
+                                            <td>${schedule.shift.endTime}</td>
+                                            <td>${schedule.maxPatients}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${schedule.active}">
+                                                        <span class="badge bg-success">Hoạt động</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge bg-secondary">Không hoạt động</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>${schedule.createdAt}</td>
+                                            <td>
+                                                <a href="${pageContext.request.contextPath}/admin/working-schedules?action=detail&id=${schedule.scheduleId}" 
+                                                   class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="${pageContext.request.contextPath}/admin/working-schedules?action=edit&id=${schedule.scheduleId}" 
+                                                   class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <button class="btn btn-sm btn-danger" title="Xóa"
+                                                        onclick="deleteSchedule(${schedule.scheduleId})">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                    <c:if test="${empty schedules}">
+                                        <tr>
+                                            <td colspan="9" class="text-center">Không có lịch làm việc nào</td>
+                                        </tr>
+                                    </c:if>
                                 </tbody>
                             </table>
                         </div>
@@ -115,175 +176,14 @@
         <%@ include file="../layouts/footer.jsp" %>
     </div>
 
-    <!-- Modal thêm lịch làm việc -->
-    <div class="modal fade" id="addScheduleModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Thêm lịch làm việc mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="addScheduleForm">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="doctorId" class="form-label">Bác sĩ *</label>
-                                    <select class="form-select" id="doctorId" name="doctorId" required>
-                                        <option value="">Chọn bác sĩ</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="dayOfWeek" class="form-label">Thứ *</label>
-                                    <select class="form-select" id="dayOfWeek" name="dayOfWeek" required>
-                                        <option value="">Chọn thứ</option>
-                                        <option value="Thứ 2">Thứ 2</option>
-                                        <option value="Thứ 3">Thứ 3</option>
-                                        <option value="Thứ 4">Thứ 4</option>
-                                        <option value="Thứ 5">Thứ 5</option>
-                                        <option value="Thứ 6">Thứ 6</option>
-                                        <option value="Thứ 7">Thứ 7</option>
-                                        <option value="Chủ nhật">Chủ nhật</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="shiftId" class="form-label">Ca làm việc *</label>
-                                    <select class="form-select" id="shiftId" name="shiftId" required>
-                                        <option value="">Chọn ca</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="isActive" class="form-label">Trạng thái</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="isActive" name="isActive" checked>
-                                        <label class="form-check-label" for="isActive">
-                                            Hoạt động
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn-primary">Thêm lịch làm việc</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal chỉnh sửa lịch làm việc -->
-    <div class="modal fade" id="editScheduleModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chỉnh sửa lịch làm việc</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="editScheduleForm">
-                    <input type="hidden" id="editScheduleId" name="scheduleId">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editDoctorId" class="form-label">Bác sĩ *</label>
-                                    <select class="form-select" id="editDoctorId" name="doctorId" required>
-                                        <option value="">Chọn bác sĩ</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editDayOfWeek" class="form-label">Thứ *</label>
-                                    <select class="form-select" id="editDayOfWeek" name="dayOfWeek" required>
-                                        <option value="">Chọn thứ</option>
-                                        <option value="Thứ 2">Thứ 2</option>
-                                        <option value="Thứ 3">Thứ 3</option>
-                                        <option value="Thứ 4">Thứ 4</option>
-                                        <option value="Thứ 5">Thứ 5</option>
-                                        <option value="Thứ 6">Thứ 6</option>
-                                        <option value="Thứ 7">Thứ 7</option>
-                                        <option value="Chủ nhật">Chủ nhật</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editShiftId" class="form-label">Ca làm việc *</label>
-                                    <select class="form-select" id="editShiftId" name="shiftId" required>
-                                        <option value="">Chọn ca</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="editIsActive" class="form-label">Trạng thái</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="editIsActive" name="isActive">
-                                        <label class="form-check-label" for="editIsActive">
-                                            Hoạt động
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn-primary">Cập nhật</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal chi tiết lịch làm việc -->
-    <div class="modal fade" id="scheduleDetailModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chi tiết lịch làm việc</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Bác sĩ:</strong> <span id="detailDoctorName"></span></p>
-                            <p><strong>Thứ:</strong> <span id="detailDayOfWeek"></span></p>
-                            <p><strong>Ca:</strong> <span id="detailShiftName"></span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Giờ bắt đầu:</strong> <span id="detailStartTime"></span></p>
-                            <p><strong>Giờ kết thúc:</strong> <span id="detailEndTime"></span></p>
-                            <p><strong>Trạng thái:</strong> <span id="detailIsActive"></span></p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <p><strong>Ngày tạo:</strong> <span id="detailCreatedDate"></span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/admin-schedules.js"></script>
+    <script>
+        function deleteSchedule(scheduleId) {
+            if (confirm('Bạn có chắc chắn muốn xóa lịch làm việc này?')) {
+                window.location.href = '${pageContext.request.contextPath}/admin/working-schedules?action=delete&id=' + scheduleId;
+            }
+        }
+    </script>
 </body>
 </html> 

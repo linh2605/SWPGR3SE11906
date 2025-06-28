@@ -4,9 +4,14 @@
  */
 package dal;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import models.Role;
 import models.User;
-import java.sql.*;
 import models.UserRegister;
 
 /**
@@ -286,10 +291,9 @@ public User findByEmail(String email) {
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             return new User(
-                rs.getInt("user_id"),
-                rs.getInt("role_id"),
                 rs.getString("username"),
                 rs.getString("password"),
+                rs.getInt("user_id"),
                 rs.getString("full_name"),
                 rs.getString("email"),
                 rs.getString("phone"),

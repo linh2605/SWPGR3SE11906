@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import models.Doctor;
 import models.PaymentStatus;
 import models.Service;
 
@@ -194,6 +195,105 @@ public class AppointmentDao {
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status.toString());
             stmt.setInt(2, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static int countAppointmentsByDoctor(int doctorId) {
+        String sql = "SELECT COUNT(*) FROM appointments WHERE doctor_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, doctorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // ================== BỔ SUNG CHO ĐỔI CA ADMIN ===================
+    /**
+     * Lấy danh sách appointment của 1 bác sĩ trong khoảng ngày (dạng yyyy-MM-dd)
+     */
+    public static List<Appointment> findAppointmentsByDoctorAndDateRange(int doctorId, String fromDate, String toDate) {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = "SELECT * FROM appointments WHERE doctor_id = ? AND appointment_date >= ? AND appointment_date <= ? AND status = 'scheduled'";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, doctorId);
+            stmt.setString(2, fromDate);
+            stmt.setString(3, toDate);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Appointment appt = getAppointmentById(rs.getInt("appointment_id"));
+                    if (appt != null) appointments.add(appt);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
+
+    /**
+     * Tìm bác sĩ cùng chuyên khoa, rảnh vào thời gian chỉ định, loại trừ 1 bác sĩ (bị đổi ca)
+     */
+    public static Doctor findAvailableDoctorForAppointment(int specialtyId, String appointmentDate, String appointmentTime, int excludeDoctorId) {
+        String sql = "SELECT d.doctor_id FROM doctors d " +
+                "JOIN working_schedules ws ON d.doctor_id = ws.doctor_id " +
+                "JOIN shifts s ON ws.shift_id = s.shift_id " +
+                "WHERE d.specialty_id = ? AND d.doctor_id != ? AND ws.week_day = DAYNAME(?) " +
+                "AND s.start_time <= ? AND s.end_time > ? AND ws.is_active = 1 " +
+                "AND d.status = 'active' " +
+                "AND d.doctor_id NOT IN (SELECT doctor_id FROM appointments WHERE appointment_date = ? AND status = 'scheduled') " +
+                "LIMIT 1";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, specialtyId);
+            stmt.setInt(2, excludeDoctorId);
+            stmt.setString(3, appointmentDate);
+            stmt.setString(4, appointmentTime);
+            stmt.setString(5, appointmentTime);
+            stmt.setString(6, appointmentDate);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int doctorId = rs.getInt("doctor_id");
+                    return dal.DoctorDao.getDoctorById(doctorId);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Cập nhật bác sĩ cho appointment
+     */
+    public static boolean updateAppointmentDoctor(int appointmentId, int newDoctorId) {
+        String sql = "UPDATE appointments SET doctor_id = ?, updated_at = NOW() WHERE appointment_id = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, newDoctorId);
+            stmt.setInt(2, appointmentId);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Hủy appointment (chuyển status sang 'cancelled')
+     */
+    public static boolean cancelAppointment(int appointmentId) {
+        String sql = "UPDATE appointments SET status = 'cancelled', updated_at = NOW() WHERE appointment_id = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, appointmentId);
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();

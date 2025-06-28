@@ -96,20 +96,28 @@ public class AdminScheduleChangeServlet extends HttpServlet {
                 return;
             }
             // Lấy danh sách appointment bị ảnh hưởng
-            List<Appointment> affectedAppointments = appointmentDao.findAppointmentsByDoctorAndDateRange(
+            List<Appointment> affectedAppointments = AppointmentDao.findAppointmentsByDoctorAndDateRange(
                 change.getDoctorId(), 
                 change.getEffectiveDate().toString(), 
                 change.getEndDate() != null ? change.getEndDate().toString() : "2099-12-31"
             );
-            // Gợi ý bác sĩ thay thế cho từng appointment
+            // Gợi ý bác sĩ thay thế cho từng appointment (an toàn null)
             for (Appointment appt : affectedAppointments) {
-                Doctor suggested = appointmentDao.findAvailableDoctorForAppointment(
-                    appt.getDoctor().getSpecialty().getSpecialty_id(),
-                    appt.getAppointmentDate(),
-                    appt.getAppointmentTime(),
-                    change.getDoctorId()
-                );
-                appt.setSuggestedDoctor(suggested);
+                Integer specialtyId = null;
+                if (appt.getDoctor() != null && appt.getDoctor().getSpecialty() != null) {
+                    specialtyId = appt.getDoctor().getSpecialty().getSpecialty_id();
+                }
+                if (specialtyId != null) {
+                    Doctor suggested = AppointmentDao.findAvailableDoctorForAppointment(
+                        specialtyId,
+                        appt.getAppointmentDate(),
+                        appt.getAppointmentTime(),
+                        change.getDoctorId()
+                    );
+                    appt.setSuggestedDoctor(suggested);
+                } else {
+                    appt.setSuggestedDoctor(null);
+                }
             }
             request.setAttribute("change", change);
             request.setAttribute("affectedAppointments", affectedAppointments);
@@ -148,7 +156,7 @@ public class AdminScheduleChangeServlet extends HttpServlet {
                 doGet(request, response);
                 return;
             }
-            List<Appointment> affectedAppointments = appointmentDao.findAppointmentsByDoctorAndDateRange(
+            List<Appointment> affectedAppointments = AppointmentDao.findAppointmentsByDoctorAndDateRange(
                 change.getDoctorId(), 
                 change.getEffectiveDate().toString(), 
                 change.getEndDate() != null ? change.getEndDate().toString() : "2099-12-31"
@@ -157,20 +165,27 @@ public class AdminScheduleChangeServlet extends HttpServlet {
             List<Appointment> reassignedAppointments = new ArrayList<>();
             List<Appointment> cancelledAppointments = new ArrayList<>();
             for (Appointment appt : affectedAppointments) {
-                Doctor replacementDoctor = appointmentDao.findAvailableDoctorForAppointment(
-                    appt.getDoctor().getSpecialty().getSpecialty_id(),
-                    appt.getAppointmentDate(),
-                    appt.getAppointmentTime(),
-                    change.getDoctorId()
-                );
+                Integer specialtyId = null;
+                if (appt.getDoctor() != null && appt.getDoctor().getSpecialty() != null) {
+                    specialtyId = appt.getDoctor().getSpecialty().getSpecialty_id();
+                }
+                Doctor replacementDoctor = null;
+                if (specialtyId != null) {
+                    replacementDoctor = AppointmentDao.findAvailableDoctorForAppointment(
+                        specialtyId,
+                        appt.getAppointmentDate(),
+                        appt.getAppointmentTime(),
+                        change.getDoctorId()
+                    );
+                }
                 if (replacementDoctor != null) {
                     System.out.println("[DEBUG] Chuyển lịch hẹn " + appt.getId() + " sang bác sĩ " + replacementDoctor.getDoctor_id());
-                    appointmentDao.updateAppointmentDoctor(appt.getId(), replacementDoctor.getDoctor_id());
+                    AppointmentDao.updateAppointmentDoctor(appt.getId(), replacementDoctor.getDoctor_id());
                     reassignedAppointments.add(appt);
                     EmailServices.sendAppointmentReassigned(appt, replacementDoctor);
                 } else {
                     System.out.println("[DEBUG] Huỷ lịch hẹn " + appt.getId() + " do không có bác sĩ thay thế");
-                    appointmentDao.cancelAppointment(appt.getId());
+                    AppointmentDao.cancelAppointment(appt.getId());
                     cancelledAppointments.add(appt);
                     EmailServices.sendAppointmentCancelled(appt);
                 }

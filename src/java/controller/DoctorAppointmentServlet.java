@@ -17,17 +17,32 @@ import jakarta.servlet.http.HttpSession;
 
 import dal.DBContext;
 import dal.AppointmentDao;
+import dal.WorkingScheduleDAO;
 import models.Appointment;
+import models.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.time.LocalDateTime;
 import utils.LocalDateTimeAdapter;
 
-@WebServlet("/getDoctorAppointments")
+@WebServlet({"/getDoctorAppointments", "/doctor/appointments"})
 public class DoctorAppointmentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+        
+        if (requestURI.endsWith("/getDoctorAppointments")) {
+            // API endpoint for JSON data
+            handleApiRequest(request, response);
+        } else if (requestURI.endsWith("/doctor/appointments")) {
+            // Page endpoint for HTML view
+            handlePageRequest(request, response);
+        }
+    }
+    
+    private void handleApiRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -85,5 +100,35 @@ public class DoctorAppointmentServlet extends HttpServlet {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
         }
+    }
+    
+    private void handlePageRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+        if (user == null || user.getRole().getRoleId() != 2) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+            return;
+        }
+        
+        // Get doctorId from session or database
+        Integer doctorIdObj = (Integer) session.getAttribute("doctorId");
+        int doctorId;
+        if (doctorIdObj == null) {
+            doctorId = new WorkingScheduleDAO().getDoctorIdByUserId(user.getUserId());
+            if (doctorId == -1) {
+                response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=doctor_not_found");
+                return;
+            }
+            session.setAttribute("doctorId", doctorId);
+        } else {
+            doctorId = doctorIdObj;
+        }
+        
+        // Get appointments for the doctor
+        List<Appointment> appointments = AppointmentDao.getAppointmentsByDoctorId(doctorId, 1, 50);
+        request.setAttribute("appointments", appointments);
+        
+        request.getRequestDispatcher("/views/doctor/appointments.jsp").forward(request, response);
     }
 }

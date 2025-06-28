@@ -66,7 +66,7 @@
                         </a>
                     </div>
                     <div class="col-auto">
-                        <a href="${pageContext.request.contextPath}/views/home/doctor-list.jsp" class="btn btn-outline-success me-2">
+                        <a href="${pageContext.request.contextPath}/doctors" class="btn btn-outline-success me-2">
                             <i class="bi bi-search"></i> Tìm bác sĩ
                         </a>
                     </div>
@@ -141,40 +141,22 @@
 
         <!-- Main Content -->
         <main class="container my-5">
-            <!-- Ưu đãi nổi bật -->
+            <!-- Dịch Vụ Khám Nổi Bật -->
             <section class="promotions mb-5">
-                <h2 class="text-center mb-4" style="color: #004d99;">Ưu đãi nổi bật</h2>
+                <h2 class="text-center mb-4" style="color: #004d99;">Dịch Vụ Khám Nổi Bật</h2>
                 <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="https://picsum.photos/300/200" class="card-img-top" alt="Ưu đãi 1">
-                            <div class="card-body">
-                                <h5 class="card-title">Gói khám sức khỏe tổng quát</h5>
-                                <p class="card-text">Giảm giá 20% cho khách hàng đăng ký trong tháng này.</p>
-                                <a href="#" class="btn btn-primary">Xem chi tiết</a>
+                    <c:forEach var="service" items="${popularServices}">
+                        <div class="col-md-4 mb-4">
+                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.service_id}'">
+                                <img src="https://picsum.photos/300/200?random=${service.service_id}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">${service.name}</h5>
+                                    <p class="card-text">${service.detail}</p>
+                                    <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="https://picsum.photos/300/200" class="card-img-top" alt="Ưu đãi 2">
-                            <div class="card-body">
-                                <h5 class="card-title">Khám chuyên khoa miễn phí</h5>
-                                <p class="card-text">Miễn phí khám chuyên khoa cho khách hàng trên 60 tuổi.</p>
-                                <a href="#" class="btn btn-primary">Xem chi tiết</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="https://picsum.photos/300/200" class="card-img-top" alt="Ưu đãi 3">
-                            <div class="card-body">
-                                <h5 class="card-title">Gói tầm soát ung thư</h5>
-                                <p class="card-text">Ưu đãi đặc biệt cho gói tầm soát ung thư toàn diện.</p>
-                                <a href="#" class="btn btn-primary">Xem chi tiết</a>
-                            </div>
-                        </div>
-                    </div>
+                    </c:forEach>
                 </div>
             </section>
 
@@ -250,73 +232,30 @@
                 </div>
             </section>
 
-            <!-- Đội ngũ bác sĩ -->
+            <!-- Đội ngũ bác sĩ - Carousel động 3 bác sĩ/slide -->
             <section class="doctors mb-5">
                 <h2 class="text-center mb-4" style="color: #004d99;">Đội ngũ bác sĩ</h2>
                 <div id="doctorCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <div class="row">
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <img src="https://picsum.photos/300/250" class="card-img-top" alt="Bác sĩ 1">
-                                        <div class="card-body">
-                                            <h5 class="card-title">ThS.BSCKI Trịnh Minh Thanh</h5>
-                                            <p class="card-text">Khoa Ngoại Tổng Hợp</p>
+                        <c:forEach var="slide" begin="0" end="${(doctors.size() - 1) / 3}" varStatus="slideStatus">
+                            <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
+                                <div class="row">
+                                    <c:forEach var="d" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, doctors.size() - 1)}">
+                                        <c:set var="doctor" value="${doctors[d]}" />
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/doctor-detail?id=${doctor.doctor_id}'">
+                                                <img src="${doctor.image_url}" class="card-img-top" alt="${doctor.user.fullName}" style="height: 200px; object-fit: cover;">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${doctor.user.fullName}</h5>
+                                                    <p class="card-text">${doctor.specialty.name}</p>
+                                                    <p class="card-text"><small>${doctor.degree}</small></p>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <img src="https://picsum.photos/300/250" class="card-img-top" alt="Bác sĩ 2">
-                                        <div class="card-body">
-                                            <h5 class="card-title">ThS.BS Nguyễn Văn Hải</h5>
-                                            <p class="card-text">Khoa Tim Mạch</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <img src="https://picsum.photos/300/250" class="card-img-top" alt="Bác sĩ 3">
-                                        <div class="card-body">
-                                            <h5 class="card-title">ThS.BS Lê Quang Hải</h5>
-                                            <p class="card-text">Khoa Ngoại Chấn Thương Chỉnh Hình</p>
-                                        </div>
-                                    </div>
+                                    </c:forEach>
                                 </div>
                             </div>
-                        </div>
-                        <div class="carousel-item">
-                            <div class="row">
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <img src="https://picsum.photos/300/250" class="card-img-top" alt="Bác sĩ 4">
-                                        <div class="card-body">
-                                            <h5 class="card-title">BSCKI Đinh Văn Hạo</h5>
-                                            <p class="card-text">Vật Lý Trị Liệu - Phục Hồi Chức Năng</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <img src="https://picsum.photos/300/250" class="card-img-top" alt="Bác sĩ 5">
-                                        <div class="card-body">
-                                            <h5 class="card-title">TS.BS Phạm Thị Hồng</h5>
-                                            <p class="card-text">Khoa Nội Tiết</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <img src="https://picsum.photos/300/250" class="card-img-top" alt="Bác sĩ 6">
-                                        <div class="card-body">
-                                            <h5 class="card-title">BSCKII Trần Văn Nam</h5>
-                                            <p class="card-text">Khoa Hô Hấp</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        </c:forEach>
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#doctorCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -327,56 +266,45 @@
                         <span class="visually-hidden">Next</span>
                     </button>
                 </div>
-                <!-- Nút hiển thị danh sách bác sĩ -->
                 <div class="text-center mt-4">
-                    <a href="${pageContext.request.contextPath}/views/home/doctor-list.jsp" class="btn btn-primary">Xem danh sách bác sĩ</a>
+                    <a href="${pageContext.request.contextPath}/doctors" class="btn btn-primary">Xem danh sách bác sĩ</a>
                 </div>
             </section>
 
-            <!-- Chuyên khoa -->
-            <section class="specialties">
-                <h2 class="text-center mb-4" style="color: #004d99;">Chuyên khoa</h2>
-                <div class="row">
-                    <div class="col-md-3 mb-4">
-                        <div class="card">
-                            <img src="https://picsum.photos/300/200" class="card-img-top" alt="Cơ Xương Khớp">
-                            <div class="card-body">
-                                <h5 class="card-title">Cơ Xương Khớp</h5>
-                                <p class="card-text">Điều trị các bệnh lý xương khớp cấp và mạn tính.</p>
-                                <a href="#" class="btn btn-outline-primary">Tìm hiểu thêm</a>
+            <!-- Dịch vụ - Carousel động 3 dịch vụ/slide -->
+            <section class="services mb-5">
+                <h2 class="text-center mb-4" style="color: #004d99;">Dịch vụ</h2>
+                <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <c:forEach var="slide" begin="0" end="${(services.size() - 1) / 3}" varStatus="slideStatus">
+                            <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
+                                <div class="row">
+                                    <c:forEach var="s" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, services.size() - 1)}">
+                                        <c:set var="service" value="${services[s]}" />
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.service_id}'">
+                                                <img src="https://picsum.photos/300/200?random=${service.service_id}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">${service.name}</h5>
+                                                    <p class="card-text">${service.detail}</p>
+                                                    <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
                             </div>
-                        </div>
+                        </c:forEach>
                     </div>
-                    <div class="col-md-3 mb-4">
-                        <div class="card">
-                            <img src="https://picsum.photos/300/200" class="card-img-top" alt="Ngoại Tổng Hợp">
-                            <div class="card-body">
-                                <h5 class="card-title">Ngoại Tổng Hợp</h5>
-                                <p class="card-text">Phẫu thuật và điều trị bệnh lý ngoại khoa.</p>
-                                <a href="#" class="btn btn-outline-primary">Tìm hiểu thêm</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-4">
-                        <div class="card">
-                            <img src="https://picsum.photos/300/200" class="card-img-top" alt="Nhi Khoa">
-                            <div class="card-body">
-                                <h5 class="card-title">Nhi Khoa</h5>
-                                <p class="card-text">Chăm sóc sức khỏe toàn diện cho trẻ em.</p>
-                                <a href="#" class="btn btn-outline-primary">Tìm hiểu thêm</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-4">
-                        <div class="card">
-                            <img src="https://picsum.photos/300/200" class="card-img-top" alt="Sản Khoa">
-                            <div class="card-body">
-                                <h5 class="card-title">Sản Khoa</h5>
-                                <p class="card-text">Hỗ trợ sinh nở và chăm sóc mẹ bầu.</p>
-                                <a href="#" class="btn btn-outline-primary">Tìm hiểu thêm</a>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Luôn hiển thị mũi tên chuyển slide -->
+                    <button class="carousel-control-prev d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev" style="opacity:1;">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next" style="opacity:1;">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
             </section>
         </main>

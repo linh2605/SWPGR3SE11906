@@ -29,7 +29,7 @@
     
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="${pageContext.request.contextPath}/views/home/index.jsp">
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/">
                 <img src="${pageContext.request.contextPath}/assets/FAUGET MEDICAL.png" alt="G3 Hospital Logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -50,7 +50,7 @@
                         <c:when test="${sessionScope.user.role.roleId == 1}">
                             <!-- Patient -->
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/info/about_us.jsp">Giới thiệu</a></li>
-                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/home/doctor-list.jsp">Bác sĩ</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctors">Bác sĩ</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>

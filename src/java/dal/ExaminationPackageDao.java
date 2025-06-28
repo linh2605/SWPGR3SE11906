@@ -157,7 +157,7 @@ public class ExaminationPackageDao {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (Specialty s : specialties) {
                 ps.setInt(1, packageId);
-                ps.setInt(2, s.getSpecialty_id());
+                ps.setInt(2, s.getSpecialtyId());
                 ps.addBatch();
             }
             ps.executeBatch();

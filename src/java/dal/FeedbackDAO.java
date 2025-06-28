@@ -85,4 +85,37 @@ public class FeedbackDAO {
 
         return fb;
     }
+    public static boolean create(Feedback fb) {
+        String sql = "INSERT INTO feedback(rate, doctor_feedback, service_feedback, price_feedback, offer_feedback, patient_id) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection con = DBContext.makeConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, fb.getRate());
+            ps.setString(2, fb.getDoctorFeedback());
+            ps.setString(3, fb.getServiceFeedback());
+            ps.setString(4, fb.getPriceFeedback());
+            ps.setString(5, fb.getOfferFeedback());
+            ps.setInt(6, fb.getPatient().getPatient_id());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public static List<Feedback> getByPatientId(int patientId) {
+        List<Feedback> list = new ArrayList<>();
+        String sql = "SELECT * FROM feedback WHERE patient_id = ?";
+        try (Connection con = DBContext.makeConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, patientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Feedback fb = extractFeedback(rs);
+                    list.add(fb);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

@@ -80,8 +80,8 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
                 Collections.sort(doctors, new Comparator<Doctor>() {
                     @Override
                     public int compare(Doctor d1, Doctor d2) {
-                        int specialty_id1 = d1.getSpecialty().getSpecialty_id();
-                        int specialty_id2 = d2.getSpecialty().getSpecialty_id();
+                        int specialty_id1 = d1.getSpecialty().getSpecialtyId();
+                        int specialty_id2 = d2.getSpecialty().getSpecialtyId();
                         if (specialty_id1 == specialty_id2) {
                             return d1.getDoctor_id() - d2.getDoctor_id();
                         } else {
@@ -126,8 +126,8 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
         d.setDoctor_id(doctorId);
         appointment.setPatient(p);
         appointment.setDoctor(d);
-        appointment.setAppointmentDate(appointmentDate);
-        appointment.setNote(note);
+        appointment.setAppointmentDate(appointmentDate.toString());
+        appointment.setNotes(note);
         boolean isSuccess = AppointmentDao.createAppointment(appointment);
         if (isSuccess) {
             request.setAttribute("successMsg", "Đặt lịch khám thành công!");

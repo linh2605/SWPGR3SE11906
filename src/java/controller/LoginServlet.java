@@ -63,33 +63,32 @@ public class LoginServlet extends HttpServlet {
         request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String password = controller.auth.util.Encode.toSHA1(request.getParameter("password"));
         User user = UserDAO.login(username, password);
 
         if (user != null && user.getUserId() != 0) {
             HttpSession session = request.getSession();
-            // Set toàn bộ thông tin user vào session
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("roleId", user.getRole().getRoleId());
             session.setAttribute("role", user.getRole().getName());
-
-            // Chuyển về trang chủ sau khi đăng nhập thành công
-            response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+            int roleId = user.getRole().getRoleId();
+            if (roleId == 4) { // admin
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else if (roleId == 2) { // doctor
+                // Set doctorId for doctor users
+                dal.WorkingScheduleDAO workingScheduleDAO = new dal.WorkingScheduleDAO();
+                int doctorId = workingScheduleDAO.getDoctorIdByUserId(user.getUserId());
+                session.setAttribute("doctorId", doctorId);
+                response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+            }
         } else {
-            // Đăng nhập sai, quay lại login và báo lỗi
             request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
             request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
         }

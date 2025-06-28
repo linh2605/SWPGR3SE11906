@@ -13,82 +13,91 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
+    <script>
+        window.contextPath = '${pageContext.request.contextPath}';
+    </script>
     <div class="wrapper">
         <%@ include file="../layouts/header.jsp" %>
-        <%@ include file="doctor-auth.jsp" %>
+        <div class="container">
+            <%@ include file="../layouts/doctor-side-bar.jsp" %>
+            <div class="content">
+                <h4 class="mb-0">Sửa yêu cầu ngoại lệ</h4>
+                <%@ include file="doctor-auth.jsp" %>
 
-        <main class="container my-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="mb-0">Sửa yêu cầu ngoại lệ</h4>
-                        </div>
-                        <div class="card-body">
-                            <c:if test="${error != null}">
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    ${error}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <main class="container my-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="mb-0">Sửa yêu cầu ngoại lệ</h4>
                                 </div>
-                            </c:if>
-                            
-                            <form action="${pageContext.request.contextPath}/doctor-schedule" method="post">
-                                <input type="hidden" name="action" value="update-exception">
-                                <input type="hidden" name="exceptionId" value="${exception.exceptionId}">
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="exceptionDate" class="form-label">Ngày ngoại lệ *</label>
-                                            <input type="date" class="form-control" id="exceptionDate" name="exceptionDate" 
-                                                   value="${exception.exceptionDate}" required>
+                                <div class="card-body">
+                                    <c:if test="${error != null}">
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            ${error}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="exceptionType" class="form-label">Loại yêu cầu *</label>
-                                            <select class="form-select" id="exceptionType" name="exceptionType" required>
-                                                <option value="">Chọn loại</option>
-                                                <option value="Nghỉ phép" ${exception.exceptionType == 'Nghỉ phép' ? 'selected' : ''}>Nghỉ phép</option>
-                                                <option value="Thay đổi giờ làm" ${exception.exceptionType == 'Thay đổi giờ làm' ? 'selected' : ''}>Thay đổi giờ làm</option>
-                                                <option value="Khẩn cấp" ${exception.exceptionType == 'Khẩn cấp' ? 'selected' : ''}>Khẩn cấp</option>
+                                    </c:if>
+                                    
+                                    <form action="${pageContext.request.contextPath}/doctor-schedule" method="post">
+                                        <input type="hidden" name="action" value="update-exception">
+                                        <input type="hidden" name="exceptionId" value="${exception.exceptionId}">
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="exceptionDate" class="form-label">Ngày ngoại lệ *</label>
+                                                    <input type="date" class="form-control" id="exceptionDate" name="exceptionDate" 
+                                                           value="${exception.exceptionDate}" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="exceptionType" class="form-label">Loại yêu cầu *</label>
+                                                    <select class="form-select" id="exceptionType" name="exceptionType" required>
+                                                        <option value="">Chọn loại</option>
+                                                        <option value="Nghỉ phép" ${exception.exceptionType == 'Nghỉ phép' ? 'selected' : ''}>Nghỉ phép</option>
+                                                        <option value="Thay đổi giờ làm" ${exception.exceptionType == 'Thay đổi giờ làm' ? 'selected' : ''}>Thay đổi giờ làm</option>
+                                                        <option value="Khẩn cấp" ${exception.exceptionType == 'Khẩn cấp' ? 'selected' : ''}>Khẩn cấp</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3" id="newShiftSection" style="display: none;">
+                                            <label for="newShiftId" class="form-label">Ca làm việc mới *</label>
+                                            <select class="form-select" id="newShiftId" name="newShiftId">
+                                                <option value="">Chọn ca làm việc mới</option>
+                                                <c:forEach var="shift" items="${shifts}">
+                                                    <option value="${shift.shiftId}" ${exception.newShiftId == shift.shiftId ? 'selected' : ''}>
+                                                        ${shift.name} (${shift.startTime} - ${shift.endTime})
+                                                    </option>
+                                                </c:forEach>
                                             </select>
                                         </div>
-                                    </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="reason" class="form-label">Lý do *</label>
+                                            <textarea class="form-control" id="reason" name="reason" rows="3" required 
+                                                      placeholder="Nhập lý do cho yêu cầu...">${exception.reason}</textarea>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between">
+                                            <a href="${pageContext.request.contextPath}/doctor-schedule?action=exceptions" class="btn btn-secondary">
+                                                <i class="bi bi-arrow-left"></i> Quay lại
+                                            </a>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-check-circle"></i> Cập nhật yêu cầu
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
-                                
-                                <div class="mb-3" id="newShiftSection" style="display: none;">
-                                    <label for="newShiftId" class="form-label">Ca làm việc mới *</label>
-                                    <select class="form-select" id="newShiftId" name="newShiftId">
-                                        <option value="">Chọn ca làm việc mới</option>
-                                        <c:forEach var="shift" items="${shifts}">
-                                            <option value="${shift.shiftId}" ${exception.newShiftId == shift.shiftId ? 'selected' : ''}>
-                                                ${shift.name} (${shift.startTime} - ${shift.endTime})
-                                            </option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="reason" class="form-label">Lý do *</label>
-                                    <textarea class="form-control" id="reason" name="reason" rows="3" required 
-                                              placeholder="Nhập lý do cho yêu cầu...">${exception.reason}</textarea>
-                                </div>
-                                
-                                <div class="d-flex justify-content-between">
-                                    <a href="${pageContext.request.contextPath}/doctor-schedule?action=exceptions" class="btn btn-secondary">
-                                        <i class="bi bi-arrow-left"></i> Quay lại
-                                    </a>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-check-circle"></i> Cập nhật yêu cầu
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </main>
             </div>
-        </main>
+        </div>
         
         <%@ include file="../layouts/footer.jsp" %>
     </div>
@@ -96,34 +105,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set minimum date to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('exceptionDate').min = today;
-        
-        const exceptionType = document.getElementById('exceptionType');
-        const newShiftSection = document.getElementById('newShiftSection');
-        const newShiftId = document.getElementById('newShiftId');
-        
-        function toggleShiftSection() {
-            if (exceptionType.value === 'Thay đổi giờ làm') {
-                newShiftSection.style.display = 'block';
-                newShiftId.required = true;
-            } else {
-                newShiftSection.style.display = 'none';
-                newShiftId.required = false;
-                newShiftId.value = '';
-            }
-        }
-        
-        // Check on page load
-        toggleShiftSection();
-        
-        // Add event listener
-        exceptionType.addEventListener('change', toggleShiftSection);
-    });
-    </script>
 </body>
 </html> 

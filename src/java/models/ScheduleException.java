@@ -15,6 +15,12 @@ public class ScheduleException {
 
     // Thêm đối tượng Shift để join và hiển thị thông tin
     private Shift newShift;
+    
+    // Thêm field để hiển thị tên bác sĩ
+    private String doctorName;
+    
+    // Thêm field để hiển thị tên ca làm việc
+    private String newShiftName;
 
     // Constructor
     public ScheduleException() {
@@ -102,5 +108,21 @@ public class ScheduleException {
     
     public void setNewShift(Shift newShift) {
         this.newShift = newShift;
+    }
+    
+    public String getDoctorName() {
+        return doctorName;
+    }
+    
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
+    }
+    
+    public String getNewShiftName() {
+        return newShiftName;
+    }
+    
+    public void setNewShiftName(String newShiftName) {
+        this.newShiftName = newShiftName;
     }
 } 

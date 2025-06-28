@@ -638,3 +638,32 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-06-28 17:03:00
+
+
+
+create table feedback(
+    feedback_id int not null AUTO_INCREMENT PRIMARY KEY,
+    rate int not null check ( rate in (1,2,3,4,5)),
+    doctor_feedback nvarchar(255) not null,
+    service_feedback nvarchar(255) not null,
+    price_feedback nvarchar(255) not null,
+    offer_feedback nvarchar(255) not null,
+    patient_id int not null,
+    foreign key (patient_id) references patients(patient_id)
+);
+create table examination_packages
+(
+    package_id  int            NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name        NVARCHAR(100)  NOT NULL,
+    description TEXT,
+    price       DECIMAL(10, 2) NOT NULL,
+    duration    INT            NOT NULL
+);
+CREATE TABLE examination_package_specialities
+(
+    package_id    INT NOT NULL,
+    speciality_id INT NOT NULL,
+    PRIMARY KEY (package_id, speciality_id),
+    FOREIGN KEY (package_id) REFERENCES examination_packages (package_id) ON DELETE CASCADE,
+    FOREIGN KEY (speciality_id) REFERENCES specialties (specialty_id)
+);

@@ -41,7 +41,7 @@
                         <c:when test="${empty sessionScope.user}">
                             <!-- Guest -->
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/info/about_us.jsp">Giới thiệu</a></li>
-                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/home/doctor-list.jsp">Bác sĩ</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctors">Bác sĩ</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>

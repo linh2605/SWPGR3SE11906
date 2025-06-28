@@ -4,26 +4,24 @@
  */
 package controller;
 
-import dal.DoctorDao;
-import dal.SpecialtyDao;
+import config.VNPayConfig;
+import dal.AppointmentDao;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import models.Doctor;
-import models.Specialty;
+import jakarta.servlet.http.HttpSession;
+import java.util.Map;
+import models.PaymentStatus;
 
 /**
  *
  * @author New_user
  */
-@WebServlet(name = "DoctorListServlet", urlPatterns = {"/doctors"})
-public class DoctorListServlet extends HttpServlet {
+@WebServlet(name = "VNPayReturnController", urlPatterns = {"/vnpay_Return"})
+public class VNPayReturnController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,19 +34,21 @@ public class DoctorListServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet DoctorListServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet DoctorListServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        HttpSession session = request.getSession();
+        int apptID = (int) session.getAttribute("apptID");
+        Map<String, String> fields = VNPayConfig.getParameterMap(request);
+
+        String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
+        if ("00".equals(vnp_ResponseCode)) {
+            AppointmentDao.updateAppointmentPaymentStatus(apptID, PaymentStatus.PAID);
+            System.out.println("Payment success.");
+            // send email
+        } else {
+            System.out.println("Payment failed.");
+            // send email
         }
+//        request.getRequestDispatcher("/views/appointment/appointments.jsp").forward(request, response);
+        response.sendRedirect(request.getContextPath() + "/views/appointment/appointments.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -63,15 +63,7 @@ public class DoctorListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO: get by specialties
-        // TODO: paging
-        List<Doctor> doctors = DoctorDao.getAllDoctors();
-        List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
-        HashMap<Specialty, Integer> specialtiesCount = SpecialtyDao.getSpecialtiesWithDoctorCount();
-        request.setAttribute("doctors", doctors);
-        request.setAttribute("countAllSpecialties", specialties.size());
-        request.setAttribute("specialties", specialtiesCount);
-        request.getRequestDispatcher("/views/home/doctor-list.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**

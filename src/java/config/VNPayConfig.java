@@ -22,10 +22,10 @@ import javax.crypto.spec.SecretKeySpec;
 public class VNPayConfig {
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_Return"; // link return sau khi hoan thanh giao dich
+    public static String vnp_ReturnUrl = "http://localhost:8080/ClinicManagementSystem/checkout-result"; // link return sau khi hoan thanh giao dich
     public static String vnp_TmnCode = "5BF5W4AC";
     public static String secretKey = "1OPGLAYNBZHNW4FVGVFRT6TNUHY3T3CY";
-    
+
 //    secret demo
 //    public static String vnp_TmnCode = "4YUP19I4";
 //    public static String secretKey = "MDUIFDCRAKLNBPOFIAFNEKFRNMFBYEPX";
@@ -76,10 +76,10 @@ public class VNPayConfig {
             String fieldName = (String) itr.next();
             String fieldValue = (String) fields.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                sb.append(fieldName);
-                sb.append("=");
+                    sb.append(fieldName);
+                    sb.append("=");
                 sb.append(fieldValue);
-            }
+                }
             if (itr.hasNext()) {
                 sb.append("&");
             }

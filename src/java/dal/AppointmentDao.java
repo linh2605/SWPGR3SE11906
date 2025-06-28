@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import models.PaymentStatus;
 import models.Service;
+import models.ServiceType;
+import models.User;
 
 public class AppointmentDao {
 
@@ -70,18 +72,34 @@ public class AppointmentDao {
     }
 
     public static Appointment getAppointmentById(int id) {
-        String sql = "SELECT appointment_id\n"
-                + " , patient_id\n"
-                + " , doctor_id\n"
-                + " , appointment_date\n"
-                + " , status\n"
-                + " , note\n"
-                + " , created_at\n"
-                + " , updated_at\n"
-                + " , service_id\n"
-                + " , payment_status\n"
-                + "FROM appointments\n"
-                + "WHERE appointment_id = ?";
+        String sql = "SELECT a.appointment_id\n"
+                + "	 , a.patient_id\n"
+                + "	 , u1.full_name  AS patient_name\n"
+                + "	 , a.doctor_id\n"
+                + "	 , u2.full_name AS doctor_name\n"
+                + "	 , appointment_date\n"
+                + "	 , a.status\n"
+                + "	 , a.note\n"
+                + "	 , a.created_at\n"
+                + "	 , updated_at\n"
+                + "	 , a.service_id\n"
+                + "	 , s.name       AS service_name\n"
+                + "	 , s.detail     AS service_detail\n"
+                + "	 , s.price      AS service_price\n"
+                + "	 , s.type       AS service_type\n"
+                + "	 , a.payment_status\n"
+                + "  FROM appointments a\n"
+                + "	       JOIN patients p\n"
+                + "	       ON a.patient_id = p.patient_id\n"
+                + "	       JOIN users u1\n"
+                + "	       ON u1.user_id = p.user_id\n"
+                + "	       JOIN doctors d\n"
+                + "	       ON a.doctor_id = d.doctor_id\n"
+                + "	       JOIN users u2\n"
+                + "	       ON d.user_id = u2.user_id\n"
+                + "	       JOIN services s\n"
+                + "	       ON a.service_id = s.service_id\n"
+                + " WHERE appointment_id = ?";
         System.out.println(sql);
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -89,18 +107,32 @@ public class AppointmentDao {
                 if (rs.next()) {
                     Appointment appt = new Appointment();
                     appt.setId(rs.getInt("appointment_id"));
-                    appt.setDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
+                    appt.setAppointmentDate(rs.getTimestamp("appointment_date").toLocalDateTime());
                     appt.setStatus(rs.getString("status"));
+                    appt.setNote(rs.getString("note"));
+                    appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
+
+                    models.Patient patient = new models.Patient();
+                    patient.setPatient_id(rs.getInt("patient_id"));
+                    User u1 = new User();
+                    u1.setFullName(rs.getString("patient_name"));
+                    patient.setUser(u1);
+                    appt.setPatient(patient);
 
                     models.Doctor doctor = new models.Doctor();
                     doctor.setDoctor_id(rs.getInt("doctor_id"));
+                    User u2 = new User();
+                    u2.setFullName(rs.getString("doctor_name"));
+                    doctor.setUser(u2);
                     appt.setDoctor(doctor);
-                    models.Patient patient = new models.Patient();
-                    patient.setPatient_id(rs.getInt("patient_id"));
-                    appt.setPatient(patient);
 
+                    Service s = new Service();
+                    s.setService_id(rs.getInt("service_id"));
+                    s.setName(rs.getString("service_name"));
+                    s.setDetail(rs.getString("service_detail"));
+                    s.setPrice(rs.getLong("service_price"));
+                    s.setType(ServiceType.valueOf(rs.getString("service_type")));
                     appt.setService(ServiceDAO.getServiceById(rs.getInt("service_id")));
-                    appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
                     return appt;
                 }
             }

@@ -20,23 +20,27 @@
         <%@ include file="../layouts/header.jsp" %>
         <!-- Main Content -->
         <main class="container my-5 text-center">
-            <c:if test="${successMsg != null}">
-                <div class="alert alert-success fs-5" role="alert">
-                    ${successMsg}
-                </div>
-                <a href="${pageContext.request.contextPath}/" class="btn btn-primary mt-3">
-                    <i class="bi bi-house-door-fill me-1"></i> Trở về trang chủ
-                </a>
-            </c:if>
-            <c:if test="${errorMsg != null}">
-                <div class="alert alert-danger fs-5" role="alert">
-                    ${errorMsg}
-                </div>
-                <a href="javascript:history.back()" class="btn btn-primary mt-3">
-                    <i class="bi bi-house-door-fill me-1"></i> Quay lại
-                </a>
-            </c:if>
 
+            <c:choose>
+                <c:when test="${isSuccess}">
+                    <div class="alert alert-success fs-5" role="alert">
+                        ${msg}
+                        <br/>
+                        Vui lòng kiểm tra chi tiết giao dịch tại email.
+                    </div>
+                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary mt-3">
+                        <i class="bi bi-house-door-fill me-1"></i> Trở về trang chủ
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <div class="alert alert-danger fs-5" role="alert">
+                        ${msg}
+                    </div>
+                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary mt-3">
+                        <i class="bi bi-house-door-fill me-1"></i> Trở về trang chủ
+                    </a>
+                </c:otherwise>
+            </c:choose>
         </main>
 
         <!-- Footer -->

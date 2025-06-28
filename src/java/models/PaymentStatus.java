@@ -1,5 +1,5 @@
 package models;
 
 public enum PaymentStatus {
-    PENDING, PAID
+    RESERVED, PENDING, PAID
 }

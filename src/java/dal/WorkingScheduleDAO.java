@@ -1,15 +1,14 @@
 package dal;
 
-import models.WorkingSchedule;
-import models.Shift;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+
+import models.Shift;
+import models.WorkingSchedule;
 
 public class WorkingScheduleDAO extends DBContext {
     
@@ -300,5 +299,53 @@ public class WorkingScheduleDAO extends DBContext {
             e.printStackTrace();
         }
         return 0;
+    }
+    
+    // Method để hủy ca làm việc của bác sĩ
+    public boolean cancelScheduleForDoctor(int doctorId, int shiftId, String effectiveDate, String endDate) {
+        String sql = "UPDATE working_schedules SET is_active = 0, updated_at = NOW() " +
+                     "WHERE doctor_id = ? AND shift_id = ?";
+        
+        // Nếu có endDate, chỉ hủy trong khoảng thời gian đó
+        if (endDate != null && !endDate.isEmpty()) {
+            sql += " AND created_at >= ? AND created_at <= ?";
+        } else {
+            sql += " AND created_at >= ?";
+        }
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, doctorId);
+            ps.setInt(2, shiftId);
+            ps.setString(3, effectiveDate);
+            
+            if (endDate != null && !endDate.isEmpty()) {
+                ps.setString(4, endDate);
+            }
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    // Cập nhật shiftId của working schedule từ oldShiftId sang newShiftId cho bác sĩ
+    public boolean updateScheduleShiftForDoctor(int doctorId, int oldShiftId, int newShiftId, String effectiveDate, String endDate) {
+        String sql = "UPDATE working_schedules SET shift_id = ?, updated_at = NOW() " +
+                     "WHERE doctor_id = ? AND shift_id = ?";
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newShiftId);
+            ps.setInt(2, doctorId);
+            ps.setInt(3, oldShiftId);
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 } 

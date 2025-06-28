@@ -7,11 +7,12 @@ public class ScheduleChange {
     private int changeId;
     private int doctorId;
     private int oldShiftId;
-    private int newShiftId;
+    private Integer newShiftId; // Changed to Integer to support null (cancel case)
     private String changeReason;
     private Date effectiveDate;
     private Date endDate;
     private String status; // pending, approved, rejected, active, completed
+    private String type; // change, cancel
     private Integer approvedBy;
     private Timestamp approvedAt;
     private Timestamp createdAt;
@@ -34,6 +35,19 @@ public class ScheduleChange {
         this.effectiveDate = effectiveDate;
         this.endDate = endDate;
         this.status = "pending";
+        this.type = "change";
+    }
+    
+    // New constructor for cancel case
+    public ScheduleChange(int doctorId, int oldShiftId, Integer newShiftId, String changeReason, Date effectiveDate, Date endDate) {
+        this.doctorId = doctorId;
+        this.oldShiftId = oldShiftId;
+        this.newShiftId = newShiftId;
+        this.changeReason = changeReason;
+        this.effectiveDate = effectiveDate;
+        this.endDate = endDate;
+        this.status = "pending";
+        this.type = (newShiftId == null) ? "cancel" : "change";
     }
     
     // Getters and Setters
@@ -61,11 +75,11 @@ public class ScheduleChange {
         this.oldShiftId = oldShiftId;
     }
     
-    public int getNewShiftId() {
+    public Integer getNewShiftId() {
         return newShiftId;
     }
     
-    public void setNewShiftId(int newShiftId) {
+    public void setNewShiftId(Integer newShiftId) {
         this.newShiftId = newShiftId;
     }
     
@@ -99,6 +113,14 @@ public class ScheduleChange {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getType() {
+        return type;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
     }
     
     public Integer getApprovedBy() {
@@ -201,6 +223,22 @@ public class ScheduleChange {
         }
     }
     
+    public String getTypeDisplay() {
+        if ("cancel".equals(type)) {
+            return "Hủy ca";
+        } else {
+            return "Đổi ca";
+        }
+    }
+    
+    public boolean isCancelRequest() {
+        return "cancel".equals(type);
+    }
+    
+    public boolean isChangeRequest() {
+        return "change".equals(type);
+    }
+    
     @Override
     public String toString() {
         return "ScheduleChange{" +
@@ -212,6 +250,11 @@ public class ScheduleChange {
                 ", effectiveDate=" + effectiveDate +
                 ", endDate=" + endDate +
                 ", status='" + status + '\'' +
+                ", type='" + type + '\'' +
+                ", approvedBy=" + approvedBy +
+                ", approvedAt=" + approvedAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 } 

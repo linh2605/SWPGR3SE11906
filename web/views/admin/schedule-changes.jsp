@@ -44,12 +44,13 @@
                                 <thead>
                                     <tr>
                                         <th>Bác sĩ</th>
+                                        <th>Loại yêu cầu</th>
                                         <th>Ca cũ</th>
                                         <th>Ca mới</th>
                                         <th>Ngày bắt đầu</th>
                                         <th>Ngày kết thúc</th>
+                                        <th>Lý do</th>
                                         <th>Trạng thái</th>
-                                        <th>Ngày gửi</th>
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
@@ -57,30 +58,38 @@
                                     <c:forEach var="change" items="${changes}">
                                         <tr>
                                             <td>${change.doctor.user.fullName}</td>
+                                            <td>
+                                                <span class="badge ${change.isCancelRequest() ? 'bg-danger' : 'bg-primary'}">
+                                                    ${change.typeDisplay}
+                                                </span>
+                                            </td>
                                             <td>${change.oldShift.name} (${change.oldShift.startTime} - ${change.oldShift.endTime})</td>
-                                            <td>${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${change.isCancelRequest()}">
+                                                        <span class="text-danger">Hủy ca</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        ${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
                                             <td>${change.effectiveDate}</td>
                                             <td><c:out value="${change.endDate != null ? change.endDate : 'Không xác định'}"/></td>
-                                            <td><span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span></td>
-                                            <td>${change.createdAt}</td>
+                                            <td>${change.changeReason}</td>
+                                            <td>
+                                                <span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span>
+                                            </td>
                                             <td>
                                                 <a href="${pageContext.request.contextPath}/admin/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-sm btn-info">
                                                     <i class="bi bi-eye"></i> Xem
                                                 </a>
-                                                <c:if test="${change.status == 'pending'}">
-                                                    <a href="${pageContext.request.contextPath}/admin/schedule-changes?action=approve&id=${change.changeId}" class="btn btn-sm btn-success">
-                                                        <i class="bi bi-check-circle"></i> Duyệt
-                                                    </a>
-                                                    <a href="${pageContext.request.contextPath}/admin/schedule-changes?action=reject&id=${change.changeId}" class="btn btn-sm btn-danger">
-                                                        <i class="bi bi-x-circle"></i> Từ chối
-                                                    </a>
-                                                </c:if>
                                             </td>
                                         </tr>
                                     </c:forEach>
                                     <c:if test="${empty changes}">
                                         <tr>
-                                            <td colspan="8" class="text-center">Chưa có yêu cầu đổi ca nào</td>
+                                            <td colspan="9" class="text-center">Chưa có yêu cầu đổi ca nào</td>
                                         </tr>
                                     </c:if>
                                 </tbody>

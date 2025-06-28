@@ -1,23 +1,124 @@
-@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
 -- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: swp_db
 -- ------------------------------------------------------
--- Server version	8.0.40
 -- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-@ -18,6 +18,7 @@
-DROP DATABASE IF EXISTS swp_db;
-CREATE DATABASE swp_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE swp_db;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Create and use database
+--
+
+DROP DATABASE IF EXISTS `swp_db`;
+CREATE DATABASE `swp_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `swp_db`;
+
+--
+-- Table structure for table `status`
+--
+
+DROP TABLE IF EXISTS `status`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `status` (
+  `status_id` int NOT NULL AUTO_INCREMENT,
+  `status_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`status_id`),
+  UNIQUE KEY `status_name` (`status_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `status`
+--
+
+LOCK TABLES `status` WRITE;
+/*!40000 ALTER TABLE `status` DISABLE KEYS */;
+INSERT INTO `status` VALUES (1,'pending','Chờ xử lý'),(2,'approved','Đã duyệt'),(3,'rejected','Đã từ chối');
+/*!40000 ALTER TABLE `status` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `schedule_changes`
+--
+
+DROP TABLE IF EXISTS `schedule_changes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `schedule_changes` (
+  `change_id` int NOT NULL AUTO_INCREMENT,
+  `doctor_id` int NOT NULL,
+  `old_shift_id` int NOT NULL,
+  `new_shift_id` int NOT NULL,
+  `change_reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `effective_date` date NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `status` enum('pending','approved','rejected','active','completed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `type` enum('change','cancel') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'change',
+  `approved_by` int DEFAULT NULL,
+  `approved_at` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`change_id`),
+  KEY `fk_change_doctor` (`doctor_id`),
+  KEY `fk_change_old_shift` (`old_shift_id`),
+  KEY `fk_change_new_shift` (`new_shift_id`),
+  KEY `fk_change_approved_by` (`approved_by`),
+  KEY `idx_status` (`status`),
+  KEY `idx_effective_date` (`effective_date`),
+  CONSTRAINT `fk_change_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_change_old_shift` FOREIGN KEY (`old_shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_change_new_shift` FOREIGN KEY (`new_shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_change_approved_by` FOREIGN KEY (`approved_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `schedule_changes`
+--
+
+LOCK TABLES `schedule_changes` WRITE;
+/*!40000 ALTER TABLE `schedule_changes` DISABLE KEYS */;
+INSERT INTO `schedule_changes` VALUES (1,1,1,2,'Có việc gia đình cần xử lý vào buổi sáng','2025-06-01','2025-12-31','pending','change',NULL,NULL,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(2,2,2,1,'Muốn làm ca sáng để có thời gian cho gia đình','2025-06-15','2025-12-31','approved','change',6,'2025-05-31 14:00:00','2025-05-31 13:00:00','2025-05-31 14:00:00'),(3,1,1,3,'vì lý do gia đình','2025-02-28',NULL,'pending','change',0,NULL,'2025-06-28 15:13:11','2025-06-28 15:13:11');
+/*!40000 ALTER TABLE `schedule_changes` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `appointments`
 --
-@ -46,54 +47,7 @@ CREATE TABLE `appointments` (
+
+DROP TABLE IF EXISTS `appointments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `appointments` (
+  `appointment_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int NOT NULL,
+  `doctor_id` int NOT NULL,
+  `appointment_date` datetime NOT NULL,
+  `status` enum('pending','completed','canceled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`appointment_id`),
+  KEY `fk_appointment_patient` (`patient_id`),
+  KEY `fk_appointment_doctor` (`doctor_id`),
+  CONSTRAINT `fk_appointment_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_appointment_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `appointments`
 --
 
@@ -72,12 +173,28 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `doctors`
-@ -118,78 +72,14 @@ CREATE TABLE `doctors` (
+--
+
+DROP TABLE IF EXISTS `doctors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `doctors` (
+  `doctor_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `gender` enum('Male','Female','Other') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dob` date DEFAULT NULL,
+  `image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `specialty_id` int DEFAULT NULL,
+  `degree` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `experience` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` enum('active','inactive') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'active',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`doctor_id`),
+  KEY `fk_doctor_user` (`user_id`),
   KEY `fk_doctor_specialty` (`specialty_id`),
   CONSTRAINT `fk_doctor_specialty` FOREIGN KEY (`specialty_id`) REFERENCES `specialties` (`specialty_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_doctor_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,12 +216,12 @@ DROP TABLE IF EXISTS `otp_verification`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `otp_verification` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `otp` varchar(6) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `otp` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiry` datetime NOT NULL,
   `is_verified` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -113,7 +230,7 @@ CREATE TABLE `otp_verification` (
 
 LOCK TABLES `otp_verification` WRITE;
 /*!40000 ALTER TABLE `otp_verification` DISABLE KEYS */;
-INSERT INTO `otp_verification` VALUES (1,'vuquanglinhfuhn@gmail.com','833160','2025-06-11 03:49:52',1),(2,'vuquanglinhfuhn@gmail.com','139847','2025-06-11 03:52:38',1),(3,'vuquanglinhfuhn@gmail.com','051402','2025-06-11 03:57:56',1),(4,'vuquanglinhfuhn@gmail.com','206031','2025-06-11 03:58:04',1),(5,'vuquanglinhfuhn@gmail.com','979037','2025-06-11 03:59:18',1),(6,'vuquanglinhfuhn@gmail.com','633002','2025-06-11 04:08:13',1),(7,'vuquanglinhfuhn@gmail.com','373273','2025-06-11 04:10:07',1),(8,'vuquanglinhfuhn@gmail.com','318970','2025-06-11 04:17:05',1),(9,'vuquanglinhfuhn@gmail.com','765318','2025-06-11 04:17:38',1),(10,'vuquanglinhfuhn@gmail.com','712693','2025-06-11 04:27:37',1),(11,'vuquanglinhfuhn@gmail.com','079758','2025-06-11 04:31:04',1),(12,'vuquanglinhfuhn@gmail.com','524602','2025-06-11 04:33:44',1),(13,'vuquanglinhfuhn@gmail.com','314991','2025-06-11 04:44:02',1),(14,'vuquanglinhfuhn@gmail.com','496441','2025-06-11 05:04:51',1),(15,'vuquanglinhfuhn@gmail.com','903143','2025-06-11 05:07:28',1),(16,'vuquanglinhfuhn@gmail.com','291678','2025-06-11 05:10:23',1),(17,'vuquanglinhfuhn@gmail.com','300368','2025-06-11 05:12:53',1),(18,'vuquanglinhfuhn@gmail.com','262486','2025-06-11 05:24:12',1),(19,'vuquanglinhfuhn@gmail.com','365048','2025-06-11 05:31:05',1),(20,'vuquanglinhfuhn@gmail.com','834136','2025-06-11 05:41:07',1),(21,'vuquanglinhfuhn@gmail.com','555659','2025-06-11 05:45:47',1),(22,'vuquanglinhfuhn@gmail.com','290541','2025-06-11 05:45:56',1),(23,'vuquanglinhfuhn@gmail.com','819740','2025-06-11 05:51:58',1),(24,'vuquanglinhfuhn@gmail.com','591674','2025-06-11 06:34:30',1),(25,'vuquanglinhfuhn@gmail.com','270307','2025-06-11 06:43:45',1),(26,'vuquanglinhfuhn@gmail.com','837513','2025-06-11 07:05:23',1),(27,'vuquanglinhfuhn@gmail.com','877323','2025-06-11 07:06:23',1),(28,'vuquanglinhfuhn@gmail.com','640031','2025-06-11 07:08:20',1),(29,'vuquanglinhfuhn@gmail.com','259852','2025-06-11 07:08:59',1),(30,'vuquanglinhfuhn@gmail.com','793641','2025-06-11 07:10:46',1),(31,'vuquanglinhfuhn@gmail.com','111216','2025-06-11 07:18:29',1),(32,'linhvqhe176018@fpt.edu.vn','897398','2025-06-11 07:20:44',1),(33,'vuquanglinhfuhn@gmail.com','362767','2025-06-11 08:23:33',1),(34,'linhvqhe176018@fpt.edu.vn','019312','2025-06-11 08:24:39',1),(35,'linhvqhe176018@fpt.edu.vn','214288','2025-06-11 08:34:36',1),(36,'linhvqhe176018@fpt.edu.vn','431157','2025-06-11 08:38:00',1),(37,'linhvqhe176018@fpt.edu.vn','182222','2025-06-11 08:41:57',1),(38,'linhvqhe176018@fpt.edu.vn','175341','2025-06-11 09:04:37',1),(39,'linhvqhe176018@fpt.edu.vn','757382','2025-06-11 09:05:01',1),(40,'linhvqhe176018@fpt.edu.vn','903089','2025-06-11 09:08:13',1),(41,'linhvqhe176018@fpt.edu.vn','260159','2025-06-11 09:09:28',1),(42,'linhvqhe176018@fpt.edu.vn','727063','2025-06-11 09:13:02',1),(43,'linhvqhe176018@fpt.edu.vn','438708','2025-06-11 09:15:11',1),(44,'linhvqhe176018@fpt.edu.vn','211429','2025-06-11 09:16:38',1),(45,'linhvqhe176018@fpt.edu.vn','021942','2025-06-11 09:18:45',1),(46,'linhvqhe176018@fpt.edu.vn','207346','2025-06-11 09:20:37',1),(47,'linhvqhe176018@fpt.edu.vn','028438','2025-06-11 09:21:57',1),(48,'linhvqhe176018@fpt.edu.vn','110622','2025-06-11 09:22:22',1),(49,'linhvqhe176018@fpt.edu.vn','229379','2025-06-11 09:25:35',1),(50,'linhvqhe176018@fpt.edu.vn','800171','2025-06-11 09:33:40',1),(51,'linhvqhe176018@fpt.edu.vn','852085','2025-06-11 09:34:57',1),(52,'vuquanglinhfuhn@gmail.com','929670','2025-06-11 09:35:21',1),(53,'vuquanglinhfuhn@gmail.com','526685','2025-06-11 10:53:44',1),(54,'linhvqhe176018@fpt.edu.vn','276846','2025-06-11 10:55:03',1),(55,'linhvqhe176018@fpt.edu.vn','290176','2025-06-11 11:16:07',1),(56,'linhvqhe176018@fpt.edu.vn','636847','2025-06-11 11:20:53',1),(57,'linhvqhe176018@fpt.edu.vn','454986','2025-06-11 11:27:23',1),(58,'vuquanglinhfuhn@gmail.com','168712','2025-06-23 23:18:32',1),(59,'vuquanglinhfuhn@gmail.com','388877','2025-06-23 23:25:34',1),(60,'vuquanglinhfuhn@gmail.com','257484','2025-06-23 23:27:48',1),(61,'vuquanglinhfuhn@gmail.com','633682','2025-06-23 23:34:28',1),(62,'vuquanglinhfuhn@gmail.com','779105','2025-06-23 23:47:59',1),(63,'vuquanglinhfuhn@gmail.com','240943','2025-06-23 23:53:54',1),(64,'vuquanglinhfuhn@gmail.com','494591','2025-06-23 23:56:00',1),(65,'vuquanglinhfuhn@gmail.com','513233','2025-06-23 23:57:57',1),(66,'linhvqhe176018@fpt.edu.vn','805941','2025-06-24 10:19:40',1),(67,'linhvqhe176018@fpt.edu.vn','216657','2025-06-24 10:23:54',1),(68,'linhvqhe176018@fpt.edu.vn','943710','2025-06-24 10:26:46',1),(69,'linhvqhe176018@fpt.edu.vn','098591','2025-06-24 10:33:06',1),(70,'linhvqhe176018@fpt.edu.vn','962103','2025-06-24 22:27:10',1),(71,'linhvqhe176018@fpt.edu.vn','553815','2025-06-24 22:28:34',1),(72,'linhvqhe176018@fpt.edu.vn','765905','2025-06-24 22:29:01',1),(73,'linhvqhe176018@fpt.edu.vn','946846','2025-06-24 22:31:35',1),(74,'linhvqhe176018@fpt.edu.vn','237083','2025-06-24 23:13:31',1),(75,'vu073483@gmail.com','775918','2025-06-25 03:59:14',0),(76,'vu0731483@gmail.com','455499','2025-06-25 03:59:36',0);
+INSERT INTO `otp_verification` VALUES (1,'vuquanglinhfuhn@gmail.com','833160','2025-06-11 03:49:52',1),(2,'vuquanglinhfuhn@gmail.com','139847','2025-06-11 03:52:38',1),(3,'vuquanglinhfuhn@gmail.com','051402','2025-06-11 03:57:56',1),(4,'vuquanglinhfuhn@gmail.com','206031','2025-06-11 03:58:04',1),(5,'vuquanglinhfuhn@gmail.com','979037','2025-06-11 03:59:18',1),(6,'vuquanglinhfuhn@gmail.com','633002','2025-06-11 04:08:13',1),(7,'vuquanglinhfuhn@gmail.com','373273','2025-06-11 04:10:07',1),(8,'vuquanglinhfuhn@gmail.com','318970','2025-06-11 04:17:05',1),(9,'vuquanglinhfuhn@gmail.com','765318','2025-06-11 04:17:38',1),(10,'vuquanglinhfuhn@gmail.com','712693','2025-06-11 04:27:37',1),(11,'vuquanglinhfuhn@gmail.com','079758','2025-06-11 04:31:04',1),(12,'vuquanglinhfuhn@gmail.com','524602','2025-06-11 04:33:44',1),(13,'vuquanglinhfuhn@gmail.com','314991','2025-06-11 04:44:02',1),(14,'vuquanglinhfuhn@gmail.com','496441','2025-06-11 05:04:51',1),(15,'vuquanglinhfuhn@gmail.com','903143','2025-06-11 05:07:28',1),(16,'vuquanglinhfuhn@gmail.com','291678','2025-06-11 05:10:23',1),(17,'vuquanglinhfuhn@gmail.com','300368','2025-06-11 05:12:53',1),(18,'vuquanglinhfuhn@gmail.com','262486','2025-06-11 05:24:12',1),(19,'vuquanglinhfuhn@gmail.com','365048','2025-06-11 05:31:05',1),(20,'vuquanglinhfuhn@gmail.com','834136','2025-06-11 05:41:07',1),(21,'vuquanglinhfuhn@gmail.com','555659','2025-06-11 05:45:47',1),(22,'vuquanglinhfuhn@gmail.com','290541','2025-06-11 05:45:56',1),(23,'vuquanglinhfuhn@gmail.com','819740','2025-06-11 05:51:58',1),(24,'vuquanglinhfuhn@gmail.com','591674','2025-06-11 06:34:30',1),(25,'vuquanglinhfuhn@gmail.com','270307','2025-06-11 06:43:45',1),(26,'vuquanglinhfuhn@gmail.com','837513','2025-06-11 07:05:23',1),(27,'vuquanglinhfuhn@gmail.com','877323','2025-06-11 07:06:23',1),(28,'vuquanglinhfuhn@gmail.com','640031','2025-06-11 07:08:20',1),(29,'vuquanglinhfuhn@gmail.com','259852','2025-06-11 07:08:59',1),(30,'vuquanglinhfuhn@gmail.com','793641','2025-06-11 07:10:46',1),(31,'vuquanglinhfuhn@gmail.com','111216','2025-06-11 07:18:29',1),(32,'linhvqhe176018@fpt.edu.vn','897398','2025-06-11 07:20:44',1),(33,'vuquanglinhfuhn@gmail.com','362767','2025-06-11 08:23:33',1),(34,'linhvqhe176018@fpt.edu.vn','019312','2025-06-11 08:24:39',1),(35,'linhvqhe176018@fpt.edu.vn','214288','2025-06-11 08:34:36',1),(36,'linhvqhe176018@fpt.edu.vn','431157','2025-06-11 08:38:00',1),(37,'linhvqhe176018@fpt.edu.vn','182222','2025-06-11 08:41:57',1),(38,'linhvqhe176018@fpt.edu.vn','175341','2025-06-11 09:04:37',1),(39,'linhvqhe176018@fpt.edu.vn','757382','2025-06-11 09:05:01',1),(40,'linhvqhe176018@fpt.edu.vn','903089','2025-06-11 09:08:13',1),(41,'linhvqhe176018@fpt.edu.vn','260159','2025-06-11 09:09:28',1),(42,'linhvqhe176018@fpt.edu.vn','727063','2025-06-11 09:13:02',1),(43,'linhvqhe176018@fpt.edu.vn','438708','2025-06-11 09:15:11',1),(44,'linhvqhe176018@fpt.edu.vn','211429','2025-06-11 09:16:38',1),(45,'linhvqhe176018@fpt.edu.vn','021942','2025-06-11 09:18:45',1),(46,'linhvqhe176018@fpt.edu.vn','207346','2025-06-11 09:20:37',1),(47,'linhvqhe176018@fpt.edu.vn','028438','2025-06-11 09:21:57',1),(48,'linhvqhe176018@fpt.edu.vn','110622','2025-06-11 09:22:22',1),(49,'linhvqhe176018@fpt.edu.vn','229379','2025-06-11 09:25:35',1),(50,'linhvqhe176018@fpt.edu.vn','800171','2025-06-11 09:33:40',1),(51,'linhvqhe176018@fpt.edu.vn','852085','2025-06-11 09:34:57',1),(52,'vuquanglinhfuhn@gmail.com','929670','2025-06-11 09:35:21',1),(53,'vuquanglinhfuhn@gmail.com','526685','2025-06-11 10:53:44',1),(54,'linhvqhe176018@fpt.edu.vn','276846','2025-06-11 10:55:03',1),(55,'linhvqhe176018@fpt.edu.vn','290176','2025-06-11 11:16:07',1),(56,'linhvqhe176018@fpt.edu.vn','636847','2025-06-11 11:20:53',1),(57,'linhvqhe176018@fpt.edu.vn','454986','2025-06-11 11:27:23',1),(58,'vuquanglinhfuhn@gmail.com','168712','2025-06-23 23:18:32',1),(59,'vuquanglinhfuhn@gmail.com','388877','2025-06-23 23:25:34',1),(60,'vuquanglinhfuhn@gmail.com','257484','2025-06-23 23:27:48',1),(61,'vuquanglinhfuhn@gmail.com','633682','2025-06-23 23:34:28',1),(62,'vuquanglinhfuhn@gmail.com','779105','2025-06-23 23:47:59',1),(63,'vuquanglinhfuhn@gmail.com','240943','2025-06-23 23:53:54',1),(64,'vuquanglinhfuhn@gmail.com','494591','2025-06-23 23:56:00',1),(65,'vuquanglinhfuhn@gmail.com','513233','2025-06-23 23:57:57',1),(66,'linhvqhe176018@fpt.edu.vn','805941','2025-06-24 10:19:40',1),(67,'linhvqhe176018@fpt.edu.vn','216657','2025-06-24 10:23:54',1),(68,'linhvqhe176018@fpt.edu.vn','943710','2025-06-24 10:26:46',1),(69,'linhvqhe176018@fpt.edu.vn','098591','2025-06-24 10:33:06',1),(70,'linhvqhe176018@fpt.edu.vn','962103','2025-06-24 22:27:10',1),(71,'linhvqhe176018@fpt.edu.vn','553815','2025-06-24 22:28:34',1),(72,'linhvqhe176018@fpt.edu.vn','765905','2025-06-24 22:29:01',1),(73,'linhvqhe176018@fpt.edu.vn','946846','2025-06-24 22:31:35',1),(74,'linhvqhe176018@fpt.edu.vn','237083','2025-06-24 23:13:31',1),(75,'vu073483@gmail.com','775918','2025-06-25 03:59:14',0),(76,'vu0731483@gmail.com','455499','2025-06-25 03:59:36',0),(77,'minzz8128@gmail.com','723286','2025-06-25 11:21:04',1),(78,'vul407261@gmail.com','391964','2025-06-25 11:23:54',0);
 /*!40000 ALTER TABLE `otp_verification` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,7 +254,7 @@ CREATE TABLE `patient_status_logs` (
   CONSTRAINT `patient_status_logs_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`),
   CONSTRAINT `patient_status_logs_ibfk_2` FOREIGN KEY (`status_code`) REFERENCES `status_definitions` (`code`),
   CONSTRAINT `patient_status_logs_ibfk_3` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,14 +263,22 @@ CREATE TABLE `patient_status_logs` (
 
 LOCK TABLES `patient_status_logs` WRITE;
 /*!40000 ALTER TABLE `patient_status_logs` DISABLE KEYS */;
-INSERT INTO `patient_status_logs` VALUES (1,1,5,3,'2025-06-23 08:55:43'),(2,1,5,3,'2025-06-23 08:55:46'),(3,1,5,3,'2025-06-23 08:55:49'),(4,1,9,3,'2025-06-23 08:56:06'),(5,1,4,3,'2025-06-23 08:57:09'),(6,1,5,3,'2025-06-23 09:00:26'),(7,1,9,3,'2025-06-23 09:00:28'),(8,1,5,3,'2025-06-23 09:00:30'),(9,1,5,3,'2025-06-23 09:05:42'),(10,1,5,3,'2025-06-23 09:05:44'),(11,1,9,3,'2025-06-23 09:05:46'),(12,1,5,3,'2025-06-23 09:05:48'),(13,2,2,5,'2025-06-24 21:43:36'),(14,2,2,5,'2025-06-24 21:43:39'),(15,2,1,5,'2025-06-24 22:00:23'),(16,1,9,3,'2025-06-25 01:58:02'),(17,2,3,5,'2025-06-25 01:59:57'),(18,3,2,5,'2025-06-25 02:31:16'),(19,4,1,5,'2025-06-25 02:31:21'),(20,4,3,5,'2025-06-25 02:31:24'),(21,1,3,5,'2025-06-25 02:36:32'),(22,3,1,5,'2025-06-25 02:39:32'),(23,3,3,5,'2025-06-25 02:39:35'),(24,1,5,3,'2025-06-25 02:41:30'),(25,1,8,40,'2025-06-25 02:41:42'),(26,1,5,3,'2025-06-25 02:41:45'),(27,1,5,3,'2025-06-25 02:42:16'),(28,1,8,40,'2025-06-25 02:43:17'),(29,1,9,3,'2025-06-25 02:44:15'),(30,2,5,3,'2025-06-25 02:44:36'),(31,2,8,40,'2025-06-25 02:44:41'),(32,2,5,3,'2025-06-25 02:44:49'),(33,2,5,3,'2025-06-25 02:47:40'),(34,3,5,3,'2025-06-25 02:47:49'),(35,2,8,40,'2025-06-25 02:47:52'),(36,3,7,40,'2025-06-25 02:47:56'),(37,3,8,40,'2025-06-25 02:47:58'),(38,3,5,3,'2025-06-25 02:48:02'),(39,1,10,5,'2025-06-25 02:48:47'),(40,1,3,5,'2025-06-25 02:48:58'),(41,3,5,3,'2025-06-25 02:49:02'),(42,3,5,3,'2025-06-25 02:53:08'),(43,3,5,3,'2025-06-25 02:53:33'),(44,3,5,3,'2025-06-25 02:53:48'),(45,3,5,3,'2025-06-25 02:58:51'),(46,1,5,3,'2025-06-25 10:11:09'),(47,4,5,3,'2025-06-25 10:11:50'),(48,15,5,3,'2025-06-25 10:12:15');
+INSERT INTO `patient_status_logs` VALUES (1,1,5,3,'2025-06-23 08:55:43'),(2,1,5,3,'2025-06-23 08:55:46'),(3,1,5,3,'2025-06-23 08:55:49'),(4,1,9,3,'2025-06-23 08:56:06'),(5,1,4,3,'2025-06-23 08:57:09'),(6,1,5,3,'2025-06-23 09:00:26'),(7,1,9,3,'2025-06-23 09:00:28'),(8,1,5,3,'2025-06-23 09:00:30'),(9,1,5,3,'2025-06-23 09:05:42'),(10,1,5,3,'2025-06-23 09:05:44'),(11,1,9,3,'2025-06-23 09:05:46'),(12,1,5,3,'2025-06-23 09:05:48'),(13,2,2,5,'2025-06-24 21:43:36'),(14,2,2,5,'2025-06-24 21:43:39'),(15,2,1,5,'2025-06-24 22:00:23'),(16,1,9,3,'2025-06-25 01:58:02'),(17,2,3,5,'2025-06-25 01:59:57'),(18,3,2,5,'2025-06-25 02:31:16'),(19,4,1,5,'2025-06-25 02:31:21'),(20,4,3,5,'2025-06-25 02:31:24'),(21,1,3,5,'2025-06-25 02:36:32'),(22,3,1,5,'2025-06-25 02:39:32'),(23,3,3,5,'2025-06-25 02:39:35'),(24,1,5,3,'2025-06-25 02:41:30'),(25,1,8,40,'2025-06-25 02:41:42'),(26,1,5,3,'2025-06-25 02:41:45'),(27,1,5,3,'2025-06-25 02:42:16'),(28,1,8,40,'2025-06-25 02:43:17'),(29,1,9,3,'2025-06-25 02:44:15'),(30,2,5,3,'2025-06-25 02:44:36'),(31,2,8,40,'2025-06-25 02:44:41'),(32,2,5,3,'2025-06-25 02:44:49'),(33,2,5,3,'2025-06-25 02:47:40'),(34,3,5,3,'2025-06-25 02:47:49'),(35,2,8,40,'2025-06-25 02:47:52'),(36,3,7,40,'2025-06-25 02:47:56'),(37,3,8,40,'2025-06-25 02:47:58'),(38,3,5,3,'2025-06-25 02:48:02'),(39,1,10,5,'2025-06-25 02:48:47'),(40,1,3,5,'2025-06-25 02:48:58'),(41,3,5,3,'2025-06-25 02:49:02'),(42,3,5,3,'2025-06-25 02:53:08'),(43,3,5,3,'2025-06-25 02:53:33'),(44,3,5,3,'2025-06-25 02:53:48'),(45,3,5,3,'2025-06-25 02:58:51'),(46,1,5,3,'2025-06-25 10:11:09'),(47,4,5,3,'2025-06-25 10:11:50'),(48,15,5,3,'2025-06-25 10:12:15'),(49,18,9,3,'2025-06-25 11:13:43'),(50,16,9,3,'2025-06-25 11:13:48'),(51,17,9,3,'2025-06-25 11:13:50'),(52,19,4,3,'2025-06-25 11:29:56'),(53,20,5,3,'2025-06-25 11:31:47'),(54,21,5,3,'2025-06-25 11:41:49'),(55,22,5,3,'2025-06-25 11:42:12');
 /*!40000 ALTER TABLE `patient_status_logs` ENABLE KEYS */;
 UNLOCK TABLES;
-INSERT INTO `doctors` VALUES (1,3,'Male','1980-03-15','https://example.com/doctor1.jpg',1,'ThS.BSCKI','10 năm kinh nghiệm tại BV Chợ Rẫy','active','2025-05-31 12:00:00'),(2,4,'Male','1985-07-20','https://example.com/doctor2.jpg',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-05-31 12:00:00');
 
 --
 -- Table structure for table `patients`
-@ -206,24 +96,17 @@ CREATE TABLE `patients` (
+--
+
+DROP TABLE IF EXISTS `patients`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `patients` (
+  `patient_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `gender` enum('Male','Female','Other') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
   `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -163,9 +288,7 @@ INSERT INTO `doctors` VALUES (1,3,'Male','1980-03-15','https://example.com/docto
   KEY `status_code` (`status_code`),
   CONSTRAINT `fk_patient_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `patients_ibfk_1` FOREIGN KEY (`status_code`) REFERENCES `status_definitions` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-  CONSTRAINT `fk_patient_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -174,14 +297,33 @@ INSERT INTO `doctors` VALUES (1,3,'Male','1980-03-15','https://example.com/docto
 
 LOCK TABLES `patients` WRITE;
 /*!40000 ALTER TABLE `patients` DISABLE KEYS */;
-INSERT INTO `patients` VALUES (1,1,'Female','1990-05-10','123 Đường Láng, Đống Đa, Hà Nội','https://example.com/patient1.jpg','2025-05-31 12:00:00',5),(2,2,'Female','1995-08-25','456 Nguyễn Huệ, TP Huế','https://example.com/patient2.jpg','2025-05-31 12:00:00',8),(3,34,'Male','2003-05-26','123 Đường ABC, Quận XYZ, Hà Nội','/ClinicManagementSystem/assets/uploads/avatars/6c1f02a170bbc7e59eaa.jpg','2025-06-24 05:40:41',5),(4,39,'Male','2025-06-04','123 Đường Láng, Đống Đa, Hà Nội',NULL,'2025-06-24 23:10:11',5),(15,43,'Female','1995-06-10','456 Nguyễn Thị Minh Khai, Hà Nội','https://example.com/patient40.jpg','2025-06-26 12:00:00',5),(16,44,'Male','1989-07-15','789 Nguyễn Trãi, Hà Nội','https://example.com/patient41.jpg','2025-06-26 12:00:00',3),(17,45,'Female','2000-08-20','234 Hòa Bình, Hà Nội','https://example.com/patient42.jpg','2025-06-26 12:00:00',3),(18,46,'Male','1998-05-22','567 Thái Hà, Hà Nội','https://example.com/patient43.jpg','2025-06-26 12:00:00',3),(19,47,'Female','1997-10-10','345 Kim Mã, Hà Nội','https://example.com/patient44.jpg','2025-06-26 12:00:00',3),(20,48,'Male','2001-11-30','678 Phan Đình Phùng, Hà Nội','https://example.com/patient45.jpg','2025-06-26 12:00:00',3),(21,49,'Female','1994-04-18','123 Lê Duẩn, Hà Nội','https://example.com/patient46.jpg','2025-06-26 12:00:00',3),(22,50,'Male','1999-02-25','456 Bạch Mai, Hà Nội','https://example.com/patient47.jpg','2025-06-26 12:00:00',3),(23,51,'Female','2002-03-12','789 Đội Cấn, Hà Nội','https://example.com/patient48.jpg','2025-06-26 12:00:00',3),(24,52,'Male','1996-09-01','234 Nguyễn Lương Bằng, Hà Nội','https://example.com/patient49.jpg','2025-06-26 12:00:00',3);
+INSERT INTO `patients` VALUES (1,1,'Female','1990-05-10','123 Đường Láng, Đống Đa, Hà Nội','https://example.com/patient1.jpg','2025-05-31 12:00:00',5),(2,2,'Female','1995-08-25','456 Nguyễn Huệ, TP Huế','https://example.com/patient2.jpg','2025-05-31 12:00:00',8),(3,34,'Male','2003-05-26','123 Đường ABC, Quận XYZ, Hà Nội','/ClinicManagementSystem/assets/uploads/avatars/6c1f02a170bbc7e59eaa.jpg','2025-06-24 05:40:41',5),(4,39,'Male','2025-06-04','123 Đường Láng, Đống Đa, Hà Nội',NULL,'2025-06-24 23:10:11',5),(15,43,'Female','1995-06-10','456 Nguyễn Thị Minh Khai, Hà Nội','/ClinicManagementSystem/assets/uploads/avatars/Screenshot 2025-06-06 101210.png','2025-06-26 12:00:00',5),(16,44,'Male','1989-07-15','789 Nguyễn Trãi, Hà Nội','https://example.com/patient41.jpg','2025-06-26 12:00:00',9),(17,45,'Female','2000-08-20','234 Hòa Bình, Hà Nội','https://example.com/patient42.jpg','2025-06-26 12:00:00',9),(18,46,'Male','1998-05-22','567 Thái Hà, Hà Nội','https://example.com/patient43.jpg','2025-06-26 12:00:00',9),(19,47,'Female','1997-10-10','345 Kim Mã, Hà Nội','https://example.com/patient44.jpg','2025-06-26 12:00:00',4),(20,48,'Male','2001-11-30','678 Phan Đình Phùng, Hà Nội','https://example.com/patient45.jpg','2025-06-26 12:00:00',5),(21,49,'Female','1994-04-18','123 Lê Duẩn, Hà Nội','https://example.com/patient46.jpg','2025-06-26 12:00:00',5),(22,50,'Male','1999-02-25','456 Bạch Mai, Hà Nội','https://example.com/patient47.jpg','2025-06-26 12:00:00',5),(23,51,'Female','2002-03-12','789 Đội Cấn, Hà Nội','https://example.com/patient48.jpg','2025-06-26 12:00:00',3),(24,52,'Male','1996-09-01','234 Nguyễn Lương Bằng, Hà Nội','https://example.com/patient49.jpg','2025-06-26 12:00:00',3),(25,53,NULL,NULL,NULL,NULL,'2025-06-25 11:16:44',1);
 /*!40000 ALTER TABLE `patients` ENABLE KEYS */;
 UNLOCK TABLES;
-INSERT INTO `patients` VALUES (1,1,'Male','1990-05-10','123 Đường Láng, Đống Đa, Hà Nội','https://example.com/patient1.jpg','2025-05-31 12:00:00'),(2,2,'Female','1995-08-25','456 Nguyễn Huệ, TP Huế','https://example.com/patient2.jpg','2025-05-31 12:00:00');
 
 --
 -- Table structure for table `receptionists`
-@ -251,11 +134,7 @@ CREATE TABLE `receptionists` (
+--
+
+DROP TABLE IF EXISTS `receptionists`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `receptionists` (
+  `receptionist_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `gender` enum('Male','Female','Other') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dob` date DEFAULT NULL,
+  `image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `shift` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('active','inactive') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'active',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`receptionist_id`),
+  KEY `fk_receptionist_user` (`user_id`),
+  CONSTRAINT `fk_receptionist_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `receptionists`
 --
 
@@ -193,12 +335,18 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `roles`
-@ -270,18 +149,14 @@ CREATE TABLE `roles` (
+--
+
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `roles` (
+  `role_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`role_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -210,11 +358,86 @@ LOCK TABLES `roles` WRITE;
 INSERT INTO `roles` VALUES (1,'patient','Bệnh nhân đặt lịch hẹn'),(2,'doctor','Bác sĩ khám bệnh'),(3,'receptionist','Lễ tân quản lý lịch hẹn'),(4,'admin','Quản trị viên hệ thống'),(5,'technician','Kỹ thuật viên thực hiện xét nghiệm và chụp chiếu');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
-INSERT INTO `roles` VALUES (1,'patient','Bệnh nhân đặt lịch hẹn'),(2,'doctor','Bác sĩ khám bệnh'),(3,'receptionist','Lễ tân quản lý lịch hẹn'),(4,'admin','Quản trị viên hệ thống');
+
+--
+-- Table structure for table `schedule_exceptions`
+--
+
+DROP TABLE IF EXISTS `schedule_exceptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `schedule_exceptions` (
+  `exception_id` int NOT NULL AUTO_INCREMENT,
+  `doctor_id` int NOT NULL,
+  `exception_date` date NOT NULL,
+  `exception_type` enum('Nghỉ phép','Thay đổi giờ làm','Khẩn cấp') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `new_shift_id` int DEFAULT NULL,
+  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` enum('Chờ duyệt','Đã duyệt','Đã từ chối') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Chờ duyệt',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`exception_id`),
+  UNIQUE KEY `unique_doctor_date` (`doctor_id`,`exception_date`),
+  KEY `fk_exception_doctor` (`doctor_id`),
+  KEY `fk_exception_new_shift` (`new_shift_id`),
+  CONSTRAINT `fk_exception_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_exception_new_shift` FOREIGN KEY (`new_shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `schedule_exceptions`
+--
+
+LOCK TABLES `schedule_exceptions` WRITE;
+/*!40000 ALTER TABLE `schedule_exceptions` DISABLE KEYS */;
+INSERT INTO `schedule_exceptions` VALUES (1,1,'2025-06-02','Nghỉ phép',NULL,'Nghỉ lễ','Chờ duyệt','2025-05-31 12:00:00'),(2,2,'2025-06-03','Thay đổi giờ làm',3,'Họp khoa','Chờ duyệt','2025-05-31 12:00:00');
+/*!40000 ALTER TABLE `schedule_exceptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shifts`
+--
+
+DROP TABLE IF EXISTS `shifts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `shifts` (
+  `shift_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`shift_id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shifts`
+--
+
+LOCK TABLES `shifts` WRITE;
+/*!40000 ALTER TABLE `shifts` DISABLE KEYS */;
+INSERT INTO `shifts` VALUES (1,'Sáng','08:00:00','12:00:00','Ca làm việc buổi sáng'),(2,'Chiều','13:00:00','17:00:00','Ca làm việc buổi chiều'),(3,'Tối','17:30:00','21:30:00','Ca làm việc buổi tối');
+/*!40000 ALTER TABLE `shifts` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `specialties`
-@ -302,69 +177,7 @@ CREATE TABLE `specialties` (
+--
+
+DROP TABLE IF EXISTS `specialties`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `specialties` (
+  `specialty_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`specialty_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping data for table `specialties`
 --
 
@@ -233,7 +456,7 @@ DROP TABLE IF EXISTS `status_definitions`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `status_definitions` (
   `code` int NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `handled_by` int DEFAULT NULL,
   `next_handled_by` int DEFAULT NULL,
   PRIMARY KEY (`code`)
@@ -260,12 +483,12 @@ DROP TABLE IF EXISTS `technicians`;
 CREATE TABLE `technicians` (
   `technician_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
-  `gender` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gender` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `dob` date DEFAULT NULL,
-  `image_url` text COLLATE utf8mb4_unicode_ci,
-  `department` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `shift` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `department` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `shift` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`technician_id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `technicians_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
@@ -284,113 +507,39 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `users`
-@ -387,35 +200,75 @@ CREATE TABLE `users` (
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `full_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `role_id` int NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),
   KEY `fk_user_role` (`role_id`),
   CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `check_email` CHECK (regexp_like(`email`,_utf8mb3'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$')),
   CONSTRAINT `check_phone` CHECK (regexp_like(`phone`,_utf8mb3'^[0-9]{10,15}$'))
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-  CONSTRAINT `check_email` CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-  CONSTRAINT `check_phone` CHECK (phone REGEXP '^[0-9]{10,15}$')
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` VALUES 
-(1,'patient1','pass123','Nguyễn Văn An','an.nguyen@email.com','0901234567',1,'2025-05-31 12:00:00'),
-(2,'patient2','pass123','Trần Thị Bình','binh.tran@email.com','0912345678',1,'2025-05-31 12:00:00'),
-(3,'doctor1','pass123','ThS.BSCKI Trịnh Minh Thanh','thanh.trinh@email.com','0923456789',2,'2025-05-31 12:00:00'),
-(4,'doctor2','pass123','BS. Lê Văn Hùng','hung.le@email.com','0934567890',2,'2025-05-31 12:00:00'),
-(5,'receptionist1','pass123','Phạm Thị Mai','mai.pham@email.com','0945678901',3,'2025-05-31 12:00:00'),
-(6,'admin1','adminpass','Nguyễn Văn Quản Trị','admin@email.com','0956789012',4,'2025-05-31 12:00:00');
-
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'patient1','adminpass','Nguyễn Văn An','an.nguyen@email.com','0901234567',1,'2025-05-31 12:00:00'),(2,'patient2','pass123','Trần Thị Bình','binh.tran@email.com','0912345678',1,'2025-05-31 12:00:00'),(3,'doctor1','aafdc23870ecbcd3d557b6423a8982134e17927e','ThS.BSCKI Trịnh Minh Thanh','thanh.trinh@email.com','0923456789',2,'2025-05-31 12:00:00'),(4,'doctor2','aafdc23870ecbcd3d557b6423a8982134e17927e','BS. Lê Văn Hùng','hung.le@email.com','0934567890',2,'2025-05-31 12:00:00'),(5,'receptionist1','aafdc23870ecbcd3d557b6423a8982134e17927e','Phạm Thị Mai','mai.pham@email.com','0945678901',3,'2025-05-31 12:00:00'),(6,'admin1','74913f5cd5f61ec0bcfdb775414c2fb3d161b620','Nguyễn Văn Quản Trị','admin@email.com','0956789012',4,'2025-05-31 12:00:00'),(8,'starpacusa','password123','quanglinh','admin1@example.com','1234567890',1,'2025-06-11 03:24:44'),(13,'john_doe','password123','John Doe','john.doe@example.com','1234567890',1,'2025-06-11 05:58:00'),(21,'john_doe1','password123','John1 Doe','john.dose@example.com','1234567890',1,'2025-06-11 06:39:14'),(27,'johndoe','password123','John Doe','johndoe@example.com','1234567890',1,'2025-06-11 11:16:20'),(34,'Vuquanglinh','241798fad97209ab8197b031da00c24909da2e7a','Vũ Quang Linh','vuquanglinhfuhn@gmail.com','0344768409',1,'2025-06-23 23:53:11'),(39,'Vuquanglinh265','241798fad97209ab8197b031da00c24909da2e7a','Vũ Quang Linhh','linhvqhe176018@fpt.edu.vn','0344768409',1,'2025-06-24 23:10:11'),(40,'tech01','aafdc23870ecbcd3d557b6423a8982134e17927e','KTV Nguyễn Văn A','tech01@example.com','0912345678',5,'2025-06-25 01:06:27'),(41,'tech02','aafdc23870ecbcd3d557b6423a8982134e17927e','KTV Trần Thị B','tech02@example.com','0987654321',5,'2025-06-25 01:06:27'),(42,'tech03','aafdc23870ecbcd3d557b6423a8982134e17927e','KTV Lê Văn C','tech03@example.com','0901122334',5,'2025-06-25 01:06:27'),(43,'patient40','aafdc23870ecbcd3d557b6423a8982134e17927e','Nguyễn Thị Mai','mai.thi.mai@example.com','0901234567',1,'2025-06-26 12:00:00'),(44,'patient41','aafdc23870ecbcd3d557b6423a8982134e17927e','Trần Thi Bích','tran.thi.bich@example.com','0901234568',1,'2025-06-26 12:00:00'),(45,'patient42','aafdc23870ecbcd3d557b6423a8982134e17927e','Phan Minh Tuấn','phan.minh.tuan@example.com','0901234569',1,'2025-06-26 12:00:00'),(46,'patient43','aafdc23870ecbcd3d557b6423a8982134e17927e','Lê Thị Lan','le.thi.lan@example.com','0901234570',1,'2025-06-26 12:00:00'),(47,'patient44','aafdc23870ecbcd3d557b6423a8982134e17927e','Nguyễn Minh Phương','nguyen.minh.phuong@example.com','0901234571',1,'2025-06-26 12:00:00'),(48,'patient45','aafdc23870ecbcd3d557b6423a8982134e17927e','Hoàng Thu Trang','hoang.thu.trang@example.com','0901234572',1,'2025-06-26 12:00:00'),(49,'patient46','aafdc23870ecbcd3d557b6423a8982134e17927e','Đỗ Văn Toàn','do.van.toan@example.com','0901234573',1,'2025-06-26 12:00:00'),(50,'patient47','aafdc23870ecbcd3d557b6423a8982134e17927e','Phạm Lan Anh','pham.lan.anh@example.com','0901234574',1,'2025-06-26 12:00:00'),(51,'patient48','aafdc23870ecbcd3d557b6423a8982134e17927e','Bùi Quang Hải','bui.quang.hai@example.com','0901234575',1,'2025-06-26 12:00:00'),(52,'patient49','aafdc23870ecbcd3d557b6423a8982134e17927e','Nguyễn Quang Linh','nguyen.quang.linh@example.com','0901234576',1,'2025-06-26 12:00:00');
+INSERT INTO `users` VALUES (1,'patient1','adminpass','Nguyễn Văn An','an.nguyen@email.com','0901234567',1,'2025-05-31 12:00:00'),(2,'patient2','pass123','Trần Thị Bình','binh.tran@email.com','0912345678',1,'2025-05-31 12:00:00'),(3,'doctor1','aafdc23870ecbcd3d557b6423a8982134e17927e','ThS.BSCKI Trịnh Minh Thanh','thanh.trinh@email.com','0923456789',2,'2025-05-31 12:00:00'),(4,'doctor2','aafdc23870ecbcd3d557b6423a8982134e17927e','BS. Lê Văn Hùng','hung.le@email.com','0934567890',2,'2025-05-31 12:00:00'),(5,'receptionist1','aafdc23870ecbcd3d557b6423a8982134e17927e','Phạm Thị Mai','mai.pham@email.com','0945678901',3,'2025-05-31 12:00:00'),(6,'admin1','74913f5cd5f61ec0bcfdb775414c2fb3d161b620','Nguyễn Văn Quản Trị','admin@email.com','0956789012',4,'2025-05-31 12:00:00'),(8,'starpacusa','password123','quanglinh','admin1@example.com','1234567890',1,'2025-06-11 03:24:44'),(13,'john_doe','password123','John Doe','john.doe@example.com','1234567890',1,'2025-06-11 05:58:00'),(21,'john_doe1','password123','John1 Doe','john.dose@example.com','1234567890',1,'2025-06-11 06:39:14'),(27,'johndoe','password123','John Doe','johndoe@example.com','1234567890',1,'2025-06-11 11:16:20'),(34,'Vuquanglinh','241798fad97209ab8197b031da00c24909da2e7a','Vũ Quang Linh','vuquanglinhfuhn@gmail.com','0344768409',1,'2025-06-23 23:53:11'),(39,'Vuquanglinh265','241798fad97209ab8197b031da00c24909da2e7a','Vũ Quang Linhh','linhvqhe176018@fpt.edu.vn','0344768409',1,'2025-06-24 23:10:11'),(40,'tech01','aafdc23870ecbcd3d557b6423a8982134e17927e','KTV Nguyễn Văn A','tech01@example.com','0912345678',5,'2025-06-25 01:06:27'),(41,'tech02','aafdc23870ecbcd3d557b6423a8982134e17927e','KTV Trần Thị B','tech02@example.com','0987654321',5,'2025-06-25 01:06:27'),(42,'tech03','aafdc23870ecbcd3d557b6423a8982134e17927e','KTV Lê Văn C','tech03@example.com','0901122334',5,'2025-06-25 01:06:27'),(43,'patient40','aafdc23870ecbcd3d557b6423a8982134e17927e','Nguyễn Thị Mai','mai.thi.mai@example.com','0901234567',1,'2025-06-26 12:00:00'),(44,'patient41','aafdc23870ecbcd3d557b6423a8982134e17927e','Trần Thi Bích','tran.thi.bich@example.com','0901234568',1,'2025-06-26 12:00:00'),(45,'patient42','aafdc23870ecbcd3d557b6423a8982134e17927e','Phan Minh Tuấn','phan.minh.tuan@example.com','0901234569',1,'2025-06-26 12:00:00'),(46,'patient43','aafdc23870ecbcd3d557b6423a8982134e17927e','Lê Thị Lan','le.thi.lan@example.com','0901234570',1,'2025-06-26 12:00:00'),(47,'patient44','aafdc23870ecbcd3d557b6423a8982134e17927e','Nguyễn Minh Phương','nguyen.minh.phuong@example.com','0901234571',1,'2025-06-26 12:00:00'),(48,'patient45','aafdc23870ecbcd3d557b6423a8982134e17927e','Hoàng Thu Trang','hoang.thu.trang@example.com','0901234572',1,'2025-06-26 12:00:00'),(49,'patient46','aafdc23870ecbcd3d557b6423a8982134e17927e','Đỗ Văn Toàn','do.van.toan@example.com','0901234573',1,'2025-06-26 12:00:00'),(50,'patient47','aafdc23870ecbcd3d557b6423a8982134e17927e','Phạm Lan Anh','pham.lan.anh@example.com','0901234574',1,'2025-06-26 12:00:00'),(51,'patient48','aafdc23870ecbcd3d557b6423a8982134e17927e','Bùi Quang Hải','bui.quang.hai@example.com','0901234575',1,'2025-06-26 12:00:00'),(52,'patient49','aafdc23870ecbcd3d557b6423a8982134e17927e','Nguyễn Quang Linh','nguyen.quang.linh@example.com','0901234576',1,'2025-06-26 12:00:00'),(53,'hoanganh123','789b49606c321c8cf228d17942608eff0ccc4171','Nguyễn Đình Hoàng Anh','minzz8128@gmail.com','0976054728',1,'2025-06-25 11:16:43');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
---
--- Table structure for table `contact_messages`
---
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-DROP TABLE IF EXISTS `contact_messages`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `contact_messages` (
-  `message_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `subject` enum('service_feedback','incident_report','improvement_suggestion','cooperation','other') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('pending','in_progress','resolved') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `priority` enum('low','medium','high') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'medium',
-  `assigned_to` int DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`message_id`),
-  KEY `idx_email` (`email`),
-  KEY `idx_phone` (`phone`),
-  KEY `idx_status` (`status`),
-  KEY `idx_subject` (`subject`),
-  KEY `idx_priority` (`priority`),
-  KEY `idx_created_at` (`created_at`),
-  KEY `fk_contact_assigned_to` (`assigned_to`),
-  CONSTRAINT `check_contact_email` CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-  CONSTRAINT `check_contact_phone` CHECK (phone REGEXP '^[0-9]{10,15}$'),
-  CONSTRAINT `fk_contact_assigned_to` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `contact_messages`
---
-
--- Dump completed on 2025-06-25 10:26:55
-INSERT INTO contact_messages
-(message_id, name, email, phone, subject, message, status, priority, assigned_to, created_at, updated_at)
-VALUES
-(1,'Nguyễn Văn A','nguyenvana@email.com','0987654321','service_feedback','Dịch vụ khám bệnh rất tốt, nhưng thời gian chờ hơi lâu','pending','medium',NULL,'2025-05-31 14:00:00','2025-05-31 14:00:00'),
-(2,'Trần Thị B','tranthib@email.com','0987654322','incident_report','Máy ATM trong bệnh viện bị hỏng','pending','high',NULL,'2025-05-31 15:00:00','2025-05-31 16:00:00'),
-(3,'Lê Văn C','levanc@email.com','0987654323','improvement_suggestion','Nên thêm dịch vụ gửi xe miễn phí cho bệnh nhân','pending','low',NULL,'2025-05-31 16:00:00','2025-05-31 16:00:00'),
-(4,'Phạm Thị D','phamthid@email.com','0987654324','cooperation','Công ty chúng tôi muốn hợp tác về dịch vụ bảo hiểm y tế','pending','high',NULL,'2025-05-31 17:00:00','2025-05-31 17:00:00');
-
---
--- Table structure for table `shifts`
---
-
-DROP TABLE IF EXISTS `shifts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `shifts` (
-  `shift_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-@ -425,14 +278,24 @@ CREATE TABLE `shifts` (
-  PRIMARY KEY (`shift_id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `shifts`
---
-
-INSERT INTO `shifts` VALUES 
-(1,'Sáng','08:00:00','12:00:00','Ca làm việc buổi sáng'),
-(2,'Chiều','13:00:00','17:00:00','Ca làm việc buổi chiều'),
-(3,'Tối','17:30:00','21:30:00','Ca làm việc buổi tối');
 
 --
 -- Table structure for table `working_schedules`
@@ -402,46 +551,30 @@ DROP TABLE IF EXISTS `working_schedules`;
 CREATE TABLE `working_schedules` (
   `schedule_id` int NOT NULL AUTO_INCREMENT,
   `doctor_id` int NOT NULL,
-@ -449,6 +312,11 @@ CREATE TABLE `working_schedules` (
+  `week_day` enum('Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `shift_id` int NOT NULL,
+  `max_patients` int DEFAULT '10',
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`schedule_id`),
+  UNIQUE KEY `unique_doctor_shift` (`doctor_id`,`week_day`,`shift_id`),
+  KEY `fk_schedule_doctor` (`doctor_id`),
+  KEY `fk_schedule_shift` (`shift_id`),
   CONSTRAINT `fk_schedule_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_schedule_shift` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `working_schedules`
 --
 
-INSERT INTO `working_schedules` (`schedule_id`, `doctor_id`, `week_day`, `shift_id`, `max_patients`, `is_active`, `created_at`, `updated_at`) VALUES 
-(1,1,'Thứ 2',1,15,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
-@ -472,8 +340,13 @@ INSERT INTO `working_schedules` (`schedule_id`, `doctor_id`, `week_day`, `shift_
-(19,2,'Thứ 6',1,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00'),
-(20,2,'Thứ 6',2,12,true,'2025-05-31 12:00:00','2025-05-31 12:00:00');
-
---
--- Table structure for table `schedule_exceptions`
---
-
-DROP TABLE IF EXISTS `schedule_exceptions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `schedule_exceptions` (
-  `exception_id` int NOT NULL AUTO_INCREMENT,
-  `doctor_id` int NOT NULL,
-@ -490,7 +363,24 @@ CREATE TABLE `schedule_exceptions` (
-  CONSTRAINT `fk_exception_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_exception_new_shift` FOREIGN KEY (`new_shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `schedule_exceptions`
---
-
-INSERT INTO `schedule_exceptions` (`exception_id`, `doctor_id`, `exception_date`, `exception_type`, `new_shift_id`, `reason`, `status`, `created_at`) VALUES
-(1, 1, '2025-06-02', 'Nghỉ phép', NULL, 'Nghỉ lễ', 'Chờ duyệt', '2025-05-31 12:00:00'),
-(2, 2, '2025-06-03', 'Thay đổi giờ làm', 3, 'Họp khoa', 'Chờ duyệt', '2025-05-31 12:00:00');
-
+LOCK TABLES `working_schedules` WRITE;
+/*!40000 ALTER TABLE `working_schedules` DISABLE KEYS */;
+INSERT INTO `working_schedules` VALUES (1,1,'Thứ 2',1,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(2,1,'Thứ 2',2,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(3,1,'Thứ 3',1,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(4,1,'Thứ 3',2,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(5,1,'Thứ 4',1,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(6,1,'Thứ 4',2,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(7,1,'Thứ 5',1,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(8,1,'Thứ 5',2,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(9,1,'Thứ 6',1,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(10,1,'Thứ 6',2,15,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(11,2,'Thứ 2',1,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(13,2,'Thứ 3',1,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(14,2,'Thứ 3',2,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(15,2,'Thứ 4',1,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(16,2,'Thứ 4',2,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(17,2,'Thứ 5',1,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(18,2,'Thứ 5',2,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(19,2,'Thứ 6',1,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(20,2,'Thứ 6',2,12,1,'2025-05-31 12:00:00','2025-05-31 12:00:00'),(21,2,'Thứ 2',2,10,1,'2025-06-27 09:43:35','2025-06-27 09:43:35');
+/*!40000 ALTER TABLE `working_schedules` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -452,46 +585,4 @@ INSERT INTO `schedule_exceptions` (`exception_id`, `doctor_id`, `exception_date`
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-31 17:55:18
-
---
--- Table structure for table `schedule_changes`
---
-
-DROP TABLE IF EXISTS `schedule_changes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `schedule_changes` (
-  `change_id` int NOT NULL AUTO_INCREMENT,
-  `doctor_id` int NOT NULL,
-  `old_shift_id` int NOT NULL,
-  `new_shift_id` int NOT NULL,
-  `change_reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `effective_date` date NOT NULL,
-  `end_date` date DEFAULT NULL,
-  `status` enum('pending','approved','rejected','active','completed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
-  `approved_by` int DEFAULT NULL,
-  `approved_at` datetime DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`change_id`),
-  KEY `fk_change_doctor` (`doctor_id`),
-  KEY `fk_change_old_shift` (`old_shift_id`),
-  KEY `fk_change_new_shift` (`new_shift_id`),
-  KEY `fk_change_approved_by` (`approved_by`),
-  KEY `idx_status` (`status`),
-  KEY `idx_effective_date` (`effective_date`),
-  CONSTRAINT `fk_change_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_change_old_shift` FOREIGN KEY (`old_shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `fk_change_new_shift` FOREIGN KEY (`new_shift_id`) REFERENCES `shifts` (`shift_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `fk_change_approved_by` FOREIGN KEY (`approved_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `schedule_changes`
---
-
-INSERT INTO `schedule_changes` (`change_id`, `doctor_id`, `old_shift_id`, `new_shift_id`, `change_reason`, `effective_date`, `end_date`, `status`, `approved_by`, `approved_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 2, 'Có việc gia đình cần xử lý vào buổi sáng', '2025-06-01', '2025-12-31', 'pending', NULL, NULL, '2025-05-31 12:00:00', '2025-05-31 12:00:00'),
-(2, 2, 2, 1, 'Muốn làm ca sáng để có thời gian cho gia đình', '2025-06-15', '2025-12-31', 'approved', 6, '2025-05-31 14:00:00', '2025-05-31 13:00:00', '2025-05-31 14:00:00');
+-- Dump completed on 2025-06-28 14:11:39

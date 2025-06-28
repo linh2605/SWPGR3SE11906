@@ -10,6 +10,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
+    <style>
+        dl.row dt, dl.row dd {
+            word-break: break-word;
+            white-space: normal;
+            vertical-align: middle;
+        }
+        dl.row dd {
+            margin-bottom: 0.5rem;
+        }
+        .badge {
+            font-size: 1em;
+            padding: 0.5em 1em;
+            border-radius: 0.5em;
+        }
+        .card-body {
+            transition: box-shadow 0.2s;
+        }
+        .card-body:hover {
+            box-shadow: 0 0 8px #007bff33;
+            background: #f8f9fa;
+        }
+    </style>
 </head>
 <body>
     <div class="wrapper">
@@ -28,15 +50,30 @@
                             <% session.removeAttribute("error"); %>
                         </c:if>
                         <dl class="row">
+                            <dt class="col-sm-4">Loại yêu cầu:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge ${change.isCancelRequest() ? 'bg-danger' : 'bg-primary'}">
+                                    ${change.typeDisplay}
+                                </span>
+                            </dd>
                             <dt class="col-sm-4">Ca hiện tại:</dt>
                             <dd class="col-sm-8">${change.oldShift.name} (${change.oldShift.startTime} - ${change.oldShift.endTime})</dd>
                             <dt class="col-sm-4">Ca muốn đổi sang:</dt>
-                            <dd class="col-sm-8">${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})</dd>
+                            <dd class="col-sm-8">
+                                <c:choose>
+                                    <c:when test="${change.isCancelRequest()}">
+                                        <span class="text-danger">Hủy ca làm việc</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})
+                                    </c:otherwise>
+                                </c:choose>
+                            </dd>
                             <dt class="col-sm-4">Ngày bắt đầu:</dt>
                             <dd class="col-sm-8">${change.effectiveDate}</dd>
                             <dt class="col-sm-4">Ngày kết thúc:</dt>
                             <dd class="col-sm-8"><c:out value="${change.endDate != null ? change.endDate : 'Không xác định'}"/></dd>
-                            <dt class="col-sm-4">Lý do đổi ca:</dt>
+                            <dt class="col-sm-4">Lý do:</dt>
                             <dd class="col-sm-8">${change.changeReason}</dd>
                             <dt class="col-sm-4">Trạng thái:</dt>
                             <dd class="col-sm-8"><span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span></dd>

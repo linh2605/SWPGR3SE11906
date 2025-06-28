@@ -57,8 +57,8 @@
                                         <tr>
                                             <td>${appointment.id}</td>
                                             <td>${appointment.patient.user.fullName}</td>
-                                            <td>${appointment.dateTime.toLocalDate()}</td>
-                                            <td>${appointment.dateTime.toLocalTime()}</td>
+                                            <td>${appointment.appointmentDate}</td>
+                                            <td>${appointment.appointmentTime}</td>
                                             <td>${appointment.notes != null ? appointment.notes : '---'}</td>
                                             <td>
                                                 <c:choose>

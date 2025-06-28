@@ -118,6 +118,15 @@ public class Appointment {
         this.appointmentDateStr = appointmentDate;
     }
     
+    // Getter for LocalDateTime version of appointment date
+    public LocalDateTime getAppointmentDateTime() {
+        return appointmentDate;
+    }
+    
+    public void setAppointmentDateTime(LocalDateTime appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
+    
     public String getAppointmentTime() {
         return appointmentTime;
     }

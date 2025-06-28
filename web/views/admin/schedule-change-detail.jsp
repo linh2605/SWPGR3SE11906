@@ -14,10 +14,12 @@
 <body>
     <div class="wrapper">
         <%@ include file="../layouts/header.jsp" %>
-        <%@ include file="../layouts/admin-side-bar.jsp" %>
-        <main class="container my-5">
-            <div class="row justify-content-center">
-                <div class="col-md-10">
+        <main class="container mt-4">
+            <div class="row">
+                <div class="col-lg-3 d-none d-lg-block">
+                    <%@ include file="../layouts/admin-side-bar.jsp" %>
+                </div>
+                <div class="col-lg-9 col-12">
                     <div class="card">
                         <div class="card-header">
                             <h4 class="mb-0">Chi tiết yêu cầu đổi ca dài hạn</h4>
@@ -31,17 +33,32 @@
                                 <% session.removeAttribute("error"); %>
                             </c:if>
                             <dl class="row">
+                                <dt class="col-sm-4">Loại yêu cầu:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge ${change.isCancelRequest() ? 'bg-danger' : 'bg-primary'}">
+                                        ${change.typeDisplay}
+                                    </span>
+                                </dd>
                                 <dt class="col-sm-4">Bác sĩ:</dt>
                                 <dd class="col-sm-8">${change.doctor.user.fullName}</dd>
                                 <dt class="col-sm-4">Ca hiện tại:</dt>
                                 <dd class="col-sm-8">${change.oldShift.name} (${change.oldShift.startTime} - ${change.oldShift.endTime})</dd>
                                 <dt class="col-sm-4">Ca muốn đổi sang:</dt>
-                                <dd class="col-sm-8">${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})</dd>
+                                <dd class="col-sm-8">
+                                    <c:choose>
+                                        <c:when test="${change.isCancelRequest()}">
+                                            <span class="text-danger">Hủy ca làm việc</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            ${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})
+                                        </c:otherwise>
+                                    </c:choose>
+                                </dd>
                                 <dt class="col-sm-4">Ngày bắt đầu:</dt>
                                 <dd class="col-sm-8">${change.effectiveDate}</dd>
                                 <dt class="col-sm-4">Ngày kết thúc:</dt>
                                 <dd class="col-sm-8"><c:out value="${change.endDate != null ? change.endDate : 'Không xác định'}"/></dd>
-                                <dt class="col-sm-4">Lý do đổi ca:</dt>
+                                <dt class="col-sm-4">Lý do:</dt>
                                 <dd class="col-sm-8">${change.changeReason}</dd>
                                 <dt class="col-sm-4">Trạng thái:</dt>
                                 <dd class="col-sm-8"><span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span></dd>

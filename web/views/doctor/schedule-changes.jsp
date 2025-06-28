@@ -10,6 +10,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
+    <style>
+    .badge {
+        font-size: 1em;
+        padding: 0.5em 1em;
+        border-radius: 0.5em;
+    }
+    .table td, .table th {
+        vertical-align: middle;
+        word-break: break-word;
+    }
+    </style>
 </head>
 <body>
     <div class="wrapper">
@@ -38,8 +49,11 @@
                     <a href="${pageContext.request.contextPath}/doctor/schedule" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Quay lại lịch làm việc
                     </a>
-                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=add" class="btn btn-primary">
+                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=add" class="btn btn-primary me-2">
                         <i class="bi bi-plus-circle"></i> Gửi yêu cầu đổi ca
+                    </a>
+                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=add&cancel=1" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i> Gửi yêu cầu hủy ca
                     </a>
                 </div>
                 <!-- Bảng yêu cầu đổi ca -->
@@ -52,6 +66,7 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
+                                        <th>Loại yêu cầu</th>
                                         <th>Ca cũ</th>
                                         <th>Ca mới</th>
                                         <th>Ngày bắt đầu</th>
@@ -64,8 +79,22 @@
                                 <tbody>
                                     <c:forEach var="change" items="${changes}">
                                         <tr>
+                                            <td>
+                                                <span class="badge ${change.isCancelRequest() ? 'bg-danger' : 'bg-primary'}">
+                                                    ${change.typeDisplay}
+                                                </span>
+                                            </td>
                                             <td>${change.oldShift.name} (${change.oldShift.startTime} - ${change.oldShift.endTime})</td>
-                                            <td>${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${change.isCancelRequest()}">
+                                                        <span class="text-danger">Hủy ca</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        ${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
                                             <td>${change.effectiveDate}</td>
                                             <td><c:out value="${change.endDate != null ? change.endDate : 'Không xác định'}"/></td>
                                             <td>${change.changeReason}</td>
@@ -86,7 +115,7 @@
                                     </c:forEach>
                                     <c:if test="${empty changes}">
                                         <tr>
-                                            <td colspan="7" class="text-center">Chưa có yêu cầu đổi ca nào</td>
+                                            <td colspan="8" class="text-center">Chưa có yêu cầu đổi ca nào</td>
                                         </tr>
                                     </c:if>
                                 </tbody>

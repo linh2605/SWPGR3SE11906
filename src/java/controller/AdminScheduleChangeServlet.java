@@ -97,7 +97,7 @@ public class AdminScheduleChangeServlet extends HttpServlet {
             }
             // Lấy danh sách appointment bị ảnh hưởng
             List<Appointment> affectedAppointments = appointmentDao.findAppointmentsByDoctorAndDateRange(
-                change.getDoctor().getDoctor_id(), 
+                change.getDoctorId(), 
                 change.getEffectiveDate().toString(), 
                 change.getEndDate() != null ? change.getEndDate().toString() : "2099-12-31"
             );
@@ -107,7 +107,7 @@ public class AdminScheduleChangeServlet extends HttpServlet {
                     appt.getDoctor().getSpecialty().getSpecialty_id(),
                     appt.getAppointmentDate(),
                     appt.getAppointmentTime(),
-                    change.getDoctor().getDoctor_id()
+                    change.getDoctorId()
                 );
                 appt.setSuggestedDoctor(suggested);
             }
@@ -121,82 +121,75 @@ public class AdminScheduleChangeServlet extends HttpServlet {
 
     private void processScheduleChangeApproval(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int changeId = Integer.parseInt(request.getParameter("changeId"));
-        String action = request.getParameter("action");
+        String decision = request.getParameter("decision");
+        System.out.println("[DEBUG] processScheduleChangeApproval: changeId=" + changeId + ", decision=" + decision);
         
         ScheduleChange change = scheduleChangeDAO.getById(changeId);
         if (change == null) {
+            System.out.println("[DEBUG] Không tìm thấy yêu cầu đổi ca với changeId=" + changeId);
             request.setAttribute("error", "Không tìm thấy yêu cầu đổi ca");
             doGet(request, response);
             return;
         }
         
-        if ("approve".equals(action)) {
-            // Cập nhật working schedule - sử dụng method có sẵn
-            workingScheduleDAO.updateScheduleChangeForDoctor(
-                change.getDoctor().getDoctor_id(),
-                change.getNewShift().getShiftId(),
+        if ("approve".equals(decision)) {
+            System.out.println("[DEBUG] Duyệt yêu cầu đổi ca: " + change);
+            boolean success = workingScheduleDAO.updateScheduleShiftForDoctor(
+                change.getDoctorId(),
+                change.getOldShiftId(),
+                change.getNewShiftId(),
                 change.getEffectiveDate().toString(),
                 change.getEndDate() != null ? change.getEndDate().toString() : null
             );
-            
-            // Xử lý các lịch hẹn bị ảnh hưởng
+            System.out.println("[DEBUG] updateScheduleShiftForDoctor result: " + success);
+            if (!success) {
+                System.out.println("[DEBUG] Không thể cập nhật ca làm việc cho bác sĩ");
+                request.setAttribute("error", "Không thể cập nhật ca làm việc. Vui lòng thử lại.");
+                doGet(request, response);
+                return;
+            }
             List<Appointment> affectedAppointments = appointmentDao.findAppointmentsByDoctorAndDateRange(
-                change.getDoctor().getDoctor_id(), 
+                change.getDoctorId(), 
                 change.getEffectiveDate().toString(), 
                 change.getEndDate() != null ? change.getEndDate().toString() : "2099-12-31"
             );
-            
+            System.out.println("[DEBUG] Số lịch hẹn bị ảnh hưởng: " + affectedAppointments.size());
             List<Appointment> reassignedAppointments = new ArrayList<>();
             List<Appointment> cancelledAppointments = new ArrayList<>();
-            
             for (Appointment appt : affectedAppointments) {
-                // Tìm bác sĩ thay thế
                 Doctor replacementDoctor = appointmentDao.findAvailableDoctorForAppointment(
                     appt.getDoctor().getSpecialty().getSpecialty_id(),
                     appt.getAppointmentDate(),
                     appt.getAppointmentTime(),
-                    change.getDoctor().getDoctor_id()
+                    change.getDoctorId()
                 );
-                
                 if (replacementDoctor != null) {
-                    // Chuyển lịch hẹn sang bác sĩ khác
+                    System.out.println("[DEBUG] Chuyển lịch hẹn " + appt.getId() + " sang bác sĩ " + replacementDoctor.getDoctor_id());
                     appointmentDao.updateAppointmentDoctor(appt.getId(), replacementDoctor.getDoctor_id());
                     reassignedAppointments.add(appt);
-                    
-                    // Gửi email thông báo
                     EmailServices.sendAppointmentReassigned(appt, replacementDoctor);
                 } else {
-                    // Huỷ lịch hẹn nếu không tìm được bác sĩ thay thế
+                    System.out.println("[DEBUG] Huỷ lịch hẹn " + appt.getId() + " do không có bác sĩ thay thế");
                     appointmentDao.cancelAppointment(appt.getId());
                     cancelledAppointments.add(appt);
-                    
-                    // Gửi email thông báo
                     EmailServices.sendAppointmentCancelled(appt);
                 }
             }
-            
-            // Cập nhật trạng thái schedule change
             change.setStatus("approved");
             scheduleChangeDAO.update(change);
-            
-            // Gửi email thông báo cho bác sĩ
             EmailServices.sendScheduleChangeApproved(change, reassignedAppointments, cancelledAppointments);
-            
-            request.setAttribute("success", "Đã duyệt yêu cầu đổi ca thành công. " + 
-                reassignedAppointments.size() + " lịch hẹn được chuyển, " + 
-                cancelledAppointments.size() + " lịch hẹn bị huỷ.");
-                
-        } else if ("reject".equals(action)) {
-            // Cập nhật trạng thái schedule change
+            System.out.println("[DEBUG] Đã duyệt yêu cầu đổi ca thành công.");
+            request.setAttribute("success", "Đã duyệt yêu cầu đổi ca thành công.");
+        } else if ("reject".equals(decision)) {
+            System.out.println("[DEBUG] Từ chối yêu cầu đổi ca: " + change);
             change.setStatus("rejected");
             scheduleChangeDAO.update(change);
-            
-            // Gửi email thông báo cho bác sĩ
             EmailServices.sendScheduleChangeRejected(change);
-            
+            System.out.println("[DEBUG] Đã từ chối yêu cầu đổi ca.");
             request.setAttribute("success", "Đã từ chối yêu cầu đổi ca");
+        } else {
+            System.out.println("[DEBUG] Quyết định không hợp lệ: " + decision);
         }
-        
         doGet(request, response);
     }
 } 

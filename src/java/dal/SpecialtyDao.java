@@ -1,13 +1,13 @@
 package dal;
 
-import models.Specialty;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import models.Specialty;
 
 public class SpecialtyDao {
 
@@ -19,7 +19,7 @@ public class SpecialtyDao {
 
             while (rs.next()) {
                 Specialty specialty = new Specialty();
-                specialty.setSpecialty_id(rs.getInt("specialty_id"));
+                specialty.setSpecialtyId(rs.getInt("specialty_id"));
                 specialty.setName(rs.getString("name"));
                 specialty.setDescription(rs.getString("description"));
                 list.add(specialty);
@@ -40,7 +40,7 @@ public class SpecialtyDao {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Specialty specialty = new Specialty();
-                    specialty.setSpecialty_id(rs.getInt("specialty_id"));
+                    specialty.setSpecialtyId(rs.getInt("specialty_id"));
                     specialty.setName(rs.getString("name"));
                     specialty.setDescription(rs.getString("description"));
                     return specialty;
@@ -69,7 +69,7 @@ public class SpecialtyDao {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Specialty specialty = new Specialty();
-                    specialty.setSpecialty_id(rs.getInt("specialty_id"));
+                    specialty.setSpecialtyId(rs.getInt("specialty_id"));
                     specialty.setName(rs.getString("name"));
                     specialty.setDescription(rs.getString("description"));
                     Integer count = rs.getInt("doctor_count");

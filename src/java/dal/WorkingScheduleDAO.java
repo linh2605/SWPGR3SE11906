@@ -348,4 +348,30 @@ public class WorkingScheduleDAO extends DBContext {
             return false;
         }
     }
+    
+    public int countAllSchedules() {
+        String sql = "SELECT COUNT(*) FROM working_schedules";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public int countActiveSchedules() {
+        String sql = "SELECT COUNT(*) FROM working_schedules WHERE is_active = 1";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 } 

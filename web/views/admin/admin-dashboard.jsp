@@ -40,7 +40,7 @@
                                     <i class="bi bi-calendar-check"></i> Lịch làm việc
                                 </div>
                                 <div class="card-body">
-                                    <h4 class="card-title" id="totalSchedules">0</h4>
+                                    <h4 class="card-title" id="totalSchedules">${totalSchedules}</h4>
                                     <p class="card-text fw-bold">Tổng số lịch làm việc</p>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
                                     <i class="bi bi-calendar-plus"></i> Đang hoạt động
                                 </div>
                                 <div class="card-body">
-                                    <h4 class="card-title" id="activeSchedules">0</h4>
+                                    <h4 class="card-title" id="activeSchedules">${activeSchedules}</h4>
                                     <p class="card-text fw-bold">Lịch làm việc đang hoạt động</p>
                                 </div>
                             </div>
@@ -66,7 +66,7 @@
                                     <i class="bi bi-clock"></i> Chờ duyệt
                                 </div>
                                 <div class="card-body">
-                                    <h4 class="card-title" id="pendingExceptions">0</h4>
+                                    <h4 class="card-title" id="pendingExceptions">${pendingExceptions}</h4>
                                     <p class="card-text fw-bold">Yêu cầu ngoại lệ chờ duyệt</p>
                                 </div>
                             </div>
@@ -79,7 +79,7 @@
                                     <i class="bi bi-people"></i> Bác sĩ
                                 </div>
                                 <div class="card-body">
-                                    <h4 class="card-title" id="totalDoctors">0</h4>
+                                    <h4 class="card-title" id="totalDoctors">${totalDoctors}</h4>
                                     <p class="card-text fw-bold">Tổng số bác sĩ</p>
                                 </div>
                             </div>

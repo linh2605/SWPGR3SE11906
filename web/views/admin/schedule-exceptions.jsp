@@ -58,9 +58,9 @@
                             <label for="status" class="form-label">Trạng thái</label>
                             <select class="form-select" id="status" name="status">
                                 <option value="">Tất cả</option>
-                                <option value="pending" <c:if test="${filterStatus == 'pending'}">selected</c:if>>Chờ duyệt</option>
-                                <option value="approved" <c:if test="${filterStatus == 'approved'}">selected</c:if>>Đã duyệt</option>
-                                <option value="rejected" <c:if test="${filterStatus == 'rejected'}">selected</c:if>>Từ chối</option>
+                                <option value="Chờ duyệt" <c:if test="${filterStatus == 'Chờ duyệt'}">selected</c:if>>Chờ duyệt</option>
+                                <option value="Đã duyệt" <c:if test="${filterStatus == 'Đã duyệt'}">selected</c:if>>Đã duyệt</option>
+                                <option value="Đã từ chối" <c:if test="${filterStatus == 'Đã từ chối'}">selected</c:if>>Từ chối</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -114,13 +114,13 @@
                                                     <td>${exception.reason}</td>
                                                     <td>
                                                         <c:choose>
-                                                            <c:when test="${exception.status == 'pending'}">
+                                                            <c:when test="${exception.status == 'Chờ duyệt'}">
                                                                 <span class="badge bg-warning">Chờ duyệt</span>
                                                             </c:when>
-                                                            <c:when test="${exception.status == 'approved'}">
+                                                            <c:when test="${exception.status == 'Đã duyệt'}">
                                                                 <span class="badge bg-success">Đã duyệt</span>
                                                             </c:when>
-                                                            <c:when test="${exception.status == 'rejected'}">
+                                                            <c:when test="${exception.status == 'Đã từ chối'}">
                                                                 <span class="badge bg-danger">Từ chối</span>
                                                             </c:when>
                                                             <c:otherwise>
@@ -130,7 +130,7 @@
                                                     </td>
                                                     <td>${exception.createdAt}</td>
                                                     <td>
-                                                        <c:if test="${exception.status == 'pending'}">
+                                                        <c:if test="${exception.status == 'Chờ duyệt'}">
                                                             <form method="post" action="${pageContext.request.contextPath}/admin/schedule-exceptions" style="display: inline;">
                                                                 <input type="hidden" name="action" value="approve">
                                                                 <input type="hidden" name="exceptionId" value="${exception.exceptionId}">
@@ -146,6 +146,10 @@
                                                                 </button>
                                                             </form>
                                                         </c:if>
+                                                        <!-- Nút xem chi tiết luôn hiển thị -->
+                                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#exceptionDetailModal${exception.exceptionId}">
+                                                            <i class="bi bi-eye"></i> Xem chi tiết
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -164,5 +168,40 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Modal chi tiết ngoại lệ cho từng exception -->
+    <c:forEach var="exception" items="${exceptions}">
+    <div class="modal fade" id="exceptionDetailModal${exception.exceptionId}" tabindex="-1" aria-labelledby="exceptionDetailModalLabel${exception.exceptionId}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exceptionDetailModalLabel${exception.exceptionId}">Chi tiết ngoại lệ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><b>Bác sĩ:</b> ${exception.doctorName}</li>
+              <li class="list-group-item"><b>Ngày ngoại lệ:</b> ${exception.exceptionDate}</li>
+              <li class="list-group-item"><b>Loại ngoại lệ:</b> ${exception.exceptionType}</li>
+              <li class="list-group-item"><b>Ca mới:</b> ${exception.newShiftName}</li>
+              <li class="list-group-item"><b>Lý do:</b> ${exception.reason}</li>
+              <li class="list-group-item"><b>Trạng thái:</b> 
+                <c:choose>
+                  <c:when test="${exception.status == 'Chờ duyệt'}"><span class="badge bg-warning">Chờ duyệt</span></c:when>
+                  <c:when test="${exception.status == 'Đã duyệt'}"><span class="badge bg-success">Đã duyệt</span></c:when>
+                  <c:when test="${exception.status == 'Đã từ chối'}"><span class="badge bg-danger">Từ chối</span></c:when>
+                  <c:otherwise><span class="badge bg-secondary">${exception.status}</span></c:otherwise>
+                </c:choose>
+              </li>
+              <li class="list-group-item"><b>Ngày gửi:</b> ${exception.createdAt}</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </c:forEach>
 </body>
 </html> 

@@ -151,7 +151,7 @@ public class VNPayReturnController extends HttpServlet {
                                 + "Số điện thoại: " + user.getPhone() + "\n"
                                 + "Dịch vụ khám: " + appt.getService().getName() + "\n"
                                 + "Bác sĩ khám:" + appt.getDoctor().getUser().getFullName() + "\n"
-                                + "Thời gian khám:" + appt.getAppointmentDate().format(DateTimeFormatter.ISO_DATE) + "\n"
+                                + "Thời gian khám:" + appt.getAppointmentDateTime().format(DateTimeFormatter.ISO_DATE) + "\n"
                                 + "Giá tiền: " + appt.getService().getPrice() + "đ\n"
                                 + "Trạng thái thanh toán: Đã đặt cọc - 50000đ\n";
                     } else {
@@ -161,7 +161,7 @@ public class VNPayReturnController extends HttpServlet {
                                 + "Số điện thoại: " + user.getPhone() + "\n"
                                 + "Dịch vụ khám: " + appt.getService().getName() + "\n"
                                 + "Bác sĩ khám:" + appt.getDoctor().getUser().getFullName() + "\n"
-                                + "Thời gian khám:" + appt.getAppointmentDate().format(DateTimeFormatter.ISO_DATE) + "\n"
+                                + "Thời gian khám:" + appt.getAppointmentDateTime().format(DateTimeFormatter.ISO_DATE) + "\n"
                                 + "Giá tiền: " + appt.getService().getPrice() + "đ\n"
                                 + "Trạng thái thanh toán: Đã thanh toán.\n";
                     }

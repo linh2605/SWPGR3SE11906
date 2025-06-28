@@ -1,8 +1,12 @@
 package dal;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import models.ScheduleException;
 import models.Shift;
 
@@ -257,10 +261,37 @@ public class ScheduleExceptionDAO extends DBContext {
     }
     
     public int countPendingExceptionsByDoctor(int doctorId) {
-        String sql = "SELECT COUNT(*) FROM schedule_exceptions WHERE doctor_id = ? AND status = 'pending'";
+        String sql = "SELECT COUNT(*) FROM schedule_exceptions WHERE doctor_id = ? AND status = 'Chờ duyệt'";
         try (Connection conn = DBContext.makeConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public int countPendingExceptions() {
+        String sql = "SELECT COUNT(*) FROM schedule_exceptions WHERE status = 'Chờ duyệt'";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    // Đếm số ngoại lệ khẩn cấp đang chờ duyệt
+    public int countUrgentExceptions() {
+        String sql = "SELECT COUNT(*) FROM schedule_exceptions WHERE exception_type = 'Khẩn cấp' AND status = 'Chờ duyệt'";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);

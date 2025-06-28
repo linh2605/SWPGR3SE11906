@@ -2,6 +2,7 @@ package controller;
 
 import dal.ScheduleExceptionDAO;
 import dal.DoctorDao;
+import dal.WorkingScheduleDAO;
 import models.ScheduleException;
 import models.User;
 import models.Doctor;
@@ -84,27 +85,56 @@ public class AdminScheduleExceptionServlet extends HttpServlet {
         }
         
         boolean success = false;
+        WorkingScheduleDAO wsDao = new WorkingScheduleDAO();
         
         if ("approve".equals(action)) {
-            // Cập nhật trạng thái thành approved
-            exception.setStatus("approved");
+            // Cập nhật trạng thái thành Đã duyệt
+            exception.setStatus("Đã duyệt");
             success = scheduleExceptionDAO.updateException(exception);
-            
+            // Cập nhật lịch làm việc tương ứng
             if (success) {
-                // Gửi email thông báo cho bác sĩ
+                String weekDay = "";
+                java.sql.Date exDate = exception.getExceptionDate();
+                java.time.LocalDate localDate = exDate.toLocalDate();
+                java.time.DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+                switch (dayOfWeek) {
+                    case MONDAY: weekDay = "Monday"; break;
+                    case TUESDAY: weekDay = "Tuesday"; break;
+                    case WEDNESDAY: weekDay = "Wednesday"; break;
+                    case THURSDAY: weekDay = "Thursday"; break;
+                    case FRIDAY: weekDay = "Friday"; break;
+                    case SATURDAY: weekDay = "Saturday"; break;
+                    case SUNDAY: weekDay = "Sunday"; break;
+                }
+                if ("Nghỉ phép".equals(exception.getExceptionType()) || "Khẩn cấp".equals(exception.getExceptionType())) {
+                    // Hủy lịch làm việc (set is_active = 0) cho ngày đó
+                    List<models.WorkingSchedule> schedules = wsDao.getSchedulesByDoctorId(exception.getDoctorId());
+                    for (models.WorkingSchedule ws : schedules) {
+                        if (ws.getWeekDay().equals(weekDay)) {
+                            ws.setActive(false);
+                            wsDao.updateSchedule(ws);
+                        }
+                    }
+                } else if ("Thay đổi giờ làm".equals(exception.getExceptionType()) && exception.getNewShiftId() != null) {
+                    // Đổi ca làm việc cho ngày đó
+                    List<models.WorkingSchedule> schedules = wsDao.getSchedulesByDoctorId(exception.getDoctorId());
+                    for (models.WorkingSchedule ws : schedules) {
+                        if (ws.getWeekDay().equals(weekDay)) {
+                            ws.setShiftId(exception.getNewShiftId());
+                            wsDao.updateSchedule(ws);
+                        }
+                    }
+                }
                 sendExceptionApprovalEmail(exception, true, null);
                 response.sendRedirect(request.getContextPath() + "/admin/schedule-exceptions?success=approved");
             } else {
                 response.sendRedirect(request.getContextPath() + "/admin/schedule-exceptions?error=update_failed");
             }
-            
         } else if ("reject".equals(action)) {
-            // Cập nhật trạng thái thành rejected
-            exception.setStatus("rejected");
+            // Cập nhật trạng thái thành Đã từ chối
+            exception.setStatus("Đã từ chối");
             success = scheduleExceptionDAO.updateException(exception);
-            
             if (success) {
-                // Gửi email thông báo cho bác sĩ
                 sendExceptionApprovalEmail(exception, false, null);
                 response.sendRedirect(request.getContextPath() + "/admin/schedule-exceptions?success=rejected");
             } else {

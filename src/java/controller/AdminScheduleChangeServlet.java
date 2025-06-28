@@ -105,7 +105,7 @@ public class AdminScheduleChangeServlet extends HttpServlet {
             for (Appointment appt : affectedAppointments) {
                 Integer specialtyId = null;
                 if (appt.getDoctor() != null && appt.getDoctor().getSpecialty() != null) {
-                    specialtyId = appt.getDoctor().getSpecialty().getSpecialty_id();
+                    specialtyId = appt.getDoctor().getSpecialty().getSpecialtyId();
                 }
                 if (specialtyId != null) {
                     Doctor suggested = AppointmentDao.findAvailableDoctorForAppointment(
@@ -167,7 +167,7 @@ public class AdminScheduleChangeServlet extends HttpServlet {
             for (Appointment appt : affectedAppointments) {
                 Integer specialtyId = null;
                 if (appt.getDoctor() != null && appt.getDoctor().getSpecialty() != null) {
-                    specialtyId = appt.getDoctor().getSpecialty().getSpecialty_id();
+                    specialtyId = appt.getDoctor().getSpecialty().getSpecialtyId();
                 }
                 Doctor replacementDoctor = null;
                 if (specialtyId != null) {

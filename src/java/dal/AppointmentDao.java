@@ -108,7 +108,7 @@ public class AppointmentDao {
                 if (rs.next()) {
                     Appointment appt = new Appointment();
                     appt.setId(rs.getInt("appointment_id"));
-                    appt.setAppointmentDate(rs.getTimestamp("appointment_date").toLocalDateTime());
+                    appt.setAppointmentDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
                     appt.setStatus(rs.getString("status"));
                     appt.setNote(rs.getString("note"));
                     appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
@@ -185,7 +185,7 @@ public class AppointmentDao {
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, appointment.getPatient().getPatient_id());
             ps.setInt(2, appointment.getDoctor().getDoctor_id());
-            ps.setTimestamp(3, Timestamp.valueOf(appointment.getAppointmentDate()));
+            ps.setTimestamp(3, Timestamp.valueOf(appointment.getAppointmentDateTime()));
             ps.setString(4, appointment.getNote());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
@@ -197,7 +197,7 @@ public class AppointmentDao {
     private static Appointment mappingAppointment(ResultSet rs) throws SQLException {
         Appointment appt = new Appointment();
         appt.setId(rs.getInt("appointment_id"));
-        appt.setDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
+        appt.setAppointmentDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
         appt.setStatus(rs.getString("status"));
 
         // Doctor

@@ -651,3 +651,19 @@ create table feedback(
     patient_id int not null,
     foreign key (patient_id) references patients(patient_id)
 );
+create table examination_packages
+(
+    package_id  int            NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name        NVARCHAR(100)  NOT NULL,
+    description TEXT,
+    price       DECIMAL(10, 2) NOT NULL,
+    duration    INT            NOT NULL
+);
+CREATE TABLE examination_package_specialities
+(
+    package_id    INT NOT NULL,
+    speciality_id INT NOT NULL,
+    PRIMARY KEY (package_id, speciality_id),
+    FOREIGN KEY (package_id) REFERENCES examination_packages (package_id) ON DELETE CASCADE,
+    FOREIGN KEY (speciality_id) REFERENCES specialties (specialty_id)
+);

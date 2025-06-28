@@ -49,7 +49,10 @@
                     <td><%=doctors.get(i).getGender()%></td>
                     <td><%=doctors.get(i).getDob()%></td>
                     <td><%=doctors.get(i).getUser().getPhone()%></td>
-                    <td><a href="<%=doctors.get(i).getImage_url().startsWith("http") ? doctors.get(i).getImage_url() : request.getContextPath() + "/views/assets/" + doctors.get(i).getImage_url()%>">link avatar</a></td>
+                    <td>
+                        <% String img = doctors.get(i).getImage_url(); %>
+                        <a href="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/views/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg") %>">link avatar</a>
+                    </td>
                     <td><%=doctors.get(i).getSpecialty().getName()%></td>
                     <td><%=doctors.get(i).getDegree()%></td>
                     <td><%=doctors.get(i).getExperience()%></td>

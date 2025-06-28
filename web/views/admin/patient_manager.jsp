@@ -40,7 +40,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <% for (int i = 0; i < patients.size(); i++) { %>
+                <% for (int i = 0; i < patients.size(); i++) { 
+                    String img = patients.get(i).getImage_url();
+                    String imgLink = (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/views/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg");
+                %>
                 <tr>
                     <td><%=patients.get(i).getUser().getUserId()%></td>
                     <td><%=patients.get(i).getUser().getUsername()%></td>
@@ -50,7 +53,7 @@
                     <td><%=patients.get(i).getGender()%></td>
                     <td><%=patients.get(i).getDate_of_birth()%></td>
                     <td><%=patients.get(i).getAddress()%></td>
-                    <td><a href="<%=patients.get(i).getImage_url().startsWith("http") ? patients.get(i).getImage_url() : request.getContextPath() + "/views/assets/" + patients.get(i).getImage_url()%>">link avatar</a></td>
+                    <td><a href="<%= imgLink %>">link avatar</a></td>
                     <td>
                         <a href="javascript:void(0)" class="text-warning"
                            onclick="populateUpdateForm(
@@ -61,7 +64,7 @@
                                    '<%=patients.get(i).getUser().getPhone()%>',
                                    '<%=patients.get(i).getGender()%>',
                                    '<%=patients.get(i).getDate_of_birth()%>',
-                                   '<%=patients.get(i).getAddress().replaceAll("'", "\\\\'")%>'
+                                   '<%=patients.get(i).getAddress()%>'
                                    )">
                             Update
                         </a>
@@ -214,7 +217,6 @@
         </div>
 
     </div>
-
     <%@ include file="../layouts/footer.jsp" %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
@@ -222,6 +224,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
 </body>
+<%@include file="../layouts/toastr.jsp"%>
 <script>
     new DataTable("#table")
     function showDeleteModal(userId) {

@@ -75,7 +75,7 @@ public class DoctorDao {
                 d.setUser(u);
                 d.setFullName(rs.getString("full_name"));
                 Specialty s = new Specialty();
-                s.setSpecialty_id(rs.getInt("specialty_id"));
+                s.setSpecialtyId(rs.getInt("specialty_id"));
                 d.setSpecialty(s);
                 d.setDegree(rs.getString("degree"));
                 d.setExperience(rs.getString("experience"));
@@ -111,7 +111,7 @@ public class DoctorDao {
         user.setRole(role);
         doctor.setUser(user);
         Specialty specialty = new Specialty();
-        specialty.setSpecialty_id(resultSet.getInt("specialties.specialty_id"));
+        specialty.setSpecialtyId(resultSet.getInt("specialties.specialty_id"));
         specialty.setName(resultSet.getString("name"));
         specialty.setDescription(resultSet.getString("description"));
         doctor.setSpecialty(specialty);
@@ -144,7 +144,7 @@ public class DoctorDao {
             doctorStmt.setString(2, doctor.getGender().toString());
             doctorStmt.setDate(3, doctor.getDob());
             doctorStmt.setString(4, doctor.getImage_url());
-            doctorStmt.setInt(5, doctor.getSpecialty().getSpecialty_id());
+            doctorStmt.setInt(5, doctor.getSpecialty().getSpecialtyId());
             doctorStmt.setString(6, doctor.getDegree());
             doctorStmt.setString(7, doctor.getExperience());
             doctorStmt.setString(8, doctor.getStatus().toString());
@@ -166,7 +166,7 @@ public class DoctorDao {
             doctorStmt.setString(1, doctor.getGender().toString());
             doctorStmt.setDate(2, doctor.getDob());
             doctorStmt.setString(3, doctor.getImage_url());
-            doctorStmt.setInt(4, doctor.getSpecialty().getSpecialty_id());
+            doctorStmt.setInt(4, doctor.getSpecialty().getSpecialtyId());
             doctorStmt.setString(5, doctor.getDegree());
             doctorStmt.setString(6, doctor.getExperience());
             doctorStmt.setString(7, doctor.getStatus().toString());
@@ -178,6 +178,38 @@ public class DoctorDao {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public int countAllDoctors() {
+        String sql = "SELECT COUNT(*) FROM doctors";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    // Đếm số bác sĩ có sẵn (active, có lịch làm việc hôm nay, không bị ngoại lệ/nghỉ)
+    public int countAvailableDoctors() {
+        String sql = "SELECT COUNT(DISTINCT d.doctor_id) " +
+                "FROM doctors d " +
+                "JOIN working_schedules ws ON d.doctor_id = ws.doctor_id AND ws.is_active = 1 " +
+                "WHERE d.status = 'active' " +
+                "AND ws.week_day = DAYNAME(CURDATE()) " +
+                "AND d.doctor_id NOT IN (SELECT doctor_id FROM schedule_exceptions WHERE exception_date = CURDATE() AND status = 'approved' AND (exception_type = 'Nghỉ phép' OR exception_type = 'Khẩn cấp'))";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public static void main(String[] args) {

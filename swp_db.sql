@@ -638,3 +638,16 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-06-28 17:03:00
+
+
+
+create table feedback(
+    feedback_id int not null AUTO_INCREMENT PRIMARY KEY,
+    rate int not null check ( rate in (1,2,3,4,5)),
+    doctor_feedback nvarchar(255) not null,
+    service_feedback nvarchar(255) not null,
+    price_feedback nvarchar(255) not null,
+    offer_feedback nvarchar(255) not null,
+    patient_id int not null,
+    foreign key (patient_id) references patients(patient_id)
+);

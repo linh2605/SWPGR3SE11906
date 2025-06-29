@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import java.util.List;
+import models.PatientStatus;
 
 /**
  *
@@ -26,32 +27,37 @@ public class DoctorServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String action = req.getServletPath();
-        if ("/getDoctorsByService".equals(action)) {
-            handleGetDoctorsByService(req, resp);
-            return;
-        }
-        if ("/getDoctorsByServiceAndTime".equals(action)) {
-            handleGetDoctorsByServiceAndTime(req, resp);
-            return;
-        }
-        if ("/getDoctorsByServiceAndDate".equals(action)) {
-            handleGetDoctorsByServiceAndDate(req, resp);
-            return;
-        }
-        // Nếu là /doctorupdate thì forward sang trang cập nhật trạng thái
-        if ("/doctorupdate".equals(action)) {
-            req.setAttribute("patients", PatientStatusDao.getByHandledRole(2));  // role_id = 2: bác sĩ
-            req.setAttribute("statuses", StatusDAO.getStatusesByRole(2));  // Trạng thái dành cho bác sĩ
-            req.getRequestDispatcher("/views/doctor/managestatus.jsp").forward(req, resp);
-            return;
-        }
-        // fallback: forward sang trang cập nhật trạng thái mặc định
-        req.setAttribute("patients", PatientStatusDao.getByHandledRole(2));  // role_id = 2: bác sĩ
-        req.setAttribute("statuses", StatusDAO.getStatusesByRole(2));  // Trạng thái dành cho bác sĩ
-        req.getRequestDispatcher("/views/doctor/managestatus.jsp").forward(req, resp);
+        throws ServletException, IOException {
+    String action = req.getServletPath();
+    if ("/getDoctorsByService".equals(action)) {
+        handleGetDoctorsByService(req, resp);
+        return;
     }
+    if ("/getDoctorsByServiceAndTime".equals(action)) {
+        handleGetDoctorsByServiceAndTime(req, resp);
+        return;
+    }
+    if ("/getDoctorsByServiceAndDate".equals(action)) {
+        handleGetDoctorsByServiceAndDate(req, resp);
+        return;
+    }
+
+    // Danh sách bệnh nhân mà bác sĩ có thể xử lý (role_id = 2)
+    List<PatientStatus> patients = PatientStatusDao.getByHandledRole(2);
+    req.setAttribute("statuses", StatusDAO.getStatusesByRole(2));
+
+    // Sắp xếp theo trạng thái ưu tiên: Đang khám -> Đang chờ xét nghiệm -> v.v...
+    patients.sort((p1, p2) -> {
+        if (p1.getStatusCode() == 4 && p2.getStatusCode() != 4) return -1; // Đang khám lên đầu
+        if (p1.getStatusCode() == 5 && p2.getStatusCode() != 5) return -1;
+        if (p1.getStatusCode() == 6 && p2.getStatusCode() != 6) return -1;
+        return Integer.compare(p1.getStatusCode(), p2.getStatusCode());
+    });
+
+    req.setAttribute("patients", patients);
+    req.getRequestDispatcher("/views/doctor/managestatus.jsp").forward(req, resp);
+}
+
 
     private void handleGetDoctorsByService(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String serviceIdStr = request.getParameter("serviceId");
@@ -166,7 +172,6 @@ public class DoctorServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         try {
             int patientId = Integer.parseInt(req.getParameter("patientId"));
             int statusCode = Integer.parseInt(req.getParameter("statusCode"));
@@ -175,14 +180,29 @@ public class DoctorServlet extends HttpServlet {
             // Cập nhật trạng thái
             PatientStatusDao.updateStatus(patientId, statusCode, changedBy);
             req.setAttribute("message", "Cập nhật trạng thái thành công!");
-
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("error", "Lỗi cập nhật trạng thái!");
         }
 
-        req.setAttribute("patients", PatientStatusDao.getByHandledRole(2));
-        req.setAttribute("statuses", StatusDAO.getStatusesByRole(2));
+        // Sau khi cập nhật, lấy lại danh sách bệnh nhân và sắp xếp lại
+        List<PatientStatus> patientStatusList = PatientStatusDao.getByHandledRole(2);  // role_id = 2: bác sĩ
+
+        // Sắp xếp lại theo yêu cầu
+        patientStatusList.sort((ps1, ps2) -> {
+            int ps1Status = ps1.getStatusCode();
+            int ps2Status = ps2.getStatusCode();
+
+            if (ps1Status == 4) return -1;  // Đang khám đứng đầu
+            if (ps2Status == 4) return 1;
+
+            if (ps1Status == 8 && ps2Status != 8) return -1;  // Đã lấy kết quả xét nghiệm đứng sau Đang khám
+            if (ps2Status == 8 && ps1Status != 8) return 1;
+
+            return 0;  // Các trạng thái còn lại giữ nguyên
+        });
+
+        req.setAttribute("patients", patientStatusList);
         req.getRequestDispatcher("/views/doctor/managestatus.jsp").forward(req, resp);
     }
 }

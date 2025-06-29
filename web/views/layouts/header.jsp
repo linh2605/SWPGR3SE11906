@@ -65,10 +65,9 @@
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 3}">
                             <!-- Receptionist -->
-                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/receptionist/dashboard.jsp">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/receptionist/appointments">Quản lý lịch hẹn</a></li>
                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/receptionistuplate">Danh sách bệnh nhân chờ</a></li>
-                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/appointment/receptionistDashboard.jsp">Quản lý lịch hẹn</a></li>
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 4}">
                             <!-- Admin -->
@@ -126,8 +125,8 @@
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 3}">
                                             <!-- Menu cho Receptionist -->
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/receptionist/appointments">Quản lý lịch hẹn</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/receptionist/dashboard.jsp">Dashboard</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/receptionistDashboard.jsp">Quản lý lịch hẹn</a></li>
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 1}">
                                             <!-- Menu cho Patient -->

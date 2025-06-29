@@ -24,15 +24,17 @@ public class AppointmentDao {
     public static List<Appointment> getAppointmentsByPatientId(int patientId, int page, int size) {
         System.out.println("[DEBUG] getAppointmentsByPatientId: patientId=" + patientId + ", page=" + page + ", size=" + size);
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, a.note, a.created_at, a.updated_at, "
-                + "ud.full_name AS doctor_name, up.full_name AS patient_name, a.status, a.service_id, a.payment_status "
+        String sql = "SELECT a.appointment_id, a.appointment_date, a.shift_id, a.queue_number, a.note, a.created_at, a.updated_at, "
+                + "ud.full_name AS doctor_name, up.full_name AS patient_name, a.status, a.service_id, a.payment_status, "
+                + "s.name AS shift_name "
                 + "FROM appointments a "
                 + "JOIN doctors d ON a.doctor_id = d.doctor_id "
                 + "JOIN users ud ON d.user_id = ud.user_id "
                 + "JOIN patients p ON a.patient_id = p.patient_id "
                 + "JOIN users up ON p.user_id = up.user_id "
+                + "JOIN shifts s ON a.shift_id = s.shift_id "
                 + "WHERE a.patient_id = ? "
-                + "ORDER BY a.appointment_date DESC "
+                + "ORDER BY a.appointment_date DESC, a.shift_id, a.queue_number "
                 + "LIMIT ? OFFSET ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, patientId);
@@ -59,15 +61,17 @@ public class AppointmentDao {
 
     public static List<Appointment> getAppointmentsByDoctorId(int doctorId, int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, a.note, a.created_at, a.updated_at, "
-                + "ud.full_name AS doctor_name, up.full_name AS patient_name, a.status, a.service_id, a.payment_status "
+        String sql = "SELECT a.appointment_id, a.appointment_date, a.shift_id, a.queue_number, a.note, a.created_at, a.updated_at, "
+                + "a.status, a.service_id, a.payment_status, "
+                + "a.patient_id, p.user_id AS patient_user_id, up.full_name AS patient_name, "
+                + "a.doctor_id, d.user_id AS doctor_user_id, ud.full_name AS doctor_name "
                 + "FROM appointments a "
                 + "JOIN doctors d ON a.doctor_id = d.doctor_id "
                 + "JOIN users ud ON d.user_id = ud.user_id "
                 + "JOIN patients p ON a.patient_id = p.patient_id "
                 + "JOIN users up ON p.user_id = up.user_id "
                 + "WHERE a.doctor_id = ? "
-                + "ORDER BY a.appointment_date DESC "
+                + "ORDER BY a.appointment_date DESC, a.shift_id, a.queue_number "
                 + "LIMIT ? OFFSET ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, doctorId);
@@ -91,6 +95,8 @@ public class AppointmentDao {
                 + "	 , a.doctor_id\n"
                 + "	 , u2.full_name AS doctor_name\n"
                 + "	 , appointment_date\n"
+                + "	 , a.shift_id\n"
+                + "	 , a.queue_number\n"
                 + "	 , a.status\n"
                 + "	 , a.note\n"
                 + "	 , a.created_at\n"
@@ -101,6 +107,7 @@ public class AppointmentDao {
                 + "	 , s.price      AS service_price\n"
                 + "	 , s.type       AS service_type\n"
                 + "	 , a.payment_status\n"
+                + "	 , sh.name      AS shift_name\n"
                 + "  FROM appointments a\n"
                 + "	       JOIN patients p\n"
                 + "	       ON a.patient_id = p.patient_id\n"
@@ -112,6 +119,8 @@ public class AppointmentDao {
                 + "	       ON d.user_id = u2.user_id\n"
                 + "	       JOIN services s\n"
                 + "	       ON a.service_id = s.service_id\n"
+                + "	       JOIN shifts sh\n"
+                + "	       ON a.shift_id = sh.shift_id\n"
                 + " WHERE appointment_id = ?";
         System.out.println(sql);
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -121,6 +130,8 @@ public class AppointmentDao {
                     Appointment appt = new Appointment();
                     appt.setId(rs.getInt("appointment_id"));
                     appt.setAppointmentDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
+                    appt.setShiftId(rs.getInt("shift_id"));
+                    appt.setQueueNumber(rs.getInt("queue_number"));
                     appt.setStatus(AppointmentStatus.fromCode(rs.getString("status")));
                     appt.setNote(rs.getString("note"));
                     appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
@@ -157,14 +168,16 @@ public class AppointmentDao {
 
     public static List<Appointment> getAllAppointments(int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
-        String sql = "SELECT a.appointment_id, a.appointment_date, a.note, a.created_at, a.updated_at, "
-                + "ud.full_name AS doctor_name, up.full_name AS patient_name, a.status, a.service_id, a.payment_status "
+        String sql = "SELECT a.appointment_id, a.appointment_date, a.shift_id, a.queue_number, a.note, a.created_at, a.updated_at, "
+                + "a.status, a.service_id, a.payment_status, "
+                + "a.patient_id, p.user_id AS patient_user_id, up.full_name AS patient_name, up.username AS patient_username, up.email AS patient_email, up.phone AS patient_phone, "
+                + "a.doctor_id, d.user_id AS doctor_user_id, ud.full_name AS doctor_name "
                 + "FROM appointments a "
                 + "JOIN doctors d ON a.doctor_id = d.doctor_id "
                 + "JOIN users ud ON d.user_id = ud.user_id "
                 + "JOIN patients p ON a.patient_id = p.patient_id "
                 + "JOIN users up ON p.user_id = up.user_id "
-                + "ORDER BY a.appointment_date DESC "
+                + "ORDER BY a.appointment_date DESC, a.shift_id, a.queue_number "
                 + "LIMIT ? OFFSET ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, size);
@@ -200,16 +213,24 @@ public class AppointmentDao {
         System.out.println("[DEBUG] - Appointment Date: " + appointment.getAppointmentDateTime());
         System.out.println("[DEBUG] - Note: " + appointment.getNote());
         
-        String sql = "INSERT INTO appointments(patient_id, doctor_id, service_id, appointment_date, note, status, payment_status, created_at)\n"
-                + "VALUES (?, ?, ?, ?, ?, 'pending', 'pending', NOW());";
+        // Xác định shift_id và queue_number
+        int shiftId = determineShiftId(appointment.getAppointmentDateTime());
+        int queueNumber = getNextQueueNumber(appointment.getDoctor().getDoctor_id(), appointment.getAppointmentDateTime().toLocalDate(), shiftId);
+        
+        String sql = "INSERT INTO appointments(patient_id, doctor_id, service_id, appointment_date, shift_id, queue_number, note, status, payment_status, created_at)\n"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', NOW());";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, appointment.getPatient().getPatient_id());
             ps.setInt(2, appointment.getDoctor().getDoctor_id());
             ps.setInt(3, appointment.getService().getServiceId());
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(appointment.getAppointmentDateTime()));
-            ps.setString(5, appointment.getNote());
+            ps.setInt(5, shiftId);
+            ps.setInt(6, queueNumber);
+            ps.setString(7, appointment.getNote());
             
             System.out.println("[DEBUG] Executing SQL: " + sql);
+            System.out.println("[DEBUG] - Shift ID: " + shiftId);
+            System.out.println("[DEBUG] - Queue Number: " + queueNumber);
             int result = ps.executeUpdate();
             System.out.println("[DEBUG] SQL execution result: " + result + " rows affected");
             
@@ -226,44 +247,92 @@ public class AppointmentDao {
         Appointment appt = new Appointment();
         appt.setId(rs.getInt("appointment_id"));
         appt.setAppointmentDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
+        appt.setShiftId(rs.getInt("shift_id"));
+        appt.setQueueNumber(rs.getInt("queue_number"));
         appt.setStatus(AppointmentStatus.fromCode(rs.getString("status")));
         appt.setNote(rs.getString("note"));
         if (rs.getObject("created_at") != null) appt.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         if (rs.getObject("updated_at") != null) appt.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        if (rs.getObject("payment_status") != null) appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
 
         // Doctor
         models.Doctor doctor = new models.Doctor();
+        if (hasColumn(rs, "doctor_id")) doctor.setDoctor_id(rs.getInt("doctor_id"));
         User doctorUser = new User();
-        doctorUser.setFullName(rs.getString("doctor_name"));
+        if (hasColumn(rs, "doctor_user_id")) doctorUser.setUserId(rs.getInt("doctor_user_id"));
+        if (hasColumn(rs, "doctor_name")) doctorUser.setFullName(rs.getString("doctor_name"));
         doctor.setUser(doctorUser);
         appt.setDoctor(doctor);
 
         // Patient
         models.Patient patient = new models.Patient();
+        if (hasColumn(rs, "patient_id")) patient.setPatient_id(rs.getInt("patient_id"));
         User patientUser = new User();
-        patientUser.setFullName(rs.getString("patient_name"));
+        if (hasColumn(rs, "patient_user_id")) patientUser.setUserId(rs.getInt("patient_user_id"));
+        if (hasColumn(rs, "patient_name")) patientUser.setFullName(rs.getString("patient_name"));
+        if (hasColumn(rs, "patient_username")) patientUser.setUsername(rs.getString("patient_username"));
+        if (hasColumn(rs, "patient_email")) patientUser.setEmail(rs.getString("patient_email"));
+        if (hasColumn(rs, "patient_phone")) patientUser.setPhone(rs.getString("patient_phone"));
         patient.setUser(patientUser);
         appt.setPatient(patient);
 
         // Service
-        if (rs.getObject("service_id") != null) {
+        if (hasColumn(rs, "service_id") && rs.getObject("service_id") != null) {
             Service service = ServiceDAO.getServiceById(rs.getInt("service_id"));
             appt.setService(service);
-        }
-
-        // Payment Status
-        if (rs.getObject("payment_status") != null) {
-            appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
         }
 
         System.out.println("[DEBUG] mappingAppointment: DONE id=" + appt.getId());
         return appt;
     }
 
-    public static boolean updateAppointmentStatus(int id, AppointmentStatus status) {
+    // Helper để kiểm tra cột có tồn tại trong ResultSet không
+    private static boolean hasColumn(ResultSet rs, String columnName) {
+        try {
+            rs.findColumn(columnName);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    // Thêm method để xác định shift_id dựa trên thời gian
+    private static int determineShiftId(LocalDateTime dateTime) {
+        int hour = dateTime.getHour();
+        if (hour >= 8 && hour < 12) {
+            return 1; // Sáng
+        } else if (hour >= 13 && hour < 17) {
+            return 2; // Chiều
+        } else if (hour >= 17 && hour < 22) {
+            return 3; // Tối
+        } else {
+            return 1; // Mặc định ca sáng
+        }
+    }
+
+    // Thêm method để lấy số thứ tự tiếp theo trong ca
+    private static int getNextQueueNumber(int doctorId, java.time.LocalDate date, int shiftId) {
+        String sql = "SELECT COALESCE(MAX(queue_number), 0) + 1 FROM appointments " +
+                    "WHERE doctor_id = ? AND DATE(appointment_date) = ? AND shift_id = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, doctorId);
+            stmt.setDate(2, java.sql.Date.valueOf(date));
+            stmt.setInt(3, shiftId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 1; // Mặc định là bệnh nhân đầu tiên
+    }
+
+    public static boolean updateAppointmentStatus(int id, String status) {
         String sql = "UPDATE appointments SET status = ?, updated_at = NOW() WHERE appointment_id = ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, status.getCode());
+            ps.setString(1, status);
             ps.setInt(2, id);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {

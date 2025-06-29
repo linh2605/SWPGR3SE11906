@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author auiri
  */
-@WebServlet(name = "DoctorServlet", urlPatterns = {"/doctor", "/getDoctorsByService", "/getDoctorsByServiceAndTime", "/getDoctorsByServiceAndDate"})
+@WebServlet(name = "DoctorServlet", urlPatterns = {"/doctorupdate", "/doctor", "/getDoctorsByService", "/getDoctorsByServiceAndTime", "/getDoctorsByServiceAndDate"})
 public class DoctorServlet extends HttpServlet {
 
     @Override
@@ -40,7 +40,14 @@ public class DoctorServlet extends HttpServlet {
             handleGetDoctorsByServiceAndDate(req, resp);
             return;
         }
-        // Lọc bệnh nhân mà bác sĩ có thể xử lý
+        // Nếu là /doctorupdate thì forward sang trang cập nhật trạng thái
+        if ("/doctorupdate".equals(action)) {
+            req.setAttribute("patients", PatientStatusDao.getByHandledRole(2));  // role_id = 2: bác sĩ
+            req.setAttribute("statuses", StatusDAO.getStatusesByRole(2));  // Trạng thái dành cho bác sĩ
+            req.getRequestDispatcher("/views/doctor/managestatus.jsp").forward(req, resp);
+            return;
+        }
+        // fallback: forward sang trang cập nhật trạng thái mặc định
         req.setAttribute("patients", PatientStatusDao.getByHandledRole(2));  // role_id = 2: bác sĩ
         req.setAttribute("statuses", StatusDAO.getStatusesByRole(2));  // Trạng thái dành cho bác sĩ
         req.getRequestDispatcher("/views/doctor/managestatus.jsp").forward(req, resp);

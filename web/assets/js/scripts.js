@@ -61,6 +61,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const calendarEl = document.getElementById('calendar');
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
+                displayEventTime: false,
+                eventTimeFormat: { hour: '2-digit', minute: '2-digit', meridiem: false },
+                views: {
+                    dayGridMonth: { displayEventTime: false },
+                    timeGridWeek: { displayEventTime: false },
+                    timeGridDay: { displayEventTime: false }
+                },
                 events: function(fetchInfo, successCallback, failureCallback) {
                     let url = '';
                     if (pageId === 'appointments') url = `${contextPath}/getAppointments`;
@@ -74,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         success: function(data) {
                             const events = data.map(appt => ({
                                 id: appt.id,
-                                title: `Hẹn với ${appt.doctor && appt.doctor.user ? appt.doctor.user.fullName : ''} (${appt.patient && appt.patient.user ? appt.patient.user.fullName : ''})`,
+                                title: `${appt.service ? appt.service.name : ''}${appt.shiftText ? ' - ' + appt.shiftText : ''}${appt.doctor && appt.doctor.user ? ' - BS. ' + appt.doctor.user.fullName : ''}`.replace(/^ - /, ''),
                                 start: appt.dateTime,
                                 className: 'fc-event-' + appt.status
                             }));
@@ -117,13 +124,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const appointmentList = document.getElementById('appointmentList');
         if (appointmentList && document.getElementById(pageId)) {
-            document.getElementById('filterDate')?.addEventListener('change', filterAppointments);
-            document.getElementById('filterDoctor')?.addEventListener('change', filterAppointments);
-            document.getElementById('filterPatient')?.addEventListener('change', filterAppointments);
-            document.getElementById('filterStatus')?.addEventListener('change', filterAppointments);
-            document.getElementById('search')?.addEventListener('input', filterAppointments);
-            document.getElementById('filterButton')?.addEventListener('click', filterAppointments);
-            document.getElementById('syncCalendarBtn')?.addEventListener('click', syncWithExternalCalendar);
+            // Vô hiệu hóa filter và renderTable cho trang receptionistDashboard vì đã dùng JS riêng trong JSP
+            if (pageId !== 'receptionistDashboard') {
+                document.getElementById('filterDate')?.addEventListener('change', filterAppointments);
+                document.getElementById('filterDoctor')?.addEventListener('change', filterAppointments);
+                document.getElementById('filterPatient')?.addEventListener('change', filterAppointments);
+                document.getElementById('filterStatus')?.addEventListener('change', filterAppointments);
+                document.getElementById('search')?.addEventListener('input', filterAppointments);
+                document.getElementById('filterButton')?.addEventListener('click', filterAppointments);
+                document.getElementById('syncCalendarBtn')?.addEventListener('click', syncWithExternalCalendar);
+            }
         }
     });
 
@@ -203,28 +213,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             if (!appointmentDate) {
-                alert('Vui lòng chọn ngày hẹn');
+                alert('Vui lòng chọn ngày khám');
                 e.preventDefault();
                 return;
             }
             if (!shift) {
-                alert('Vui lòng chọn ca làm việc');
-                e.preventDefault();
-                return;
-            }
-            const selectedDate = new Date(appointmentDate);
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-            if (selectedDate <= now) {
-                alert('Ngày hẹn phải trong tương lai');
+                alert('Vui lòng chọn ca khám');
                 e.preventDefault();
                 return;
             }
         });
-        // Tự động load lại bác sĩ nếu đã chọn dịch vụ khi load trang
-        if (serviceSelect && serviceSelect.value) {
-            serviceSelect.dispatchEvent(new Event('change'));
-        }
     }
 
     // Form góp ý
@@ -760,36 +758,70 @@ if (document.getElementById('receptionist-dashboard')) {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
+            displayEventTime: false,
+            eventTimeFormat: { hour: '2-digit', minute: '2-digit', meridiem: false },
+            views: {
+                dayGridMonth: { displayEventTime: false },
+                timeGridWeek: { displayEventTime: false },
+                timeGridDay: { displayEventTime: false }
+            },
             events: events
         });
         window.receptionistCalendar.render();
     }
 
     // Render table
-    function renderTable(events) {
-        const tbody = document.getElementById('appointmentList');
-        tbody.innerHTML = '';
-        if (!events.length) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4"><div class="text-muted"><i class="bi bi-calendar-x fs-1"></i><p class="mt-2">Chưa có lịch hẹn nào</p></div></td></tr>`;
+    function renderTable(appointments) {
+        const tableBody = document.querySelector('#appointmentTable tbody');
+        if (!tableBody) return;
+        tableBody.innerHTML = '';
+        if (!appointments || appointments.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Không có lịch hẹn nào</td></tr>';
             return;
         }
-        events.forEach(appt => {
-            tbody.innerHTML += `
-            <tr>
-                <td>${appt.id}</td>
-                <td>${appt.start.replace('T', ' ').substring(0, 16)}</td>
-                <td>${appt.patientName}</td>
-                <td>${appt.doctorName}</td>
-                <td>${appt.serviceName}</td>
-                <td>${appt.status}</td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-sm btn-outline-success" onclick="updateStatus(${appt.id}, 'confirmed')" title="Xác nhận"><i class="bi bi-check-circle"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="updateStatus(${appt.id}, 'canceled')" title="Hủy"><i class="bi bi-x-circle"></i></button>
-                        <button class="btn btn-sm btn-outline-info" onclick="updateStatus(${appt.id}, 'completed')" title="Hoàn thành"><i class="bi bi-check2-square"></i></button>
-                    </div>
+        appointments.forEach((appointment, index) => {
+            const row = document.createElement('tr');
+            // Format ngày tháng
+            let formattedDate = '';
+            if (appointment.date) {
+                const date = new Date(appointment.date);
+                formattedDate = date.toLocaleDateString('vi-VN', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+            // Lấy tên trạng thái tiếng Việt
+            const statusDisplay = getStatusDisplay(appointment.status);
+            // Lấy badge màu trạng thái
+            const statusBadge = `<span class="badge ${getStatusBadgeClass(appointment.status)}">${statusDisplay}</span>`;
+            // Lấy badge ca làm
+            const shiftBadge = `<span class="badge bg-primary">${appointment.shift || ''}</span>`;
+            // Render row
+            row.innerHTML = `
+                <td class="text-center">${appointment.queueNumber}</td>
+                <td>${formattedDate}</td>
+                <td class="text-center">${shiftBadge}</td>
+                <td>${appointment.patientName || 'N/A'}</td>
+                ${appointment.doctorName !== undefined ? `<td>${appointment.doctorName || 'N/A'}</td>` : ''}
+                <td>${appointment.serviceName || 'N/A'}</td>
+                <td class="text-center">${statusBadge}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-info" onclick="viewDetails(${appointment.id})">
+                        <i class="bi bi-eye"></i> Xem chi tiết
+                    </button>
+                    ${roleId === 3 ? `
+                        <button class="btn btn-sm btn-warning" onclick="updateStatus(${appointment.id}, 'pending')">
+                            <i class="bi bi-clock"></i>
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="updateStatus(${appointment.id}, 'completed')">
+                            <i class="bi bi-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="updateStatus(${appointment.id}, 'canceled')">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    ` : ''}
                 </td>
-            </tr>`;
+            `;
+            tableBody.appendChild(row);
         });
     }
 
@@ -904,6 +936,13 @@ if (document.getElementById('doctor-appointments')) {
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
+            displayEventTime: false,
+            eventTimeFormat: { hour: '2-digit', minute: '2-digit', meridiem: false },
+            views: {
+                dayGridMonth: { displayEventTime: false },
+                timeGridWeek: { displayEventTime: false },
+                timeGridDay: { displayEventTime: false }
+            },
             events: calendarEvents
         });
         window.doctorCalendar.render();
@@ -929,26 +968,57 @@ if (document.getElementById('doctor-appointments')) {
     }
 
     // Render table
-    function renderTable(events) {
-        const tbody = document.getElementById('appointmentList');
-        tbody.innerHTML = '';
-        if (!events.length) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4"><div class="text-muted"><i class="bi bi-calendar-x fs-1"></i><p class="mt-2">Chưa có lịch hẹn nào</p></div></td></tr>`;
+    function renderTable(appointments) {
+        const tableBody = document.querySelector('#appointmentTable tbody');
+        if (!tableBody) return;
+        tableBody.innerHTML = '';
+        if (!appointments || appointments.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="8" class="text-center">Không có lịch hẹn nào</td></tr>';
             return;
         }
-        events.forEach((appt, idx) => {
-            const statusText = getStatusDisplay(appt.status);
-            tbody.innerHTML += `
-            <tr>
-                <td>${appt.id}</td>
-                <td>${appt.appointmentDateTime ? appt.appointmentDateTime.replace('T', ' ').substring(0, 16) : ''}</td>
-                <td>${appt.patient && appt.patient.user ? appt.patient.user.fullName : ''}</td>
-                <td>${appt.service ? appt.service.name : ''}</td>
-                <td>${statusText}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-info" onclick="showAppointmentDetailDoctor(${idx})" title="Xem chi tiết"><i class="bi bi-eye"></i></button>
+        appointments.forEach((appointment, index) => {
+            const row = document.createElement('tr');
+            // Format ngày tháng
+            let formattedDate = '';
+            if (appointment.date) {
+                const date = new Date(appointment.date);
+                formattedDate = date.toLocaleDateString('vi-VN', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+            // Lấy tên trạng thái tiếng Việt
+            const statusDisplay = getStatusDisplay(appointment.status);
+            // Lấy badge màu trạng thái
+            const statusBadge = `<span class="badge ${getStatusBadgeClass(appointment.status)}">${statusDisplay}</span>`;
+            // Lấy badge ca làm
+            const shiftBadge = `<span class="badge bg-primary">${appointment.shift || ''}</span>`;
+            // Render row
+            row.innerHTML = `
+                <td class="text-center">${appointment.queueNumber}</td>
+                <td>${formattedDate}</td>
+                <td class="text-center">${shiftBadge}</td>
+                <td>${appointment.patientName || 'N/A'}</td>
+                ${appointment.doctorName !== undefined ? `<td>${appointment.doctorName || 'N/A'}</td>` : ''}
+                <td>${appointment.serviceName || 'N/A'}</td>
+                <td class="text-center">${statusBadge}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-info" onclick="viewDetails(${appointment.id})">
+                        <i class="bi bi-eye"></i> Xem chi tiết
+                    </button>
+                    ${roleId === 3 ? `
+                        <button class="btn btn-sm btn-warning" onclick="updateStatus(${appointment.id}, 'pending')">
+                            <i class="bi bi-clock"></i>
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="updateStatus(${appointment.id}, 'completed')">
+                            <i class="bi bi-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="updateStatus(${appointment.id}, 'canceled')">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    ` : ''}
                 </td>
-            </tr>`;
+            `;
+            tableBody.appendChild(row);
         });
     }
 
@@ -994,4 +1064,13 @@ if (document.getElementById('doctor-appointments')) {
     $(function() {
         loadAppointments(1);
     });
+}
+
+function getStatusBadgeClass(status) {
+    switch (status) {
+        case 'pending': return 'bg-warning';
+        case 'completed': return 'bg-success';
+        case 'canceled': return 'bg-danger';
+        default: return 'bg-secondary';
+    }
 }

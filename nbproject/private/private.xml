@@ -19,8 +19,12 @@
             <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/dal/SpecialtyDao.java</file>
             <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/appointment/make-appointment.jsp</file>
             <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/admin/patient-detail.jsp</file>
+            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/appointment/receptionistDashboard.jsp</file>
+            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/controller/api/ReceptionistAppointmentApiServlet.java</file>
             <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/controller/PatientAddAppoinmentServlet.java</file>
             <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/src/java/dal/ServiceDAO.java</file>
+            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/appointment/doctorDashboard.jsp</file>
+            <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/views/appointment/appointments.jsp</file>
             <file>file:/C:/Users/HoangAnh/Documents/GitHub/SWPGR3SE11906/web/assets/favicon.svg</file>
         </group>
     </open-files>

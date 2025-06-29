@@ -8,6 +8,8 @@ public class Appointment {
     private Doctor doctor;
     private Service service;
     private LocalDateTime appointmentDateTime;
+    private int shiftId;
+    private int queueNumber;
     private AppointmentStatus status;
     private String note;
     private LocalDateTime createdAt;
@@ -26,6 +28,19 @@ public class Appointment {
         this.doctor = doctor;
         this.service = service;
         this.appointmentDateTime = appointmentDateTime;
+        this.status = status != null ? status : AppointmentStatus.PENDING;
+        this.note = note;
+        this.paymentStatus = PaymentStatus.PENDING;
+    }
+
+    public Appointment(int id, Patient patient, Doctor doctor, Service service, LocalDateTime appointmentDateTime, int shiftId, int queueNumber, AppointmentStatus status, String note) {
+        this.id = id;
+        this.patient = patient;
+        this.doctor = doctor;
+        this.service = service;
+        this.appointmentDateTime = appointmentDateTime;
+        this.shiftId = shiftId;
+        this.queueNumber = queueNumber;
         this.status = status != null ? status : AppointmentStatus.PENDING;
         this.note = note;
         this.paymentStatus = PaymentStatus.PENDING;
@@ -72,6 +87,22 @@ public class Appointment {
         this.appointmentDateTime = appointmentDateTime;
     }
 
+    public int getShiftId() {
+        return shiftId;
+    }
+
+    public void setShiftId(int shiftId) {
+        this.shiftId = shiftId;
+    }
+
+    public int getQueueNumber() {
+        return queueNumber;
+    }
+
+    public void setQueueNumber(int queueNumber) {
+        this.queueNumber = queueNumber;
+    }
+
     public AppointmentStatus getStatus() {
         return status;
     }
@@ -114,6 +145,6 @@ public class Appointment {
 
     @Override
     public String toString() {
-        return "Appointment{" + "id=" + id + ", patient=" + patient + ", doctor=" + doctor + ", service=" + service + ", appointmentDateTime=" + appointmentDateTime + ", status=" + status + ", note=" + note + '}';
+        return "Appointment{" + "id=" + id + ", patient=" + patient + ", doctor=" + doctor + ", service=" + service + ", appointmentDateTime=" + appointmentDateTime + ", shiftId=" + shiftId + ", queueNumber=" + queueNumber + ", status=" + status + ", note=" + note + '}';
     }
 } 

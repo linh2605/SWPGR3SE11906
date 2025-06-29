@@ -5,7 +5,7 @@ public enum AppointmentStatus {
     CONFIRMED("confirmed", "Đã xác nhận"),
     IN_PROGRESS("in_progress", "Đang khám"),
     COMPLETED("completed", "Hoàn thành"),
-    CANCELLED("cancelled", "Đã hủy"),
+    CANCELED("canceled", "Đã hủy"),
     NO_SHOW("no_show", "Không đến");
 
     private final String code;

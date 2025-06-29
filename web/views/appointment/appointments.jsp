@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page session="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <html lang="vi">
 <head>
     <title>Lịch hẹn đã đặt - G3 Hospital</title>
@@ -92,33 +93,49 @@
         <!-- Danh sách chi tiết -->
         <div class="appointment-table">
             <h3 class="section-title mb-3">Danh sách lịch hẹn</h3>
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover" id="appointmentTable">
                 <thead>
                     <tr>
-                        <th>ID Hẹn</th>
-                        <th>Ngày giờ</th>
-                        <th>Bác sĩ</th>
+                        <th class="text-center">STT</th>
+                        <th>Ngày</th>
+                        <th class="text-center">Ca làm</th>
+                        <th>Bệnh nhân</th>
                         <th>Dịch vụ</th>
-                        <th>Trạng thái</th>
-                        <th>Thanh toán</th>
-                        <th>Hành động</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Hành động</th>
                     </tr>
                 </thead>
-                <tbody id="appointmentList">
+                <tbody>
                     <c:forEach var="appointment" items="${appointments}">
                         <tr>
-                            <td>${appointment.id}</td>
+                            <td class="text-center">${appointment.queueNumber}</td>
                             <td>
                                 <c:choose>
                                     <c:when test="${not empty appointment.appointmentDateTime}">
-                                        ${appointment.appointmentDateTime.toLocalDate()} ${appointment.appointmentDateTime.toLocalTime()}
+                                        ${appointment.appointmentDateTime.toLocalDate().getDayOfMonth()}/${appointment.appointmentDateTime.toLocalDate().getMonthValue()}/${appointment.appointmentDateTime.toLocalDate().getYear()}
                                     </c:when>
                                     <c:otherwise>
                                         <span class="text-muted">Không có thông tin</span>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
-                            <td>${appointment.doctor.user.fullName}</td>
+                            <td class="text-center">
+                                <c:choose>
+                                    <c:when test="${appointment.shiftId == 1}">
+                                        <span class="badge bg-primary">Sáng</span>
+                                    </c:when>
+                                    <c:when test="${appointment.shiftId == 2}">
+                                        <span class="badge bg-warning">Chiều</span>
+                                    </c:when>
+                                    <c:when test="${appointment.shiftId == 3}">
+                                        <span class="badge bg-dark">Tối</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="badge bg-secondary">Không xác định</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>${appointment.patient.user.fullName}</td>
                             <td>
                                 <c:choose>
                                     <c:when test="${not empty appointment.service}">
@@ -129,7 +146,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <span class="badge 
                                     <c:choose>
                                         <c:when test="${appointment.status.code == 'pending'}">bg-warning</c:when>
@@ -140,20 +157,10 @@
                                     ${appointment.status.displayName}
                                 </span>
                             </td>
-                            <td>
-                                <span class="badge 
-                                    <c:choose>
-                                        <c:when test="${appointment.paymentStatus == 'PENDING'}">bg-warning</c:when>
-                                        <c:when test="${appointment.paymentStatus == 'PAID'}">bg-success</c:when>
-                                        <c:when test="${appointment.paymentStatus == 'RESERVED'}">bg-info</c:when>
-                                        <c:otherwise>bg-secondary</c:otherwise>
-                                    </c:choose>">
-                                    ${appointment.paymentStatus}
-                                </span>
-                            </td>
-                            <td>
+                            <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                    <button type="button" class="btn btn-sm btn-outline-info" title="Xem chi tiết" data-bs-toggle="modal" data-bs-target="#appointmentDetailModal"
+                                        onclick="showAppointmentDetail('${fn:escapeXml(appointment.id)}','${fn:escapeXml(appointment.queueNumber)}','${appointment.appointmentDateTime != null ? appointment.appointmentDateTime.toLocalDate() : ''}','${fn:escapeXml(appointment.shiftId)}','${fn:escapeXml(appointment.patient.user.fullName)}','${appointment.service != null ? fn:escapeXml(appointment.service.name) : ''}','${fn:escapeXml(appointment.status.displayName)}','${appointment.note != null ? fn:escapeXml(appointment.note) : ''}')">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     <c:if test="${appointment.status.code == 'pending'}">
@@ -182,6 +189,29 @@
             </table>
         </div>
     </main>
+
+    <!-- Modal xem chi tiết lịch hẹn -->
+    <div class="modal fade" id="appointmentDetailModal" tabindex="-1" aria-labelledby="appointmentDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="appointmentDetailModalLabel">Chi tiết lịch hẹn</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group">
+              <li class="list-group-item"><b>STT:</b> <span id="modalQueueNumber"></span></li>
+              <li class="list-group-item"><b>Ngày:</b> <span id="modalDate"></span></li>
+              <li class="list-group-item"><b>Ca làm:</b> <span id="modalShift"></span></li>
+              <li class="list-group-item"><b>Bệnh nhân:</b> <span id="modalPatient"></span></li>
+              <li class="list-group-item"><b>Dịch vụ:</b> <span id="modalService"></span></li>
+              <li class="list-group-item"><b>Trạng thái:</b> <span id="modalStatus"></span></li>
+              <li class="list-group-item"><b>Ghi chú:</b> <span id="modalNote"></span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Footer -->
     <%@ include file="../layouts/footer.jsp" %>
@@ -329,6 +359,24 @@
             });
         }
     });
+    </script>
+    <script>
+    function showAppointmentDetail(id, queueNumber, date, shiftId, patient, service, status, note) {
+      document.getElementById('modalQueueNumber').innerText = queueNumber;
+      document.getElementById('modalDate').innerText = date;
+      let shiftText = '';
+      switch (shiftId) {
+        case '1': shiftText = 'Sáng'; break;
+        case '2': shiftText = 'Chiều'; break;
+        case '3': shiftText = 'Tối'; break;
+        default: shiftText = 'Không xác định';
+      }
+      document.getElementById('modalShift').innerText = shiftText;
+      document.getElementById('modalPatient').innerText = patient;
+      document.getElementById('modalService').innerText = service;
+      document.getElementById('modalStatus').innerText = status;
+      document.getElementById('modalNote').innerText = note;
+    }
     </script>
 </body>
 </html>

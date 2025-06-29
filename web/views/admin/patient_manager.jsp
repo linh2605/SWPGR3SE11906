@@ -45,7 +45,7 @@
                     String imgLink = (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg");
                 %>
                 <tr>
-                    <td><%=patients.get(i).getUser().getUserId()%></td>
+                    <td><%=patients.get(i).getPatient_id()%></td>
                     <td><%=patients.get(i).getUser().getUsername()%></td>
                     <td><%=patients.get(i).getUser().getFullName()%></td>
                     <td><%=patients.get(i).getUser().getEmail()%></td>
@@ -246,5 +246,10 @@
         var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
         updateModal.show();
     }
+</script>
+<script>
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("update_date_of_birth").setAttribute("max", today);
+    document.getElementById("date_of_birth").setAttribute("max", today);
 </script>
 </html>

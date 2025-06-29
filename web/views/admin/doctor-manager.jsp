@@ -110,7 +110,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label">Số điện thoại</label>
-                                    <input type="text" name="phone" id="phone" class="form-control" required>
+                                    <input type="tel" name="phone" class="form-control"
+                                        pattern="0[0-9]{9}" maxlength="10"
+                                        title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="gender" class="form-label">Giới tính</label>
@@ -126,7 +128,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="image" class="form-label">Ảnh đại diện</label>
-                                    <input type="file" name="image" id="image" class="form-control">
+                                    <input required type="file" name="image" id="image" class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="specialty_id" class="form-label">Chuyên khoa</label>
@@ -199,7 +201,8 @@
                         </div>
                         <div class="col-md-6">
                             <label>Phone</label>
-                            <input name="phone" id="update_phone" class="form-control" required>
+                            <input pattern="0[0-9]{9}" maxlength="10"
+       title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" name="phone" id="update_phone" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Gender</label>
@@ -283,5 +286,17 @@
         updateModal.show();
     }
 
+</script>
+<script>
+    // Tính ngày tối đa được chọn (tức là cách đây 18 năm)
+    const today = new Date();
+    const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+    // Định dạng YYYY-MM-DD
+    const formatted = minDate.toISOString().split("T")[0];
+
+    // Áp dụng vào input
+    document.getElementById("dob").setAttribute("max", formatted);
+    document.getElementById("update_dobupdate_dob").setAttribute("max", formatted);
 </script>
 </html>

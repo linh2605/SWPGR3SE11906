@@ -27,12 +27,12 @@
                 <thead class="table-light">
                 <tr>
                     <th>ID</th>
-                    <th>Tên gói</th>
-                    <th>Mô tả</th>
-                    <th>Chuyên khoa</th>
-                    <th>Giá</th>
-                    <th>Thời lượng</th>
-                    <th>Hành động</th>
+                    <th>Package name</th>
+                    <th>Description</th>
+                    <th>Specialities</th>
+                    <th>Price</th>
+                    <th>Duration</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -49,11 +49,11 @@
                     <td><%= p.getPrice() %></td>
                     <td><%= p.getDuration() %> phút</td>
                     <td>
-                        <button type="button" class="btn btn-warning btn-sm" onclick="populateUpdateForm(<%= p.getPackageId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getDescription().replace("'", "\\'") %>', <%= p.getPrice() %>, <%= p.getDuration() %>, [<%= p.getSpecialties().stream().map(s -> s.getSpecialty_id() + "").collect(java.util.stream.Collectors.joining(",")) %>])" data-bs-toggle="modal" data-bs-target="#updatePackageModal">Sửa</button>
-                        <form action="<%= request.getContextPath() %>/admin/examination-manage" method="post" style="display:inline;">
+                        <a class="text-warning" href="javascript:void(0)" onclick="populateUpdateForm(<%= p.getPackageId() %>, '<%= p.getName().replace("'", "\\'") %>', '<%= p.getDescription().replace("'", "\\'") %>', <%= p.getPrice() %>, <%= p.getDuration() %>, [<%= p.getSpecialties().stream().map(s -> s.getSpecialtyId() + "").collect(java.util.stream.Collectors.joining(",")) %>])" data-bs-toggle="modal" data-bs-target="#updatePackageModal">Update</a>|<br>
+                        <form id="deleteForm_<%= p.getPackageId() %>" action="<%= request.getContextPath() %>/admin/examination-manage" method="post" style="display:inline;">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="<%= p.getPackageId() %>">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Xóa gói này?')">Xóa</button>
+                            <a href="javascript:void(0)" class="text-danger" onclick="confirmDelete('<%= p.getPackageId() %>')">Delete</a>
                         </form>
                     </td>
                 </tr>
@@ -65,7 +65,7 @@
         <!-- Modal thêm gói khám -->
         <div class="modal fade" id="createPackageModal" tabindex="-1">
             <div class="modal-dialog">
-                <form method="post" action="${pageContext.request.contextPath}/admin/examination-manage">
+                <form id="createForm" method="post" action="${pageContext.request.contextPath}/admin/examination-manage">
                     <input type="hidden" name="action" value="add">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -93,8 +93,8 @@
                                 <label class="form-label">Chuyên khoa</label>
                                 <% for (Specialty s : allSpecialties) { %>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="specialty_ids" value="<%= s.getSpecialty_id() %>" id="specialty_create_<%= s.getSpecialty_id() %>">
-                                    <label class="form-check-label" for="specialty_create_<%= s.getSpecialty_id() %>"><%= s.getName() %></label>
+                                    <input class="form-check-input" type="checkbox" name="specialty_ids" value="<%= s.getSpecialtyId() %>" id="specialty_create_<%= s.getSpecialtyId() %>">
+                                    <label class="form-check-label" for="specialty_create_<%= s.getSpecialtyId() %>"><%= s.getName() %></label>
                                 </div>
                                 <% } %>
                             </div>
@@ -139,8 +139,8 @@
                                 <label class="form-label">Chuyên khoa</label>
                                 <% for (Specialty s : allSpecialties) { %>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="specialty_ids" value="<%= s.getSpecialty_id() %>" id="specialty_update_<%= s.getSpecialty_id() %>">
-                                    <label class="form-check-label" for="specialty_update_<%= s.getSpecialty_id() %>"><%= s.getName() %></label>
+                                    <input class="form-check-input" type="checkbox" name="specialty_ids" value="<%= s.getSpecialtyId() %>" id="specialty_update_<%= s.getSpecialtyId() %>">
+                                    <label class="form-check-label" for="specialty_update_<%= s.getSpecialtyId() %>"><%= s.getName() %></label>
                                 </div>
                                 <% } %>
                             </div>
@@ -180,5 +180,26 @@
     }
 </script>
 <%@include file="../layouts/toastr.jsp"%>
+<script>
+    document.getElementById("createForm").addEventListener("submit", function (e) {
+        const inputName = document.querySelector("#createForm input[name='name']").value.trim().toLowerCase();
+
+        // Duyệt tất cả tên gói trong bảng
+        const existingNames = Array.from(document.querySelectorAll("#table tbody tr td:nth-child(2)"))
+            .map(td => td.textContent.trim().toLowerCase());
+
+        if (existingNames.includes(inputName)) {
+            e.preventDefault(); // Ngăn form submit
+            toastr.error("Tên gói khám đã tồn tại!");
+        }
+    });
+</script>
+<script>
+    function confirmDelete(id) {
+        if (confirm("Xóa gói này?")) {
+            document.getElementById("deleteForm_" + id).submit();
+        }
+    }
+</script>
 </body>
 </html>

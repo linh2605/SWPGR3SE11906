@@ -62,8 +62,9 @@
                                 <div class="mb-3">
                                     <label class="form-label">Giới tính</label>
                                     <select class="form-select" name="gender" required>
-                                        <option value="Male" ${profile.gender == 'Male' ? 'selected' : ''}>Nam</option>
-                                        <option value="Female" ${profile.gender == 'Female' ? 'selected' : ''}>Nữ</option>
+                                        <option value="MALE" ${profile.gender == 'MALE' ? 'selected' : ''}>Nam</option>
+                                        <option value="FEMALE" ${profile.gender == 'FEMALE' ? 'selected' : ''}>Nữ</option>
+                                        <option value="OTHER" ${profile.gender == 'OTHER' ? 'selected' : ''}>Khác</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">

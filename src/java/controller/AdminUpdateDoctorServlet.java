@@ -51,7 +51,7 @@ public class AdminUpdateDoctorServlet extends HttpServlet {
         user.setPhone(phone);
         UserDAO.updateUser(user);
 
-        Gender gender = Gender.valueOf(req.getParameter("gender"));
+        Gender gender = Gender.valueOf(req.getParameter("gender").toUpperCase());
         Date dob = Date.valueOf(req.getParameter("dob"));
         Specialty specialty = SpecialtyDao.getSpecialtyById(Integer.parseInt(req.getParameter("specialty_id")));
         String degree = req.getParameter("degree");

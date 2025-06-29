@@ -31,15 +31,28 @@ public class DoctorAppointmentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
-        
-        if (requestURI.endsWith("/getDoctorAppointments")) {
-            // API endpoint for JSON data
-            handleApiRequest(request, response);
-        } else if (requestURI.endsWith("/doctor/appointments")) {
-            // Page endpoint for HTML view
-            handlePageRequest(request, response);
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+            return;
         }
+        int roleId = (int) session.getAttribute("roleId");
+        if (roleId != 2) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+            return;
+        }
+        int userId = (int) session.getAttribute("userId");
+
+        // Lấy doctorId từ userId
+        int doctorId = new dal.WorkingScheduleDAO().getDoctorIdByUserId(userId);
+        if (doctorId == -1) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=doctor_not_found");
+            return;
+        }
+
+        List<models.Appointment> appointments = dal.AppointmentDao.getAppointmentsByDoctorId(doctorId, 1, 100);
+        request.setAttribute("appointments", appointments);
+        request.getRequestDispatcher("/views/doctor/appointments.jsp").forward(request, response);
     }
     
     private void handleApiRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

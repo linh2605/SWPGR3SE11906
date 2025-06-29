@@ -56,7 +56,7 @@ public class AdminUpdatePatientServlet extends HttpServlet {
 
         UserDAO.updateUser(user);
 
-        Gender gender = Gender.valueOf(req.getParameter("gender"));
+        Gender gender = Gender.valueOf(req.getParameter("gender").toUpperCase());
         Date date_of_birth = Date.valueOf(req.getParameter("date_of_birth"));
         String address = req.getParameter("address");
 

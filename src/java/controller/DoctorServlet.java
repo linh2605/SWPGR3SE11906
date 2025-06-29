@@ -14,22 +14,146 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
+import java.util.List;
 
 /**
  *
  * @author auiri
  */
-@WebServlet("/doctorupdate")
+@WebServlet(name = "DoctorServlet", urlPatterns = {"/doctor", "/getDoctorsByService", "/getDoctorsByServiceAndTime", "/getDoctorsByServiceAndDate"})
 public class DoctorServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
+        String action = req.getServletPath();
+        if ("/getDoctorsByService".equals(action)) {
+            handleGetDoctorsByService(req, resp);
+            return;
+        }
+        if ("/getDoctorsByServiceAndTime".equals(action)) {
+            handleGetDoctorsByServiceAndTime(req, resp);
+            return;
+        }
+        if ("/getDoctorsByServiceAndDate".equals(action)) {
+            handleGetDoctorsByServiceAndDate(req, resp);
+            return;
+        }
         // Lọc bệnh nhân mà bác sĩ có thể xử lý
         req.setAttribute("patients", PatientStatusDao.getByHandledRole(2));  // role_id = 2: bác sĩ
         req.setAttribute("statuses", StatusDAO.getStatusesByRole(2));  // Trạng thái dành cho bác sĩ
         req.getRequestDispatcher("/views/doctor/managestatus.jsp").forward(req, resp);
+    }
+
+    private void handleGetDoctorsByService(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String serviceIdStr = request.getParameter("serviceId");
+        int serviceId = 0;
+        try {
+            serviceId = Integer.parseInt(serviceIdStr);
+        } catch (Exception e) {
+            response.setStatus(400);
+            response.getWriter().write("[]");
+            return;
+        }
+        List<models.Doctor> doctors = dal.DoctorDao.getDoctorsByServiceId(serviceId);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(new Gson().toJson(doctors));
+    }
+
+    private void handleGetDoctorsByServiceAndTime(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String serviceIdStr = request.getParameter("serviceId");
+        String datetimeStr = request.getParameter("datetime");
+        int serviceId = 0;
+        try {
+            serviceId = Integer.parseInt(serviceIdStr);
+        } catch (Exception e) {
+            response.setStatus(400);
+            response.getWriter().write("[]");
+            return;
+        }
+        java.time.LocalDateTime dateTime = null;
+        try {
+            dateTime = java.time.LocalDateTime.parse(datetimeStr);
+        } catch (Exception e) {
+            response.setStatus(400);
+            response.getWriter().write("[]");
+            return;
+        }
+        List<models.Doctor> doctors = dal.DoctorDao.getDoctorsByServiceId(serviceId);
+        // Lọc tiếp theo ca làm việc (nếu cần, có thể bỏ hoặc sửa lại logic cho phù hợp)
+        List<models.Doctor> availableDoctors = new java.util.ArrayList<>();
+        // TODO: Nếu muốn lọc theo ca làm việc, cần truyền thêm shiftId và week_day, hoặc bỏ đoạn này nếu không dùng endpoint này nữa
+        // Hiện tại, chỉ trả về danh sách bác sĩ theo serviceId
+        availableDoctors.addAll(doctors);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(new com.google.gson.Gson().toJson(availableDoctors));
+    }
+
+    private void handleGetDoctorsByServiceAndDate(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String serviceIdStr = request.getParameter("serviceId");
+        String dateStr = request.getParameter("date");
+        String shiftIdStr = request.getParameter("shiftId");
+        
+        System.out.println("[DEBUG] handleGetDoctorsByServiceAndDate - Parameters:");
+        System.out.println("[DEBUG] - serviceId: " + serviceIdStr);
+        System.out.println("[DEBUG] - date: " + dateStr);
+        System.out.println("[DEBUG] - shiftId: " + shiftIdStr);
+        
+        int serviceId = 0;
+        int shiftId = 0;
+        try {
+            serviceId = Integer.parseInt(serviceIdStr);
+            shiftId = Integer.parseInt(shiftIdStr);
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Parameter parsing failed: " + e.getMessage());
+            response.setStatus(400);
+            response.getWriter().write("[]");
+            return;
+        }
+        java.time.LocalDate date = null;
+        try {
+            date = java.time.LocalDate.parse(dateStr);
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Date parsing failed: " + e.getMessage());
+            response.setStatus(400);
+            response.getWriter().write("[]");
+            return;
+        }
+        // Chuyển ngày sang week_day tiếng Việt
+        String weekDayVN = getVietnameseWeekDay(date);
+        System.out.println("[DEBUG] Week day in Vietnamese: " + weekDayVN);
+        
+        List<models.Doctor> doctors = dal.DoctorDao.getDoctorsByServiceId(serviceId);
+        System.out.println("[DEBUG] Total doctors for service " + serviceId + ": " + doctors.size());
+        
+        List<models.Doctor> availableDoctors = new java.util.ArrayList<>();
+        for (models.Doctor d : doctors) {
+            System.out.println("[DEBUG] Checking doctor " + d.getDoctor_id() + " (" + d.getUser().getFullName() + ")");
+            boolean isAvailable = dal.AppointmentDao.isDoctorAvailableByWeekDayAndShift(d.getDoctor_id(), weekDayVN, shiftId);
+            System.out.println("[DEBUG] - Available: " + isAvailable);
+            if (isAvailable) {
+                availableDoctors.add(d);
+            }
+        }
+        
+        System.out.println("[DEBUG] Available doctors: " + availableDoctors.size());
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(new com.google.gson.Gson().toJson(availableDoctors));
+    }
+
+    // Hàm chuyển đổi ngày sang week_day tiếng Việt
+    private String getVietnameseWeekDay(java.time.LocalDate date) {
+        switch (date.getDayOfWeek()) {
+            case MONDAY: return "Thứ 2";
+            case TUESDAY: return "Thứ 3";
+            case WEDNESDAY: return "Thứ 4";
+            case THURSDAY: return "Thứ 5";
+            case FRIDAY: return "Thứ 6";
+            case SATURDAY: return "Thứ 7";
+            case SUNDAY: return "Chủ nhật";
+            default: return "";
+        }
     }
 
     @Override

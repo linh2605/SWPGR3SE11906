@@ -147,8 +147,8 @@
                 <div class="row">
                     <c:forEach var="service" items="${popularServices}">
                         <div class="col-md-4 mb-4">
-                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.service_id}'">
-                                <img src="https://picsum.photos/300/200?random=${service.service_id}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
+                                <img src="https://picsum.photos/300/200?random=${service.serviceId}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body text-center">
                                     <h5 class="card-title">${service.name}</h5>
                                     <p class="card-text">${service.detail}</p>
@@ -282,8 +282,8 @@
                                     <c:forEach var="s" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, services.size() - 1)}">
                                         <c:set var="service" value="${services[s]}" />
                                         <div class="col-md-4 mb-4">
-                                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.service_id}'">
-                                                <img src="https://picsum.photos/300/200?random=${service.service_id}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
+                                                <img src="https://picsum.photos/300/200?random=${service.serviceId}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
                                                 <div class="card-body text-center">
                                                     <h5 class="card-title">${service.name}</h5>
                                                     <p class="card-text">${service.detail}</p>

@@ -50,7 +50,7 @@ public class AdminDoctorServlet extends HttpServlet {
                 User user = new User(username, password, fullname, email, phone, role);
                 UserDAO.insertUser(user);
 
-                Gender gender = Gender.valueOf(req.getParameter("gender"));
+                Gender gender = Gender.valueOf(req.getParameter("gender").toUpperCase());
                 Date dob = Date.valueOf(req.getParameter("dob"));
                 String image_url = UploadImage.saveImage(req, "image");
                 Specialty specialty = SpecialtyDao.getSpecialtyById(Integer.parseInt(req.getParameter("specialty_id")));

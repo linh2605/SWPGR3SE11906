@@ -1,8 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page session="true" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html lang="vi">
 <head>
-    <title>Bảng điều khiển lễ tân - G3 Hospital</title>
+    <title>Quản lý lịch hẹn - Lễ tân</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS -->
@@ -25,12 +26,12 @@
         window.contextPath = '<%= request.getContextPath() %>';
     </script>
 </head>
-  <body id="receptionistDashboard">
+<body id="receptionist-dashboard">
     <!-- Header -->
     <%@ include file="../layouts/header.jsp" %>
 
     <!-- Main Content -->
-    <main class="container my-5">
+    <main class="container my-5 fade-in">
         <h2 class="section-title text-center mb-4">QUẢN LÝ LỊCH HẸN</h2>
 
         <!-- Nút đồng bộ -->
@@ -41,12 +42,10 @@
         </div>
 
         <!-- Bộ lọc -->
-        <div class="filter-bar row g-3">
+        <div class="row g-3 mb-3">
             <div class="col-md-3">
                 <label for="filterDate" class="form-label">Lọc theo ngày</label>
-                <select id="filterDate" class="form-select">
-                    <option value="">Tất cả</option>
-                </select>
+                <input type="date" id="filterDate" class="form-control">
             </div>
             <div class="col-md-3">
                 <label for="filterDoctor" class="form-label">Lọc theo bác sĩ</label>
@@ -58,19 +57,14 @@
                 <label for="filterStatus" class="form-label">Lọc theo trạng thái</label>
                 <select id="filterStatus" class="form-select">
                     <option value="">Tất cả</option>
-                    <option value="pending">Đang chờ</option>
+                    <option value="pending">Chờ xác nhận</option>
+                    <option value="confirmed">Đã xác nhận</option>
                     <option value="completed">Hoàn thành</option>
                     <option value="canceled">Đã hủy</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <label for="search" class="form-label">Tìm kiếm</label>
-                <input type="text" id="search" class="form-control" placeholder="Tìm theo bệnh nhân...">
-            </div>
-            <div class="col-md-12 text-end">
-                <button class="btn btn-primary mt-3" id="filterButton">
-                    <i class="bi bi-funnel"></i> Lọc lịch hẹn
-                </button>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100" id="filterButton"><i class="bi bi-funnel"></i> Lọc lịch hẹn</button>
             </div>
         </div>
 
@@ -78,23 +72,30 @@
         <div id="calendar"></div>
 
         <!-- Danh sách chi tiết -->
-        <div class="appointment-table">
+        <div class="appointment-table mt-4">
             <h3 class="section-title mb-3">Danh sách lịch hẹn</h3>
             <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
                         <th>ID Hẹn</th>
                         <th>Ngày giờ</th>
-                        <th>Bác sĩ</th>
                         <th>Bệnh nhân</th>
+                        <th>Bác sĩ</th>
+                        <th>Dịch vụ</th>
                         <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="appointmentList">
-                    <!-- Dữ liệu sẽ được thêm động bằng JS -->
+                    <!-- JS render here -->
                 </tbody>
             </table>
+            <!-- Phân trang -->
+            <nav>
+                <ul class="pagination justify-content-center" id="pagination">
+                    <!-- JS render here -->
+                </ul>
+            </nav>
         </div>
     </main>
 

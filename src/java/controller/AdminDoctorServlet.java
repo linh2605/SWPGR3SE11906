@@ -25,6 +25,7 @@ public class AdminDoctorServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
+        System.out.println("check doctor size:" + doctors.size());
         req.setAttribute("doctors", doctors);
         req.setAttribute("specialties", specialties);
         req.getRequestDispatcher("/views/admin/doctor-manager.jsp").forward(req, resp);
@@ -35,7 +36,7 @@ public class AdminDoctorServlet extends HttpServlet {
         HttpSession session = req.getSession();
         String username = req.getParameter("username");
         if (UserDAO.doesUsernameExist(username)) {
-            session.setAttribute("flash_error", "Username đã tồn tại.");
+            session.setAttribute("flash_error", "Username "+username+" đã tồn tại.");
             resp.sendRedirect(req.getContextPath() + "/admin/doctor");
         } else {
             String email = req.getParameter("email");

@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
@@ -237,7 +238,7 @@
                 <h2 class="text-center mb-4" style="color: #004d99;">Đội ngũ bác sĩ</h2>
                 <div id="doctorCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        <c:forEach var="slide" begin="0" end="${(doctors.size() - 1) / 3}" varStatus="slideStatus">
+                        <%--<c:forEach var="slide" begin="0" end="${(doctors.size() - 1) / 3}" varStatus="slideStatus">
                             <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
                                 <div class="row">
                                     <c:forEach var="d" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, doctors.size() - 1)}">
@@ -255,7 +256,7 @@
                                     </c:forEach>
                                 </div>
                             </div>
-                        </c:forEach>
+                        </c:forEach>--%>
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#doctorCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -276,7 +277,7 @@
                 <h2 class="text-center mb-4" style="color: #004d99;">Dịch vụ</h2>
                 <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        <c:forEach var="slide" begin="0" end="${(services.size() - 1) / 3}" varStatus="slideStatus">
+                        <%--<c:forEach var="slide" begin="0" end="${(services.size() - 1) / 3}" varStatus="slideStatus">
                             <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
                                 <div class="row">
                                     <c:forEach var="s" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, services.size() - 1)}">
@@ -294,7 +295,7 @@
                                     </c:forEach>
                                 </div>
                             </div>
-                        </c:forEach>
+                        </c:forEach>--%>
                     </div>
                     <!-- Luôn hiển thị mũi tên chuyển slide -->
                     <button class="carousel-control-prev d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev" style="opacity:1;">

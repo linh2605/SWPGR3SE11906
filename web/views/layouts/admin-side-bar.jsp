@@ -9,4 +9,5 @@
     <a href="${pageContext.request.contextPath}/admin/working-schedules">Quản lý lịch làm việc</a>
     <a href="${pageContext.request.contextPath}/admin/schedule-exceptions">Duyệt yêu cầu ngoại lệ</a>
     <a href="${pageContext.request.contextPath}/admin/schedule-changes">Duyệt yêu cầu đổi ca</a>
+    <a href="${pageContext.request.contextPath}/admin/health-consultation">Quản lý tư vấn sức khỏe</a>
 </div>

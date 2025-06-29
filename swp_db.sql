@@ -667,3 +667,10 @@ CREATE TABLE examination_package_specialities
     FOREIGN KEY (package_id) REFERENCES examination_packages (package_id) ON DELETE CASCADE,
     FOREIGN KEY (speciality_id) REFERENCES specialties (specialty_id)
 );
+create table health_consultation(
+    consultation_id int not null auto_increment primary key,
+    doctor_id int not null,
+    patient_id int not null,
+    detail text,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP
+);

@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../layouts/header.jsp" %>
 
@@ -56,6 +56,7 @@
             <h3 class="text-primary mb-4">Đánh giá dịch vụ</h3>
 
             <form method="post" action="${pageContext.request.contextPath}/patient/feedback">
+                <input type="hidden" name="action" value="add">
                 <div class="mb-4">
                     <label class="form-label">Mức độ hài lòng tổng thể</label>
                     <div class="star-rating">

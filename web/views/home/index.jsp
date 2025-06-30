@@ -100,7 +100,7 @@
                     <div class="modal-body">
                         <form id="bookingForm">
                             <div class="mb-3">
-                                <label for="fullName" class="form-label">Họ và tên</label>
+                                <label for="fullName" class="form-label">Họ và Tên</label>
                                 <input type="text" class="form-control" id="fullName" name="fullName" required>
                             </div>
                             <div class="mb-3">

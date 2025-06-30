@@ -101,7 +101,7 @@
                                     <input type="password" name="password" id="password" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="fullName" class="form-label">Họ tên</label>
+                                        <label for="fullName" class="form-label">Họ tên</label>
                                     <input type="text" name="fullname" id="fullname" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">

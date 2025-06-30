@@ -51,7 +51,7 @@
                     <td><%=doctors.get(i).getUser().getPhone()%></td>
                     <td>
                         <% String img = doctors.get(i).getImage_url(); %>
-                        <a href="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/views/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg") %>">link avatar</a>
+                        <a href="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg") %>">link avatar</a>
                     </td>
                     <td><%=doctors.get(i).getSpecialty().getName()%></td>
                     <td><%=doctors.get(i).getDegree()%></td>
@@ -67,7 +67,7 @@
                                    '<%= doctors.get(i).getUser().getPhone() %>',
                                    '<%= doctors.get(i).getGender() %>',
                                    '<%= doctors.get(i).getDob() %>',
-                                   '<%= doctors.get(i).getSpecialty().getSpecialty_id() %>',
+                                   '<%= doctors.get(i).getSpecialty().getSpecialtyId()%>',
                                    '<%= doctors.get(i).getDegree() %>',
                                    '<%= doctors.get(i).getExperience() %>',
                                    '<%= doctors.get(i).getStatus() %>'
@@ -101,8 +101,8 @@
                                     <input type="password" name="password" id="password" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="fullName" class="form-label">Họ tên</label>
-                                    <input type="text" name="fullName" id="fullName" class="form-control" required>
+                                        <label for="fullName" class="form-label">Họ tên</label>
+                                    <input type="text" name="fullname" id="fullname" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
@@ -110,7 +110,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label">Số điện thoại</label>
-                                    <input type="text" name="phone" id="phone" class="form-control" required>
+                                    <input type="tel" name="phone" class="form-control"
+                                        pattern="0[0-9]{9}" maxlength="10"
+                                        title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="gender" class="form-label">Giới tính</label>
@@ -126,7 +128,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="image" class="form-label">Ảnh đại diện</label>
-                                    <input type="file" name="image" id="image" class="form-control">
+                                    <input required type="file" name="image" id="image" class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="specialty_id" class="form-label">Chuyên khoa</label>
@@ -135,7 +137,7 @@
                                             List<Specialty> specialties = (ArrayList<Specialty>) request.getAttribute("specialties");
                                             for (Specialty spec : specialties) {
                                         %>
-                                        <option value="<%= spec.getSpecialty_id() %>"><%= spec.getName() %></option>
+                                        <option value="<%= spec.getSpecialtyId() %>"><%= spec.getName() %></option>
                                         <% } %>
                                     </select>
                                 </div>
@@ -191,7 +193,7 @@
                         </div>
                         <div class="col-md-6">
                             <label>Full Name</label>
-                            <input name="fullName" id="update_fullName" class="form-control" required>
+                            <input name="fullname" id="update_fullname" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Email</label>
@@ -199,14 +201,15 @@
                         </div>
                         <div class="col-md-6">
                             <label>Phone</label>
-                            <input name="phone" id="update_phone" class="form-control" required>
+                            <input pattern="0[0-9]{9}" maxlength="10"
+       title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" name="phone" id="update_phone" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Gender</label>
                             <select name="gender" id="update_gender" class="form-control">
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -217,7 +220,7 @@
                             <label>Specialization</label>
                             <select name="specialty_id" id="update_specialty_id" class="form-control">
                                 <% for (Specialty s : specialties) { %>
-                                <option value="<%= s.getSpecialty_id() %>"><%= s.getName() %></option>
+                                <option value="<%= s.getSpecialtyId()%>"><%= s.getName() %></option>
                                 <% } %>
                             </select>
                         </div>
@@ -238,7 +241,7 @@
                         </div>
                         <div class="col-md-12">
                             <label>Image (Leave empty if not updating)</label>
-                            <input required type="file" name="image" class="form-control">
+                            <input type="file" name="image" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -269,7 +272,7 @@
     function populateDoctorUpdateForm(doctorId, username, fullName, email, phone, gender, dob, specialty_id, degree, experience, status) {
         document.getElementById("update_doctor_id").value = doctorId;
         document.getElementById("update_username").value = username;
-        document.getElementById("update_fullName").value = fullName;
+        document.getElementById("update_fullname").value = fullName;
         document.getElementById("update_email").value = email;
         document.getElementById("update_phone").value = phone;
         document.getElementById("update_gender").value = gender;
@@ -283,5 +286,17 @@
         updateModal.show();
     }
 
+</script>
+<script>
+    // Tính ngày tối đa được chọn (tức là cách đây 18 năm)
+    const today = new Date();
+    const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+    // Định dạng YYYY-MM-DD
+    const formatted = minDate.toISOString().split("T")[0];
+
+    // Áp dụng vào input
+    document.getElementById("dob").setAttribute("max", formatted);
+    document.getElementById("update_dobupdate_dob").setAttribute("max", formatted);
 </script>
 </html>

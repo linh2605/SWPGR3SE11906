@@ -90,6 +90,7 @@
                         <div class="d-flex justify-content-end mt-4">
                             <a href="${pageContext.request.contextPath}/new-password" class="btn btn-outline-secondary me-3">Đổi mật khẩu</a>
                             <button type="submit" class="btn btn-primary">Cập nhật hồ sơ</button>
+                            <a href="${pageContext.request.contextPath}/patient/feedback" class="btn btn-outline-secondary me-3">Đánh giá</a>
                         </div>
                     </form>
                 </div>

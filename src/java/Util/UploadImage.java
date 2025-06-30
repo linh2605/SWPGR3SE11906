@@ -50,7 +50,7 @@ public class UploadImage {
         }
 
         String newFileName = UploadImage.generateUniqueFileName(fileName);
-        String uploadDir = req.getServletContext().getRealPath("/") + "views/assets/uploads";
+        String uploadDir = req.getServletContext().getRealPath("/") + "assets/uploads";
         Path filePath = Paths.get(uploadDir, newFileName);
 
         try (InputStream fileContent = filePart.getInputStream()) {

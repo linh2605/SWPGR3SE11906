@@ -1,4 +1,9 @@
+<%@ page import="models.ExaminationPackage" %>
+<%@ page import="dal.ExaminationPackageDao" %>
+<%@ page import="java.util.List" %>
+<%@ page import="models.Specialty" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
@@ -159,6 +164,50 @@
                     </c:forEach>
                 </div>
             </section>
+            <section class="promotions mb-5">
+                <h2 class="text-center mb-4" style="color: #004d99;">Các Gói Khám</h2>
+                <div class="row">
+                    <%
+                            List<ExaminationPackage> examinationPackages = ExaminationPackageDao.getAll();
+                            if (examinationPackages != null && !examinationPackages.isEmpty()) {
+                                int count = Math.min(3, examinationPackages.size());
+                                for (int i = 0; i < count; i++) {
+                                    ExaminationPackage pkg = examinationPackages.get(i);
+                        %>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card p-3 h-100">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title"><%= pkg.getName() %></h5>
+                                                <p class="card-text"><%= pkg.getDescription() %></p>
+
+                                                <% if (pkg.getSpecialties() != null && !pkg.getSpecialties().isEmpty()) { %>
+                                                    <p class="card-text mb-1"><strong>Chuyên khoa:</strong></p>
+                                                    <ul class="list-unstyled">
+                                                        <% for (Specialty spec : pkg.getSpecialties()) { %>
+                                                            <li>- <%= spec.getName() %></li>
+                                                        <% } %>
+                                                    </ul>
+                                                <% } %>
+
+                                                <p class="card-text"><strong>Giá:</strong> <%= pkg.getPrice() %> VNĐ</p>
+                                                <p class="card-text"><strong>Thời lượng:</strong> <%= pkg.getDuration() %> phút</p>
+                                                <a href="<%= request.getContextPath() %>/package?id=<%= pkg.getPackageId() %>" class="btn btn-primary mt-2">Xem chi tiết</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                        <%
+                                }
+                            } else {
+                        %>
+                            <div class="col-12">
+                                <p class="text-muted text-center">Không có gói khám nào để hiển thị.</p>
+                            </div>
+                        <%
+                            }
+                        %>
+
+                </div>
+            </section>
 
             <!-- Tại sao chọn G3 Hospital -->
             <section class="why-choose-us mb-5">
@@ -276,7 +325,7 @@
                 <h2 class="text-center mb-4" style="color: #004d99;">Dịch vụ</h2>
                 <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        <c:forEach var="slide" begin="0" end="${(services.size() - 1) / 3}" varStatus="slideStatus">
+                        <%--<c:forEach var="slide" begin="0" end="${(services.size() - 1) / 3}" varStatus="slideStatus">
                             <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
                                 <div class="row">
                                     <c:forEach var="s" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, services.size() - 1)}">
@@ -294,7 +343,7 @@
                                     </c:forEach>
                                 </div>
                             </div>
-                        </c:forEach>
+                        </c:forEach>--%>
                     </div>
                     <!-- Luôn hiển thị mũi tên chuyển slide -->
                     <button class="carousel-control-prev d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev" style="opacity:1;">

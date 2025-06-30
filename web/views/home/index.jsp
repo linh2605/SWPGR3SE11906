@@ -38,7 +38,7 @@
                     <div class="carousel-item">
                         <img src="https://picsum.photos/1200/400" class="d-block w-100" alt="Banner 2">
                         <div class="carousel-caption d-none d-md-block">
-                            <h5>Cấp cứu 24/7</h5>
+                            <h5>Cấp Cứu 24/7</h5>
                             <p>Liên hệ ngay: 0976054728</p>
                         </div>
                     </div>

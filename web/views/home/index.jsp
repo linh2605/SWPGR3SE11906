@@ -181,7 +181,7 @@
                                                 <p class="card-text"><%= pkg.getDescription() %></p>
 
                                                 <% if (pkg.getSpecialties() != null && !pkg.getSpecialties().isEmpty()) { %>
-                                                    <p class="card-text mb-1"><strong>Chuyên khoa:</strong></p>
+                                                    <p class="card-text mb-1"><strong>Chuyên Khoa:</strong></p>
                                                     <ul class="list-unstyled">
                                                         <% for (Specialty spec : pkg.getSpecialties()) { %>
                                                             <li>- <%= spec.getName() %></li>

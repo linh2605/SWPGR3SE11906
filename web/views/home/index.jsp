@@ -112,7 +112,7 @@
                                 <input type="email" class="form-control" id="email" name="email" required>
                             </div>
                             <div class="mb-3">
-                                <label for="specialty" class="form-label">Chuyên khoa</label>
+                                <label for="specialty" class="form-label">Chuyên Khoa</label>
                                 <select class="form-select" id="specialty" name="specialty" required>
                                     <option value="">Chọn chuyên khoa</option>
                                     <option value="co-xuong-khop">Cơ Xương Khớp</option>

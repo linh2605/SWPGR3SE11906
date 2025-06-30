@@ -67,7 +67,7 @@
                         <a class="btn btn-outline-success me-2"
                            href="${pageContext.request.contextPath}/appointment"
                            >
-                            <i class="bi bi-calendar-plus"></i> Đặt Lịch khám
+                            <i class="bi bi-calendar-plus"></i> Đặt Lịch Khám
                         </a>
                     </div>
                     <div class="col-auto">

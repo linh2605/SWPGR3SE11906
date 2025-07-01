@@ -25,14 +25,7 @@ public class AdminUpdateDoctorServlet extends HttpServlet {
         User user = doctor.getUser();
         int user_id = user.getUserId();
 
-        String username = req.getParameter("username");
         String email = req.getParameter("email");
-
-        if (UserDAO.doesUsernameExistExcept(user_id, username)) {
-            req.getSession().setAttribute("flash_error", "Username đang được sử dụng bởi user khác.");
-            resp.sendRedirect(req.getContextPath() + "/admin/doctor");
-            return;
-        }
 
         if (UserDAO.doesEmailExistExcept(user_id, email)) {
             req.getSession().setAttribute("flash_error", "Email đang được sử dụng bởi user khác.");
@@ -44,7 +37,6 @@ public class AdminUpdateDoctorServlet extends HttpServlet {
         String fullname = req.getParameter("fullname");
         String phone = req.getParameter("phone");
 
-        user.setUsername(username);
         user.setPassword(password);
         user.setFullName(fullname);
         user.setEmail(email);

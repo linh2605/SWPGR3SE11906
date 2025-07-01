@@ -14,7 +14,7 @@
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
         <!-- Bootstrap Icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <!-- Custom CSS (đã bao gồm Leaflet CSS) -->
@@ -320,42 +320,6 @@
                 </div>
             </section>
 
-            <!-- Dịch vụ - Carousel động 3 dịch vụ/slide -->
-            <section class="services mb-5">
-                <h2 class="text-center mb-4" style="color: #004d99;">Dịch vụ</h2>
-                <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <%--<c:forEach var="slide" begin="0" end="${(services.size() - 1) / 3}" varStatus="slideStatus">
-                            <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
-                                <div class="row">
-                                    <c:forEach var="s" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, services.size() - 1)}">
-                                        <c:set var="service" value="${services[s]}" />
-                                        <div class="col-md-4 mb-4">
-                                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
-                                                <img src="https://picsum.photos/300/200?random=${service.serviceId}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
-                                                <div class="card-body text-center">
-                                                    <h5 class="card-title">${service.name}</h5>
-                                                    <p class="card-text">${service.detail}</p>
-                                                    <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:forEach>
-                                </div>
-                            </div>
-                        </c:forEach>--%>
-                    </div>
-                    <!-- Luôn hiển thị mũi tên chuyển slide -->
-                    <button class="carousel-control-prev d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev" style="opacity:1;">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next" style="opacity:1;">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </section>
         </main>
 
         <!-- Bản đồ OpenStreetMap với Leaflet -->

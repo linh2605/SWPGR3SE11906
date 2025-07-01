@@ -8,8 +8,10 @@
     <title>Yêu Cầu Ngoại Lệ - G3 Hospital</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
@@ -63,7 +65,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped" id="table">
                                 <thead>
                                     <tr>
                                         <th>Ngày</th>
@@ -105,14 +107,14 @@
                                             </td>
                                             <td>
                                                 <c:if test="${exception.status == 'Chờ duyệt'}">
-                                                    <a href="${pageContext.request.contextPath}/doctor-schedule?action=edit-exception&id=${exception.exceptionId}" 
-                                                       class="btn btn-sm btn-outline-primary">
-                                                        <i class="bi bi-pencil"></i> Sửa
-                                                    </a>
-                                                    <button class="btn btn-sm btn-outline-danger" 
-                                                            onclick="deleteException(${exception.exceptionId})">
-                                                        <i class="bi bi-trash"></i> Xóa
-                                                    </button>
+                                                                                        <a href="${pageContext.request.contextPath}/doctor-schedule?action=edit-exception&id=${exception.exceptionId}" 
+                                       class="btn btn-sm btn-outline-primary" title="Chỉnh sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteException(${exception.exceptionId})" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                                 </c:if>
                                             </td>
                                         </tr>
@@ -133,11 +135,23 @@
         <%@ include file="../layouts/footer.jsp" %>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 
     <script>
+    $(document).ready(function() {
+        $('#table').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+            },
+            pageLength: 10,
+            responsive: true,
+            order: [[0, 'desc']]
+        });
+    });
+    
     function deleteException(exceptionId) {
         if (confirm('Bạn có chắc chắn muốn xóa yêu cầu này không?')) {
             window.location.href = '${pageContext.request.contextPath}/doctor-schedule?action=delete-exception&id=' + exceptionId;

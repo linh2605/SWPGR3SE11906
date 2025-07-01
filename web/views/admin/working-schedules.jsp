@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
@@ -19,8 +20,8 @@
             <div class="content">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="section-title">Quản lý lịch làm việc</h2>
-                    <a href="${pageContext.request.contextPath}/admin/working-schedules?action=add" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Thêm lịch làm việc
+                    <a href="${pageContext.request.contextPath}/admin/working-schedules?action=add" class="btn btn-primary" title="Thêm lịch làm việc">
+                        <i class="bi bi-plus-circle"></i>
                     </a>
                 </div>
 
@@ -84,11 +85,11 @@
                                 <div class="col-md-3">
                                     <label class="form-label">&nbsp;</label>
                                     <div>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-search"></i> Lọc
+                                        <button type="submit" class="btn btn-primary" title="Lọc">
+                                            <i class="bi bi-search"></i>
                                         </button>
-                                        <a href="${pageContext.request.contextPath}/admin/working-schedules" class="btn btn-secondary">
-                                            <i class="bi bi-arrow-clockwise"></i> Làm mới
+                                        <a href="${pageContext.request.contextPath}/admin/working-schedules" class="btn btn-secondary" title="Làm mới">
+                                            <i class="bi bi-arrow-clockwise"></i>
                                         </a>
                                     </div>
                                 </div>
@@ -104,7 +105,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover" id="table">
                                 <thead>
                                     <tr>
                                         <th>Bác sĩ</th>
@@ -177,13 +178,26 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script>
         function deleteSchedule(scheduleId) {
             if (confirm('Bạn có chắc chắn muốn xóa lịch làm việc này?')) {
                 window.location.href = '${pageContext.request.contextPath}/admin/working-schedules?action=delete&id=' + scheduleId;
             }
         }
+        
+        $(document).ready(function() {
+            $('#table').DataTable({
+                language: {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                },
+                pageLength: 10,
+                responsive: true,
+                order: [[0, 'asc']]
+            });
+        });
     </script>
 </body>
 </html> 

@@ -5,8 +5,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
     <style>
         .star-rating {
@@ -53,7 +55,7 @@
     <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addFeedbackModal">Thêm phản hồi</button>
 
     <% List<Feedback> feedbacks = (List<Feedback>) request.getAttribute("feedbacks"); %>
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="feedbackTable">
         <thead class="table-light">
         <tr>
             <th>ID</th>
@@ -75,8 +77,12 @@
             <td><%= fb.getOfferFeedback() %></td>
             <td><%= fb.getRate() %></td>
             <td>
-                <button class="btn btn-warning btn-sm" onclick="populateUpdateForm(<%= fb.getId() %>, <%= fb.getRate() %>, '<%= fb.getDoctorFeedback().replace("'", "\\'") %>', '<%= fb.getServiceFeedback().replace("'", "\\'") %>', '<%= fb.getPriceFeedback().replace("'", "\\'") %>', '<%= fb.getOfferFeedback().replace("'", "\\'") %>')" data-bs-toggle="modal" data-bs-target="#updateFeedbackModal">Sửa</button>
-                <button class="btn btn-danger btn-sm" onclick="confirmDelete(<%= fb.getId() %>)" data-bs-toggle="modal" data-bs-target="#deleteFeedbackModal">Xóa</button>
+                <button class="btn btn-warning btn-sm" onclick="populateUpdateForm(<%= fb.getId() %>, <%= fb.getRate() %>, '<%= fb.getDoctorFeedback().replace("'", "\\'") %>', '<%= fb.getServiceFeedback().replace("'", "\\'") %>', '<%= fb.getPriceFeedback().replace("'", "\\'") %>', '<%= fb.getOfferFeedback().replace("'", "\\'") %>')" data-bs-toggle="modal" data-bs-target="#updateFeedbackModal" title="Chỉnh sửa">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete(<%= fb.getId() %>)" data-bs-toggle="modal" data-bs-target="#deleteFeedbackModal" title="Xóa">
+                    <i class="bi bi-trash"></i>
+                </button>
             </td>
         </tr>
         <% } %>

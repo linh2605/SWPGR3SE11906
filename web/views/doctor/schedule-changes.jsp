@@ -7,8 +7,10 @@
     <title>Yêu Cầu Đổi Ca Dài Hạn - G3 Hospital</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
     <style>
     .badge {
@@ -63,7 +65,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped" id="table">
                                 <thead>
                                     <tr>
                                         <th>Loại yêu cầu</th>
@@ -102,14 +104,14 @@
                                                 <span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span>
                                             </td>
                                             <td>
-                                                <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-sm btn-info">
-                                                    <i class="bi bi-eye"></i> Xem
-                                                </a>
-                                                <c:if test="${change.status == 'pending'}">
-                                                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=cancel&id=${change.changeId}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này?');">
-                                                        <i class="bi bi-x-circle"></i> Hủy
-                                                    </a>
-                                                </c:if>
+                                                                                <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <c:if test="${change.status == 'pending'}">
+                                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=cancel&id=${change.changeId}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này?');" title="Hủy yêu cầu">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                </c:if>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -127,8 +129,21 @@
         </div>
         <%@ include file="../layouts/footer.jsp" %>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#table').DataTable({
+                language: {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                },
+                pageLength: 10,
+                responsive: true,
+                order: [[3, 'desc']]
+            });
+        });
+    </script>
 </body>
 </html> 

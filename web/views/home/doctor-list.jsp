@@ -9,23 +9,179 @@
 
 <html lang="vi">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
         <!-- Bootstrap Icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <!-- Custom CSS (đã bao gồm Leaflet CSS) -->
+        <!-- Custom CSS -->
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/doctor-list.css">
 
         <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/favicon.svg" />
-        <link href="${pageContext.request.contextPath}/assets/css/doctor-list.css" media="screen" rel="stylesheet" type="text/css" />
 
-        <title>Danh sách bác sĩ</title>
+        <title>Danh sách bác sĩ - Hệ thống Quản lý Phòng khám</title>
         <style>
+            /* Fix header overlap issue */
+            body {
+                padding-top: 0;
+                font-family: 'Montserrat', sans-serif !important;
+            }
+            
+            main {
+                margin-top: 20px;
+            }
+            
             .page-btn.active {
                 background-color: #004D99;
                 color: white;
+            }
+            
+            .doctor-list-container {
+                padding: 60px 0;
+                background-color: #f8f9fa;
+            }
+            
+            .doctor-card {
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                margin-bottom: 30px;
+                overflow: hidden;
+            }
+            
+            .doctor-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+            
+            .doctor-image {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 10px;
+            }
+            
+            .doctor-name {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #004d99;
+                margin-bottom: 10px;
+                text-decoration: none;
+            }
+            
+            .doctor-name:hover {
+                color: #0066cc;
+                text-decoration: none;
+            }
+            
+            .doctor-info {
+                padding: 20px;
+            }
+            
+            .doctor-detail-btn {
+                background-color: #004d99;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 20px;
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+            
+            .doctor-detail-btn:hover {
+                background-color: #003366;
+                color: white;
+                text-decoration: none;
+            }
+            
+            .specialty-filter {
+                background: white;
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                margin-bottom: 30px;
+            }
+            
+            .filter-tab {
+                background: #f8f9fa;
+                border: 2px solid #e9ecef;
+                color: #495057;
+                padding: 10px 15px;
+                margin: 5px;
+                border-radius: 25px;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                display: inline-block;
+            }
+            
+            .filter-tab.active,
+            .filter-tab:hover {
+                background: #004d99;
+                color: white;
+                border-color: #004d99;
+                text-decoration: none;
+            }
+            
+            .banner-section {
+                background: linear-gradient(rgba(0,77,153,0.7), rgba(0,77,153,0.7)), 
+                           url('${pageContext.request.contextPath}/assets/pexels-photo-5327590.png');
+                background-size: cover;
+                background-position: center;
+                color: white;
+                padding: 100px 0;
+                text-align: center;
+            }
+            
+            .banner-title {
+                font-size: 3rem;
+                font-weight: 700;
+                margin-bottom: 20px;
+            }
+            
+            .search-box {
+                background: white;
+                border-radius: 25px;
+                padding: 5px;
+                margin: 20px 0;
+            }
+            
+            .search-input {
+                border: none;
+                padding: 10px 20px;
+                border-radius: 20px;
+                width: 100%;
+                outline: none;
+            }
+            
+            .breadcrumb {
+                background: transparent;
+                padding: 0;
+                margin: 20px 0;
+            }
+            
+            .breadcrumb-item a {
+                color: white;
+                text-decoration: none;
+            }
+            
+            .breadcrumb-item.active {
+                color: #ffd700;
+            }
+            
+            /* Map section styling */
+            .map-section {
+                margin: 40px 0;
+            }
+            
+            #map {
+                border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             }
         </style>
     </head>
@@ -34,839 +190,163 @@
         <!-- Nhúng header và navbar -->
         <%@ include file="../layouts/header.jsp" %>
 
-        <!--<main class="container my-5">-->
+        <c:set var="defaultAvatar" value="${pageContext.request.contextPath}/assets/default-avatar.jpg" />
+
         <main>
-            <div id="doctor">
-                <div class="Banner">
-                    <div class="-img">
-                        <img
-                            src="../../assets/pexels-photo-5327590.png"
-                            alt=""
-                            title=""
-                            class="ls-is-cached lazyloaded"/>
-                    </div>
-
-                    <div class="-txt">
-                        <div class="container-fluid">
-                            <h1 class="-title">Danh sách bác sĩ</h1>
-
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item">
-                                        <a class="-link" href="${pageContext.request.contextPath}">
-                                            Trang chủ
-                                        </a>
-                                    </li>
-
-                                    <li class="breadcrumb-item active" aria-current="page"> <!--chưa ăn icon bootstrap-->
-                                        Danh sách bác sĩ
-                                    </li>
-                                </ol>
-                            </nav>
+            <!-- Banner Section -->
+            <section class="banner-section">
+                <div class="container">
+                    <h1 class="banner-title">Danh sách bác sĩ</h1>
+                    
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item">
+                                <a href="${pageContext.request.contextPath}/">
+                                    <i class="bi bi-house-door"></i> Trang chủ
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                Danh sách bác sĩ
+                            </li>
+                        </ol>
+                    </nav>
+                    
+                    <!-- Search Box -->
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="search-box">
+                                <input type="text" 
+                                       id="doctor-search" 
+                                       class="search-input" 
+                                       placeholder="Tìm kiếm bác sĩ theo tên...">
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="doctorFilter">
-                    <div class="container-fluid" id="doctoFilterAjax">
-
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="-top">
-                                    <form class="-search" id="doctor-search-form">
-                                        <input
-                                            type="text"
-                                            name="doctor-search"
-                                            id="doctor-search"
-                                            placeholder="Tìm kiếm" />
-                                        <input
-                                            type="text"
-                                            name="app-locale"
-                                            id="app-locale"
-                                            value="vi"
-                                            hidden="" />
-                                        <div class="-icon">
-                                            <img src="../../assets/icon-search.svg" alt="" />
-                                        </div>
-                                    </form>
-                                </div>
-
-                                <div class="tabAll" id="tabDoctor" role="tablist">
-                                    <div
-                                        class="-itemTab active"
-
-                                        type="button"
-                                        role="tab"
-                                        aria-selected="true"
-                                        data-specialist-id="all">
+            <!-- Doctor List Section -->
+            <section class="doctor-list-container">
+                <div class="container">
+                    <div class="row">
+                        <!-- Specialty Filter Sidebar -->
+                        <div class="col-md-3">
+                            <div class="specialty-filter">
+                                <h5 class="mb-3">
+                                    <i class="bi bi-filter"></i> Lọc theo chuyên khoa
+                                </h5>
+                                
+                                <div class="filter-tabs">
+                                    <button class="filter-tab active w-100 mb-2" 
+                                            data-specialist-id="all">
                                         Tất cả
-                                        <div class="-number">${countAllSpecialties}</div>
-                                    </div>
+                                        <span class="badge bg-primary float-end">${countAllSpecialties}</span>
+                                    </button>
+                                    
                                     <c:forEach var="s" items="${specialties}">
-                                        <button
-                                            class="-itemTab nav-link"
-
-                                            type="button"
-                                            role="tab"
-                                            aria-selected="false"
-                                            data-specialist-id="${s.key.specialty_id}">
+                                        <button class="filter-tab w-100 mb-2" 
+                                                data-specialist-id="${s.key.specialtyId}">
                                             ${s.key.name}
-                                            <div class="-number">${s.value}</div>
+                                            <span class="badge bg-secondary float-end">${s.value}</span>
                                         </button>
                                     </c:forEach>
-                                    <!--                                    <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1128-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1128"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1128"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1128"
-                                                                            tabindex="-1">
-                                                                            Đơn nguyên Nam Khoa &amp; PT Tiết Niệu
-                                                                            <div class="-number">6</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1119-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1119"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1119"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1119"
-                                                                            tabindex="-1">
-                                                                            Khoa Cấp Cứu - Hồi Sức Tích Cực ICU
-                                                                            <div class="-number">12</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1120-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1120"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1120"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1120"
-                                                                            tabindex="-1">
-                                                                            Khoa Chẩn đoán hình ảnh và Điện quang can thiệp
-                                                                            <div class="-number">11</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1121-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1121"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1121"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1121"
-                                                                            tabindex="-1">
-                                                                            Khoa Cơ - Xương - Khớp
-                                                                            <div class="-number">10</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1122-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1122"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1122"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1122"
-                                                                            tabindex="-1">
-                                                                            Khoa Da Liễu
-                                                                            <div class="-number">4</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1124-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1124"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1124"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1124"
-                                                                            tabindex="-1">
-                                                                            Khoa Hô Hấp
-                                                                            <div class="-number">6</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1127-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1127"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1127"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1127"
-                                                                            tabindex="-1">
-                                                                            Khoa Mắt
-                                                                            <div class="-number">12</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-27775-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-27775"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-27775"
-                                                                            aria-selected="false"
-                                                                            data-specialist="27775"
-                                                                            tabindex="-1">
-                                                                            Khoa Ngoại Chấn Thương Chỉnh Hình - Thần Kinh Sọ Não
-                                                                            <div class="-number">19</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1129-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1129"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1129"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1129"
-                                                                            tabindex="-1">
-                                                                            Khoa Ngoại Tổng Hợp
-                                                                            <div class="-number">15</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1130-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1130"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1130"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1130"
-                                                                            tabindex="-1">
-                                                                            Khoa Nhi
-                                                                            <div class="-number">102</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1132-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1132"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1132"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1132"
-                                                                            tabindex="-1">
-                                                                            Khoa Nội Tiết
-                                                                            <div class="-number">8</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1131-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1131"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1131"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1131"
-                                                                            tabindex="-1">
-                                                                            Khoa Nội Tổng Hợp
-                                                                            <div class="-number">13</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1133-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1133"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1133"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1133"
-                                                                            tabindex="-1">
-                                                                            Khoa Răng Hàm Mặt
-                                                                            <div class="-number">17</div>
-                                                                        </button>
-                                    
-                                                                        <button
-                                                                            class="-itemTab nav-link"
-                                                                            id="nav-1134-tab"
-                                                                            data-bs-toggle="tab"
-                                                                            data-bs-target="#nav-1134"
-                                                                            type="button"
-                                                                            role="tab"
-                                                                            aria-controls="nav-1134"
-                                                                            aria-selected="false"
-                                                                            data-specialist="1134"
-                                                                            tabindex="-1">
-                                                                            Khoa Sản - Phụ Khoa
-                                                                            <div class="-number">16</div>
-                                                                        </button>-->
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-md-9 tab-content" id="tabDoctorContent">
-                                <div
-                                    class="-listdoctor tab-pane fade show active"
-                                    id="nav-all"
-                                    role="tabpanel"
-                                    aria-labelledby="nav-all-tab">
-                                    <div class="row">
+                        <!-- Doctor Grid -->
+                        <div class="col-md-9">
+                            <div class="row" id="doctor-grid">
+                                
+                                <c:choose>
+                                    <c:when test="${not empty doctors}">
                                         <c:forEach var="d" items="${doctors}">
-                                            <div class="col-md-6 doctor-item" data-specialist-id="${d.specialty.specialty_id}">
-                                                <div class="itemDoctor" >
-                                                    <div class="-img">
-                                                        <img
-                                                            src="${d.image_url}"
-                                                            alt=""
-                                                            title=""
-                                                            class="ls-is-cached lazyloaded" />
-                                                    </div>
-
-                                                    <div class="-txt">
-                                                        <a
-                                                            href="${pageContext.request.contextPath}/doctors/${d.doctor_id}"
-                                                            class="-link">
-                                                            <h6 class="-name">${d.user.fullName}</h6>
-                                                        </a>
-
-                                                        <div class="-des"></div>
-
-                                                        <a
-                                                            href="${pageContext.request.contextPath}/doctors/${d.doctor_id}"
-                                                            class="-viewdetail">
-                                                            Xem chi tiết
-                                                        </a>
-
-                                                        <ul>
-                                                            <li>
-                                                                <img
-                                                                    src="../../assets/icon-graduation.svg"
-                                                                    alt=""
-                                                                    class="ls-is-cached lazyloaded" />
-                                                                <span> ${d.degree} </span>
-                                                            </li>
-
-                                                            <li>
-                                                                <img
-                                                                    src="../../assets/icon-hospital.svg"
-                                                                    alt=""
-                                                                    class="ls-is-cached lazyloaded" />
-                                                                <span> ${d.experience} </span>
-                                                            </li>
-                                                        </ul>
+                                            <div class="col-md-6 doctor-item" data-specialist-id="${d.specialty.specialtyId}">
+                                                <div class="doctor-card">
+                                                    <div class="p-3">
+                                                        <div class="row">
+                                                            <div class="col-4">
+                                                                <img src="${not empty d.image_url ? d.image_url : defaultAvatar}" 
+                                                                     alt="${d.user.fullName}" 
+                                                                     class="doctor-image">
+                                                            </div>
+                                                            <div class="col-8 doctor-info">
+                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
+                                                                   class="doctor-name">
+                                                                    ${d.user.fullName}
+                                                                </a>
+                                                                
+                                                                <p class="text-muted mb-2">
+                                                                    <i class="bi bi-hospital"></i> 
+                                                                    ${d.specialty.name}
+                                                                </p>
+                                                                
+                                                                <div class="mb-2">
+                                                                    <small class="text-muted">
+                                                                        <i class="bi bi-mortarboard"></i> 
+                                                                        ${d.degree}
+                                                                    </small>
+                                                                </div>
+                                                                
+                                                                <div class="mb-3">
+                                                                    <small class="text-muted">
+                                                                        <i class="bi bi-briefcase"></i> 
+                                                                        ${d.experience}
+                                                                    </small>
+                                                                </div>
+                                                                
+                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
+                                                                   class="doctor-detail-btn">
+                                                                    <i class="bi bi-eye"></i> Xem chi tiết
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </c:forEach>
-                                        <!--                                        <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">PGS.TS - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Phó Giáo sư, Tiến sĩ </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bệnh viện Đa khoa A </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">ThS.BSCKII - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Thạc sĩ, Bác sĩ Chuyên khoa II </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bệnh viện Đa khoa A </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">PGS.TS - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Phó Giáo sư, Tiến sĩ </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bệnh viện Đa khoa A </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">
-                                                                                                    TTƯT.ThS.BSCKI - Nguyễn Văn A
-                                                                                                </h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span>
-                                                                                                        Thầy thuốc ưu tú, Thạc sĩ, Bác sĩ Chuyên khoa I
-                                                                                                    </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bệnh viện Đa khoa A </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">Ths. Bs - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bác sĩ, Thạc sĩ </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span>
-                                                                                                        Bệnh viện Đa khoa A
-                                                                                                    </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">TS.BS. - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Tiến sĩ, Bác sĩ </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bệnh viện Đa khoa A </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">TS. BS - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Tiến sĩ, Bác sĩ </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span>
-                                                                                                        Bệnh viện Đa khoa A
-                                                                                                    </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                        
-                                        
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Phó Giáo sư, Tiến sĩ, Bác sĩ </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bệnh viện Đa khoa A </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">PGS.TS - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Phó giáo sư, Tiến sĩ </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span>
-                                                                                                        Bệnh viện Đa khoa A
-                                                                                                    </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="col-md-6">
-                                                                                    <div class="itemDoctor">
-                                                                                        <div class="-img">
-                                                                                            <img
-                                                                                                src="../../assets/doctor-image.png"
-                                                                                                alt=""
-                                                                                                title=""
-                                                                                                class="ls-is-cached lazyloaded" />
-                                                                                        </div>
-                                        
-                                                                                        <div class="-txt">
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-link">
-                                                                                                <h6 class="-name">BSCKII - Nguyễn Văn A</h6>
-                                                                                            </a>
-                                        
-                                                                                            <div class="-des"></div>
-                                        
-                                                                                            <a
-                                                                                                href="#"
-                                                                                                class="-viewdetail">
-                                                                                                Xem chi tiết
-                                                                                            </a>
-                                        
-                                                                                            <ul>
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-graduation.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span> Bác sĩ Chuyên khoa II </span>
-                                                                                                </li>
-                                        
-                                                                                                <li>
-                                                                                                    <img
-                                                                                                        src="../../assets/icon-hospital.svg"
-                                                                                                        alt=""
-                                                                                                        class="ls-is-cached lazyloaded" />
-                                                                                                    <span>
-                                                                                                        Bệnh viện Đa khoa A
-                                                                                                    </span>
-                                                                                                </li>
-                                                                                            </ul>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>-->
-                                    </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="col-12">
+                                            <div class="alert alert-info text-center">
+                                                <i class="bi bi-info-circle"></i>
+                                                <h5>Không có bác sĩ nào được tìm thấy</h5>
+                                                <p class="mb-0">Hiện tại chưa có thông tin bác sĩ trong hệ thống hoặc tất cả bác sĩ đang bận.</p>
+                                            </div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
 
-                                    <div id="pagination-container" class="mt-4 text-center pagination"></div>
-                                </div>
+                            <!-- Pagination -->
+                            <div id="pagination-container" class="mt-4 text-center">
+                                <!-- Pagination will be generated by JavaScript -->
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- Map Section -->
+            <section class="map-section">
+                <div class="container">
+                    <div class="text-center mb-4">
+                        <h3>Vị trí phòng khám</h3>
+                        <p class="text-muted">Tìm hiểu vị trí các cơ sở y tế của chúng tôi</p>
+                    </div>
+                    <div id="map" style="height: 300px; width: 100%;"></div>
+                </div>
+            </section>
         </main>
 
-        <!-- Bản đồ OpenStreetMap với Leaflet -->
-        <section class="map-section mb-4">
-            <div id="map" style="height: 300px; width: 100%;"></div>
-        </section>
-
-        <!-- Nhúng footer -->
+        <!-- Footer -->
         <%@ include file="../layouts/footer.jsp" %>
 
-        <!-- Bootstrap JS -->
+        <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <!-- Leaflet JS cho OpenStreetMap -->
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <!-- Custom JS (đã bao gồm script khởi tạo bản đồ) -->
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+        
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const specialistButtons = document.querySelectorAll('[data-specialist-id]');
@@ -874,7 +354,7 @@
                 const paginationContainer = document.getElementById('pagination-container');
                 const searchInput = document.getElementById('doctor-search');
 
-                const doctorsPerPage = 2; // config so bac si tren 1 trang
+                const doctorsPerPage = 6; // 6 bác sĩ trên 1 trang
                 let currentSpecialistId = 'all';
                 let currentPage = 1;
                 let currentKeyword = '';
@@ -886,9 +366,9 @@
                 function getFilteredDoctors() {
                     return allDoctors.filter(doc => {
                         const docSpecId = doc.getAttribute('data-specialist-id');
-                        const name = doc.querySelector('.-name')?.textContent || '';
+                        const name = doc.querySelector('.doctor-name')?.textContent || '';
                         const matchSpec = currentSpecialistId === 'all' || docSpecId === currentSpecialistId;
-                        const matchKeyword = normalize(name).includes(normalize(currentKeyword));
+                        const matchKeyword = currentKeyword === '' || normalize(name).includes(normalize(currentKeyword));
                         return matchSpec && matchKeyword;
                     });
                 }
@@ -896,13 +376,17 @@
                 function renderDoctors() {
                     const filteredDoctors = getFilteredDoctors();
                     const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage);
-                    if (currentPage > totalPages)
+                    if (currentPage > totalPages && totalPages > 0) {
                         currentPage = 1;
+                    }
 
                     const start = (currentPage - 1) * doctorsPerPage;
                     const end = start + doctorsPerPage;
 
+                    // Hide all doctors
                     allDoctors.forEach(doc => doc.style.display = 'none');
+                    
+                    // Show filtered doctors for current page
                     filteredDoctors.slice(start, end).forEach(doc => doc.style.display = 'block');
 
                     renderPagination(totalPages);
@@ -910,27 +394,75 @@
 
                 function renderPagination(totalPages) {
                     paginationContainer.innerHTML = '';
+                    
+                    if (totalPages <= 1) return;
+                    
+                    const pagination = document.createElement('nav');
+                    const ul = document.createElement('ul');
+                    ul.className = 'pagination justify-content-center';
+                    
+                    // Previous button
+                    const prevLi = document.createElement('li');
+                    prevLi.className = 'page-item ' + (currentPage === 1 ? 'disabled' : '');
+                    const prevLink = document.createElement('a');
+                    prevLink.className = 'page-link';
+                    prevLink.innerHTML = '<i class="bi bi-chevron-left"></i>';
+                    prevLink.href = '#';
+                    if (currentPage > 1) {
+                        prevLink.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            currentPage--;
+                            renderDoctors();
+                        });
+                    }
+                    prevLi.appendChild(prevLink);
+                    ul.appendChild(prevLi);
+                    
+                    // Page numbers
                     for (let i = 1; i <= totalPages; i++) {
-                        const btn = document.createElement('button');
-                        btn.className = 'btn btn-outline-primary m-1 page-btn';
-                        btn.textContent = i;
-                        if (i === currentPage)
-                            btn.classList.add('active');
-
-                        btn.addEventListener('click', () => {
+                        const li = document.createElement('li');
+                        li.className = 'page-item ' + (i === currentPage ? 'active' : '');
+                        const link = document.createElement('a');
+                        link.className = 'page-link';
+                        link.textContent = i;
+                        link.href = '#';
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
                             currentPage = i;
                             renderDoctors();
                         });
-
-                        paginationContainer.appendChild(btn);
+                        li.appendChild(link);
+                        ul.appendChild(li);
                     }
+                    
+                    // Next button
+                    const nextLi = document.createElement('li');
+                    nextLi.className = 'page-item ' + (currentPage === totalPages ? 'disabled' : '');
+                    const nextLink = document.createElement('a');
+                    nextLink.className = 'page-link';
+                    nextLink.innerHTML = '<i class="bi bi-chevron-right"></i>';
+                    nextLink.href = '#';
+                    if (currentPage < totalPages) {
+                        nextLink.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            currentPage++;
+                            renderDoctors();
+                        });
+                    }
+                    nextLi.appendChild(nextLink);
+                    ul.appendChild(nextLi);
+                    
+                    pagination.appendChild(ul);
+                    paginationContainer.appendChild(pagination);
                 }
 
+                // Specialty filter handlers
                 specialistButtons.forEach(btn => {
                     btn.addEventListener('click', function () {
                         currentSpecialistId = btn.getAttribute('data-specialist-id');
                         currentPage = 1;
 
+                        // Update active state
                         specialistButtons.forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
 
@@ -938,15 +470,28 @@
                     });
                 });
 
+                // Search handler
                 searchInput.addEventListener('input', function () {
                     currentKeyword = this.value;
                     currentPage = 1;
                     renderDoctors();
                 });
 
+                // Initialize map
+                if (typeof L !== 'undefined') {
+                    const map = L.map('map').setView([21.0285, 105.8542], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+                    
+                    L.marker([21.0285, 105.8542]).addTo(map)
+                        .bindPopup('Hệ thống Quản lý Phòng khám')
+                        .openPopup();
+                }
+
+                // Initial render
                 renderDoctors();
             });
         </script>
-
     </body>
 </html>

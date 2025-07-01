@@ -68,6 +68,17 @@ public class DoctorListServlet extends HttpServlet {
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
         HashMap<Specialty, Integer> specialtiesCount = SpecialtyDao.getSpecialtiesWithDoctorCount();
+        
+        // Debug information
+        System.out.println("DoctorListServlet Debug:");
+        System.out.println("Number of doctors retrieved: " + (doctors != null ? doctors.size() : "null"));
+        System.out.println("Number of specialties: " + (specialties != null ? specialties.size() : "null"));
+        System.out.println("Specialties count map size: " + (specialtiesCount != null ? specialtiesCount.size() : "null"));
+        
+        if (doctors != null && doctors.size() > 0) {
+            System.out.println("First doctor: " + doctors.get(0).getUser().getFullName());
+        }
+        
         request.setAttribute("doctors", doctors);
         request.setAttribute("countAllSpecialties", specialties.size());
         request.setAttribute("specialties", specialtiesCount);

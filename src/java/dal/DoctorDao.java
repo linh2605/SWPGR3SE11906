@@ -20,16 +20,18 @@ public class DoctorDao {
 
         try {
             Connection connection = DBContext.makeConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id");
+            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id where doctors.status = 'active'");
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Doctor> doctors = new ArrayList<>();
             while (resultSet.next()) {
                 Doctor doctor = mappingDoctor(resultSet);
                 doctors.add(doctor);
             }
+            System.out.println("DoctorDao.getAllDoctors() - Retrieved " + doctors.size() + " active doctors");
             return doctors;
         } catch (Exception e) {
             e.printStackTrace();
+            System.err.println("Error in DoctorDao.getAllDoctors(): " + e.getMessage());
             return new ArrayList<>();
         }
     }

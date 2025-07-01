@@ -1,4 +1,5 @@
 @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 body {
     font-family: 'Montserrat', sans-serif;
     color: #333;
@@ -217,9 +218,8 @@ footer a:hover {
 }
 
 .map-section {
-    height: 300px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin: 40px 0;
+    padding-bottom: 60px;
 }
 
 /* Style cho thanh chức năng */
@@ -998,4 +998,22 @@ section p {
     background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
     color: #0c5460;
     border-left: 4px solid #17a2b8;
+}
+
+/* Font consistency for all admin pages */
+html, body, .card, .card-body, .table, .modal, .btn, .form-control, .form-select, .alert, h1, h2, h3, h4, h5, h6, p, span, div, td, th {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Specific font weights for better consistency */
+.card-title, .modal-title, .section-title, h1, h2, h3, h4, h5, h6 {
+    font-weight: 600 !important;
+}
+
+.btn {
+    font-weight: 500 !important;
+}
+
+.table thead th {
+    font-weight: 600 !important;
 }

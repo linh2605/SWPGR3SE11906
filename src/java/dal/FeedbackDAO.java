@@ -1,7 +1,9 @@
 package dal;
 
 import models.Feedback;
+import models.Gender;
 import models.Patient;
+import models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,11 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class FeedbackDAO {
     public static List<Feedback> getAll() {
         List<Feedback> list = new ArrayList<>();
-        String sql = "SELECT * FROM feedback";
+        String sql = "SELECT f.*, p.*, u.* " +
+                "FROM feedback f " +
+                "JOIN patients p ON f.patient_id = p.patient_id " +
+                "JOIN users u ON p.user_id = u.user_id";
         try (Connection con = DBContext.makeConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -26,6 +32,7 @@ public class FeedbackDAO {
         }
         return list;
     }
+
 
     public static Feedback getById(int id) {
         String sql = "SELECT * FROM feedback WHERE feedback_id = ?";
@@ -99,15 +106,35 @@ public class FeedbackDAO {
         fb.setPriceFeedback(rs.getString("price_feedback"));
         fb.setOfferFeedback(rs.getString("offer_feedback"));
 
+        // Lấy thông tin User
+        User u = new User();
+        u.setUserId(rs.getInt("user_id")); // từ bảng users
+        u.setUsername(rs.getString("username"));
+        u.setFullName(rs.getString("full_name"));
+        u.setEmail(rs.getString("email"));
+        u.setPhone(rs.getString("phone"));
+        u.setRoleId(rs.getInt("role_id"));
+
+        // Lấy thông tin Patient
         Patient p = new Patient();
-        p.setPatient_id(rs.getInt("patient_id"));
-        fb.setPatient(p);
+        p.setPatient_id(rs.getInt("patient_id")); // từ bảng patients
+        p.setGender(Gender.valueOf(rs.getString("gender").toUpperCase(Locale.ITALY)));
+        p.setDate_of_birth(rs.getDate("date_of_birth"));
+        p.setAddress(rs.getString("address"));
+        p.setImage_url(rs.getString("image_url"));
+        p.setUser(u); // gắn User vào Patient
+
+        fb.setPatient(p); // gắn Patient vào Feedback
 
         return fb;
     }
+
     public static List<Feedback> getByPatientId(int patientId) {
         List<Feedback> list = new ArrayList<>();
-        String sql = "SELECT * FROM feedback WHERE patient_id = ?";
+        String sql = "SELECT f.*, p.*, u.* " +
+                "FROM feedback f " +
+                "JOIN patients p ON f.patient_id = p.patient_id " +
+                "JOIN users u ON p.user_id = u.user_id WHERE p.patient_id = ?";
         try (Connection con = DBContext.makeConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, patientId);

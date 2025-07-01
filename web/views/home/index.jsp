@@ -2,6 +2,8 @@
 <%@ page import="dal.ExaminationPackageDao" %>
 <%@ page import="java.util.List" %>
 <%@ page import="models.Specialty" %>
+<%@ page import="dal.FeedbackDAO" %>
+<%@ page import="models.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -278,6 +280,42 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+            <!-- feedback list-->
+            <section class="introduction mb-5">
+                <h2 class="text-center mb-4" style="color: #004d99;">Đánh giá</h2>
+                <div class="row g-4">
+                    <%
+                        List<Feedback> feedbacks = FeedbackDAO.getAll();
+                        for (Feedback fb : feedbacks) {
+                            Patient p = fb.getPatient();
+                            User u = p.getUser();
+                    %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning">
+                                    <%= "★".repeat(fb.getRate()) + "☆".repeat(5 - fb.getRate()) %>
+                                </h5>
+                                <p><strong>Bác sĩ:</strong> <%= fb.getDoctorFeedback() %></p>
+                                <p><strong>Dịch vụ:</strong> <%= fb.getServiceFeedback() %></p>
+                                <p><strong>Giá cả:</strong> <%= fb.getPriceFeedback() %></p>
+                                <p><strong>Ưu đãi:</strong> <%= fb.getOfferFeedback() %></p>
+                                <hr>
+                                <div class="d-flex align-items-center mt-3">
+                                    <img src="<%= p.getImage_url() != null ? p.getImage_url() : "https://via.placeholder.com/50" %>"
+                                         alt="Avatar" class="rounded-circle me-2" width="50" height="50">
+                                    <div>
+                                        <strong><%= u.getFullName() %></strong><br>
+                                        <small><%= u.getEmail() %></small><br>
+                                        <small><%= p.getGender() %> - <%= p.getDate_of_birth() %></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
                 </div>
             </section>
 

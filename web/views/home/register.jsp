@@ -89,11 +89,16 @@
 </div>
 
 
-                    <div class="mb-3">
-                        <label for="fullName" class="form-label">Họ và tên</label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" pattern=".{2,}" required>
-                        <div class="invalid-feedback">Vui lòng nhập họ và tên hợp lệ.</div>
-                    </div>
+                <div class="mb-3">
+    <label for="fullName" class="form-label">Họ và tên</label>
+    <input type="text" class="form-control" id="fullName" name="fullName" 
+           pattern="^[\p{L}\s]+$" 
+           title="Họ và tên chỉ được chứa chữ cái có dấu (tiếng Việt) và dấu cách." 
+           required>
+    <div class="invalid-feedback">Vui lòng nhập họ và tên hợp lệ.</div>
+</div>
+
+
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>

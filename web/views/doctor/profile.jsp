@@ -102,7 +102,7 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mt-4">
-                        <a href="${pageContext.request.contextPath}/views/home/new-password.jsp" class="btn btn-outline-secondary me-3">Đổi mật khẩu</a>
+                        <a href="${pageContext.request.contextPath}/new-password" class="btn btn-outline-secondary me-3">Đổi mật khẩu</a>
                         <button type="submit" class="btn btn-primary">Cập nhật hồ sơ</button>
                     </div>
                 </form>

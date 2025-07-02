@@ -57,13 +57,13 @@ public class SpecialtyDao {
     public static HashMap<Specialty, Integer> getSpecialtiesWithDoctorCount() {
         HashMap<Specialty, Integer> map = new HashMap<>();
         String sql = "SELECT s.specialty_id\n"
-                + "	 , name\n"
-                + "	 , description\n"
+                + "	 , s.name\n"
+                + "	 , s.description\n"
                 + "	 , COUNT(d.doctor_id) AS doctor_count\n"
                 + "  FROM specialties s\n"
                 + "	       LEFT JOIN doctors d\n"
-                + "	       ON s.specialty_id = d.specialty_id\n"
-                + " GROUP BY s.specialty_id, name, description;";
+                + "	       ON s.specialty_id = d.specialty_id AND d.status = 'active'\n"
+                + " GROUP BY s.specialty_id, s.name, s.description;";
 
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             try (ResultSet rs = ps.executeQuery()) {

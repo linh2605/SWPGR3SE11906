@@ -120,7 +120,7 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="username" class="form-label">Tên đăng nhập</label>
-                                    <input type="text" name="username" id="username" class="form-control" required>
+                                    <input maxlength="100" type="text" name="username" id="username" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="password" class="form-label">Mật khẩu</label>
@@ -128,7 +128,7 @@
                                 </div>
                                 <div class="col-md-6">
                                         <label for="fullName" class="form-label">Họ tên</label>
-                                    <input type="text" name="fullname" id="fullname" class="form-control" required>
+                                        <input maxlength="100" type="text" name="fullname" id="fullname" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
@@ -169,11 +169,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="degree" class="form-label">Bằng cấp</label>
-                                    <input type="text" name="degree" id="degree" class="form-control" required>
+                                    <input maxlength="100" type="text" name="degree" id="degree" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="experience" class="form-label">Kinh nghiệm</label>
-                                    <input type="text" name="experience" id="experience" class="form-control" required min="0">
+                                    <input maxlength="100" type="text" name="experience" id="experience" class="form-control" required min="0">
                                 </div>
                             </div>
                         </div>
@@ -215,11 +215,11 @@
                         <input type="hidden" id="update_doctor_id" name="doctor_id">
                         <div class="col-md-6">
                             <label>Username</label>
-                            <input name="username" id="update_username" class="form-control" required>
+                            <input maxlength="100" name="username" id="update_username" class="form-control" required disabled>
                         </div>
                         <div class="col-md-6">
                             <label>Full Name</label>
-                            <input name="fullname" id="update_fullname" class="form-control" required>
+                            <input maxlength="100" name="fullname" id="update_fullname" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Email</label>
@@ -252,11 +252,11 @@
                         </div>
                         <div class="col-md-6">
                             <label>Degree</label>
-                            <input name="degree" id="update_degree" class="form-control" required>
+                            <input maxlength="100" name="degree" id="update_degree" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Experience</label>
-                            <input name="experience" id="update_experience" class="form-control" required>
+                            <input maxlength="100" name="experience" id="update_experience" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Status</label>

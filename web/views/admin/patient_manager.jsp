@@ -120,7 +120,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="fullName" class="form-label">Họ tên</label>
-                            <input class="form-control" id="fullname" name="fullname" required>
+                            <input maxlength="100" class="form-control" id="fullname" name="fullname" required>
                         </div>
                         <div class="col-md-6">
                             <label for="email" class="form-label">Email</label>
@@ -128,7 +128,8 @@
                         </div>
                         <div class="col-md-6">
                             <label for="phone" class="form-label">Số điện thoại</label>
-                            <input class="form-control" id="phone" name="phone">
+                            <input class="form-control" id="phone" name="phone" pattern="0[0-9]{9}" maxlength="10"
+                                        title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0">
                         </div>
                         <div class="col-md-6">
                             <label for="gender" class="form-label">Giới tính</label>
@@ -149,7 +150,7 @@
                         </div>
                         <div class="col-md-12">
                             <label for="address" class="form-label">Địa chỉ</label>
-                            <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                            <textarea maxlength="100" class="form-control" id="address" name="address" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -192,15 +193,11 @@
                         <input type="hidden" id="update_patient_id" name="patient_id">
                         <div class="col-md-6">
                             <label for="update_username" class="form-label">Username</label>
-                            <input class="form-control" id="update_username" name="username" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="update_password" class="form-label">Password (để trống nếu không đổi)</label>
-                            <input type="password" class="form-control" id="update_password" name="password">
+                            <input class="form-control" id="update_username" name="username" required disabled>
                         </div>
                         <div class="col-md-6">
                             <label for="update_fullName" class="form-label">Họ tên</label>
-                            <input class="form-control" id="update_fullname" name="fullname" required>
+                            <input maxlength="100" class="form-control" id="update_fullname" name="fullname" required>
                         </div>
                         <div class="col-md-6">
                             <label for="update_email" class="form-label">Email</label>
@@ -208,7 +205,8 @@
                         </div>
                         <div class="col-md-6">
                             <label for="update_phone" class="form-label">Số điện thoại</label>
-                            <input class="form-control" id="update_phone" name="phone">
+                            <input class="form-control" id="update_phone" name="phone" pattern="0[0-9]{9}" maxlength="10"
+                                        title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0">
                         </div>
                         <div class="col-md-6">
                             <label for="update_gender" class="form-label">Giới tính</label>
@@ -229,7 +227,7 @@
                         </div>
                         <div class="col-md-12">
                             <label for="update_address" class="form-label">Địa chỉ</label>
-                            <textarea class="form-control" id="update_address" name="address" rows="3"></textarea>
+                            <textarea maxlength="100" class="form-control" id="update_address" name="address" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -255,7 +253,7 @@
 <script>
     new DataTable("#table", {
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
         }
     });
 

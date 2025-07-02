@@ -29,17 +29,21 @@
             <div id="carouselBanner" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="https://picsum.photos/1200/400" class="d-block w-100" alt="Banner 1">
+                        <img src="assets/Blue White Modern Professional Medical Business Facebook Cover.png" class="d-block w-100" alt="Banner 1">
                         <div class="carousel-caption d-none d-md-block">
-                            <h5>Chăm sóc sức khỏe toàn diện</h5>
-                            <p>Đội ngũ bác sĩ chuyên nghiệp, thiết bị hiện đại hàng đầu.</p>
+                           
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="https://picsum.photos/1200/400" class="d-block w-100" alt="Banner 2">
+                        <img src="assets/Blue White Modern Professional Medical Business Facebook Cover (1).png" class="d-block w-100" alt="Banner 2">
                         <div class="carousel-caption d-none d-md-block">
-                            <h5>Cấp Cứu 24/7</h5>
-                            <p>Liên hệ ngay: 0976054728</p>
+                            
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="assets/Blue White Modern Professional Medical Business Facebook Cover (2).png" class="d-block w-100" alt="Banner 2">
+                        <div class="carousel-caption d-none d-md-block">
+                            
                         </div>
                     </div>
                 </div>

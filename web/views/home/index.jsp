@@ -1,5 +1,3 @@
-<%@ page import="models.ExaminationPackage" %>
-<%@ page import="dal.ExaminationPackageDao" %>
 <%@ page import="java.util.List" %>
 <%@ page import="models.Specialty" %>
 <%@ page import="dal.FeedbackDAO" %>
@@ -159,62 +157,18 @@
                     <c:forEach var="service" items="${popularServices}">
                         <div class="col-md-4 mb-4">
                             <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
-                                <img src="https://picsum.photos/300/200?random=${service.serviceId}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                                <img src="<%=request.getContextPath()%>/assets/${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body text-center">
                                     <h5 class="card-title">${service.name}</h5>
                                     <p class="card-text">${service.detail}</p>
                                     <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
+                                    <a href="<%=request.getContextPath()%>/appointment?service_id=${service.service_id}"><button class="btn btn-primary">Đặt lịch khám ngay</button></a>
                                 </div>
                             </div>
                         </div>
                     </c:forEach>
                 </div>
             </section>
-            <section class="promotions mb-5">
-                <h2 class="text-center mb-4" style="color: #004d99;">Các Gói Khám</h2>
-                <div class="row">
-                    <%
-                            List<ExaminationPackage> examinationPackages = ExaminationPackageDao.getAll();
-                            if (examinationPackages != null && !examinationPackages.isEmpty()) {
-                                int count = Math.min(3, examinationPackages.size());
-                                for (int i = 0; i < count; i++) {
-                                    ExaminationPackage pkg = examinationPackages.get(i);
-                        %>
-                                    <div class="col-md-4 mb-4">
-                                        <div class="card p-3 h-100">
-                                            <div class="card-body text-center">
-                                                <h5 class="card-title"><%= pkg.getName() %></h5>
-                                                <p class="card-text"><%= pkg.getDescription() %></p>
-
-                                                <% if (pkg.getSpecialties() != null && !pkg.getSpecialties().isEmpty()) { %>
-                                                    <p class="card-text mb-1"><strong>Chuyên Khoa:</strong></p>
-                                                    <ul class="list-unstyled">
-                                                        <% for (Specialty spec : pkg.getSpecialties()) { %>
-                                                            <li>- <%= spec.getName() %></li>
-                                                        <% } %>
-                                                    </ul>
-                                                <% } %>
-
-                                                <p class="card-text"><strong>Giá:</strong> <%= pkg.getPrice() %> VNĐ</p>
-                                                <p class="card-text"><strong>Thời lượng:</strong> <%= pkg.getDuration() %> phút</p>
-                                                <a href="<%= request.getContextPath() %>/package?id=<%= pkg.getPackageId() %>" class="btn btn-primary mt-2">Xem chi tiết</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                        <%
-                                }
-                            } else {
-                        %>
-                            <div class="col-12">
-                                <p class="text-muted text-center">Không có gói khám nào để hiển thị.</p>
-                            </div>
-                        <%
-                            }
-                        %>
-
-                </div>
-            </section>
-
             <!-- Tại sao chọn G3 Hospital -->
             <section class="why-choose-us mb-5">
                 <h2 class="text-center mb-4" style="color: #004d99;">Tại sao chọn G3 Hospital?</h2>

@@ -1,8 +1,12 @@
 
-<%@ page import="models.ExaminationPackage" %>
+
+<%@ page import="models.Service" %>
+<%@ page import="java.util.stream.Collectors" %>
+<%@ page import="models.Specialty" %>
+<%@ page import="models.Doctor" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%
-    ExaminationPackage examinationPackage = (ExaminationPackage) request.getAttribute("examinationPackage");
+    Service service = (Service) request.getAttribute("service");
 %>
 <!DOCTYPE html>
 <html>
@@ -47,23 +51,28 @@
 
                         <div class="mb-3">
                             <label class="form-label">Tên gói</label>
-                            <input disabled type="text" name="name" value="<%= examinationPackage.getName() %>" class="form-control" required>
+                            <input disabled type="text" name="name" value="<%= service.getName() %>" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Các bác sĩ phụ trách</label>
+                            <input disabled type="text" name="name" value="<%= service.getDoctors().stream().map(d -> d.getUser().getFullName()).collect(Collectors.joining(", ")) %>" class="form-control" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Mô tả</label>
-                            <textarea disabled name="description" class="form-control"><%= examinationPackage.getDescription() %></textarea>
+                            <textarea disabled name="description" class="form-control"><%= service.getDetail() %></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Giá</label>
-                            <input disabled type="number" name="price" step="0.01" min="0" value="<%= examinationPackage.getPrice() %>" class="form-control" required>
+                            <input disabled type="number" name="price" step="0.01" min="0" value="<%= service.getPrice() %>" class="form-control" required>
                         </div>
+                        
+                        <a href="<%=request.getContextPath()%>/appointment?service_id=<%=request.getParameter("id")%>">
+                            <button type="button" class="btn btn-success">Đặt lịch khám ngay</button>
+                        </a>
 
-                        <div class="mb-3">
-                            <label class="form-label">Thời lượng (phút)</label>
-                            <input disabled type="number" name="duration" min="1" value="<%= examinationPackage.getDuration() %>" class="form-control" required>
-                        </div>
                 </form>
             </div>
     </div>
@@ -71,6 +80,6 @@
 <%@ include file="../layouts/footer.jsp" %>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/views/assets/js/scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 </body>
 </html>

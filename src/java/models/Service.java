@@ -8,8 +8,9 @@ public class Service {
     private String detail;
     private Long price;
     private ServiceType type;
+    private String image;
     private List<Doctor> doctors;
-    
+
     // Constructors
     public Service() {}
     
@@ -20,7 +21,16 @@ public class Service {
         this.price = price;
         this.type = type;
     }
-    
+
+    public Service(String name, String detail, Long price, ServiceType type, String image, List<Doctor> doctors) {
+        this.name = name;
+        this.detail = detail;
+        this.price = price;
+        this.type = type;
+        this.image = image;
+        this.doctors = doctors;
+    }
+
     // Getters and Setters
     public int getServiceId() {
         return service_id;
@@ -69,7 +79,23 @@ public class Service {
     public void setDoctors(List<Doctor> doctors) {
         this.doctors = doctors;
     }
-    
+
+    public int getService_id() {
+        return service_id;
+    }
+
+    public void setService_id(int service_id) {
+        this.service_id = service_id;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     @Override
     public String toString() {
         return "Service{" + "service_id=" + service_id + ", name=" + name + ", detail=" + detail + ", price=" + price + ", type=" + type + '}';

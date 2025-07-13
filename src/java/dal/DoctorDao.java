@@ -15,6 +15,20 @@ import models.Status;
 import models.User;
 
 public class DoctorDao {
+    
+    public static void deleteDoctor(int userId){
+        try {
+            String sql = "update doctors set status = 'inactive' where user_id = ?";
+            Connection conn = DBContext.makeConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    
 
     public static List<Doctor> getAllDoctors() {
 
@@ -28,6 +42,25 @@ public class DoctorDao {
                 doctors.add(doctor);
             }
             System.out.println("DoctorDao.getAllDoctors() - Retrieved " + doctors.size() + " active doctors");
+            return doctors;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error in DoctorDao.getAllDoctors(): " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    
+    public static List<Doctor> getAllDeletedDoctors(){
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Doctor> doctors = new ArrayList<>();
+            while (resultSet.next()) {
+                Doctor doctor = mappingDoctor(resultSet);
+                doctors.add(doctor);
+            }
+            System.out.println("DoctorDao.getAllDoctors() - Retrieved " + doctors.size() + " doctors");
             return doctors;
         } catch (Exception e) {
             e.printStackTrace();

@@ -18,6 +18,35 @@ import models.UserRegister;
  * User Data Access Object
  */
 public class UserDAO {
+    
+     public static User getByUserId(int userId) {
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setInt(1, userId);
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()) {
+                Role role = new Role();
+                role.setRoleId(rs.getInt("role_id"));
+
+                return new User(
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getInt("user_id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        role,
+                        rs.getTimestamp("created_at")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Nên dùng logger thực tế
+        }
+        return null;
+    }
 
     public static User login(String usernameOrEmail, String passwordHashed) {
     try (Connection connection = DBContext.makeConnection();
@@ -118,7 +147,7 @@ public class UserDAO {
 
     public static void deleteUser(int userId) {
         try (Connection connection = DBContext.makeConnection();
-             PreparedStatement stmt = connection.prepareStatement("DELETE FROM users WHERE user_id = ?")) {
+             PreparedStatement stmt = connection.prepareStatement("update users set is_deleted = true where user_id = ?")) {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {

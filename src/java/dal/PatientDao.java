@@ -13,13 +13,26 @@ import models.Role;
 import models.User;
 
 public class PatientDao {
+    
+    public static void deletePatient(int userId){
+        try {
+            String sql = "update patients set status = 'inactive' where user_id = ?";
+            Connection conn = DBContext.makeConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     public static List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
         String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description "
                 + "FROM patients p "
                 + "JOIN users u ON p.user_id = u.user_id "
-                + "JOIN roles r ON u.role_id = r.role_id";
+                + "JOIN roles r ON u.role_id = r.role_id "
+                + "WHERE status = 'active'";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 patients.add(mappingPatient(rs));

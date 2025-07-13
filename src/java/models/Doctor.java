@@ -19,6 +19,10 @@ public class Doctor {
     private List<Service> services;
 
     public Doctor() {}
+    
+    public Doctor(int doctor_id) {
+        this.doctor_id = doctor_id;
+    }
 
     public Doctor(User user, Gender gender, Date dob, String image_url, Specialty specialty, String degree, String experience, Status status) {
         this.user = user;

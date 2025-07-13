@@ -108,7 +108,12 @@
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
-        
+        <script>
+            const service_id = '<%=request.getParameter("service_id")%>';
+            if (service_id !== 'null'){
+                document.getElementById("service").value = service_id
+            }
+        </script>
        
     </body>
 </html>

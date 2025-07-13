@@ -49,7 +49,7 @@ public class AdminPatientServlet extends HttpServlet {
                 Role role = RoleDao.getRoleWithName("patient");
                 User user = new User(username, password, fullname, email, phone, role);
                 UserDAO.insertUser(user);
-                Gender gender = Gender.valueOf(req.getParameter("gender"));
+                Gender gender = Gender.valueOf(req.getParameter("gender").toUpperCase());
                 Date date_of_birth = Date.valueOf(req.getParameter("date_of_birth"));
                 String address = req.getParameter("address");
                 String image_url = UploadImage.saveImage(req, "image");

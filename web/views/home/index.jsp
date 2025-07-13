@@ -1,4 +1,11 @@
+<%@ page import="models.ExaminationPackage" %>
+<%@ page import="dal.ExaminationPackageDao" %>
+<%@ page import="java.util.List" %>
+<%@ page import="models.Specialty" %>
+<%@ page import="dal.FeedbackDAO" %>
+<%@ page import="models.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="vi">
@@ -9,7 +16,7 @@
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
         <!-- Bootstrap Icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <!-- Custom CSS (đã bao gồm Leaflet CSS) -->
@@ -24,17 +31,21 @@
             <div id="carouselBanner" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="https://picsum.photos/1200/400" class="d-block w-100" alt="Banner 1">
+                        <img src="assets/Blue White Modern Professional Medical Business Facebook Cover.png" class="d-block w-100" alt="Banner 1">
                         <div class="carousel-caption d-none d-md-block">
-                            <h5>Chăm sóc sức khỏe toàn diện</h5>
-                            <p>Đội ngũ bác sĩ chuyên nghiệp, thiết bị hiện đại hàng đầu.</p>
+                           
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="https://picsum.photos/1200/400" class="d-block w-100" alt="Banner 2">
+                        <img src="assets/Blue White Modern Professional Medical Business Facebook Cover (1).png" class="d-block w-100" alt="Banner 2">
                         <div class="carousel-caption d-none d-md-block">
-                            <h5>Cấp cứu 24/7</h5>
-                            <p>Liên hệ ngay: 0976054728</p>
+                            
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="assets/Blue White Modern Professional Medical Business Facebook Cover (2).png" class="d-block w-100" alt="Banner 2">
+                        <div class="carousel-caption d-none d-md-block">
+                            
                         </div>
                     </div>
                 </div>
@@ -62,7 +73,7 @@
                         <a class="btn btn-outline-success me-2"
                            href="${pageContext.request.contextPath}/appointment"
                            >
-                            <i class="bi bi-calendar-plus"></i> Đặt lịch khám
+                            <i class="bi bi-calendar-plus"></i> Đặt Lịch Khám
                         </a>
                     </div>
                     <div class="col-auto">
@@ -95,7 +106,7 @@
                     <div class="modal-body">
                         <form id="bookingForm">
                             <div class="mb-3">
-                                <label for="fullName" class="form-label">Họ và tên</label>
+                                <label for="fullName" class="form-label">Họ và Tên</label>
                                 <input type="text" class="form-control" id="fullName" name="fullName" required>
                             </div>
                             <div class="mb-3">
@@ -107,7 +118,7 @@
                                 <input type="email" class="form-control" id="email" name="email" required>
                             </div>
                             <div class="mb-3">
-                                <label for="specialty" class="form-label">Chuyên khoa</label>
+                                <label for="specialty" class="form-label">Chuyên Khoa</label>
                                 <select class="form-select" id="specialty" name="specialty" required>
                                     <option value="">Chọn chuyên khoa</option>
                                     <option value="co-xuong-khop">Cơ Xương Khớp</option>
@@ -147,8 +158,8 @@
                 <div class="row">
                     <c:forEach var="service" items="${popularServices}">
                         <div class="col-md-4 mb-4">
-                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.service_id}'">
-                                <img src="https://picsum.photos/300/200?random=${service.service_id}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
+                                <img src="https://picsum.photos/300/200?random=${service.serviceId}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body text-center">
                                     <h5 class="card-title">${service.name}</h5>
                                     <p class="card-text">${service.detail}</p>
@@ -157,6 +168,50 @@
                             </div>
                         </div>
                     </c:forEach>
+                </div>
+            </section>
+            <section class="promotions mb-5">
+                <h2 class="text-center mb-4" style="color: #004d99;">Các Gói Khám</h2>
+                <div class="row">
+                    <%
+                            List<ExaminationPackage> examinationPackages = ExaminationPackageDao.getAll();
+                            if (examinationPackages != null && !examinationPackages.isEmpty()) {
+                                int count = Math.min(3, examinationPackages.size());
+                                for (int i = 0; i < count; i++) {
+                                    ExaminationPackage pkg = examinationPackages.get(i);
+                        %>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card p-3 h-100">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title"><%= pkg.getName() %></h5>
+                                                <p class="card-text"><%= pkg.getDescription() %></p>
+
+                                                <% if (pkg.getSpecialties() != null && !pkg.getSpecialties().isEmpty()) { %>
+                                                    <p class="card-text mb-1"><strong>Chuyên Khoa:</strong></p>
+                                                    <ul class="list-unstyled">
+                                                        <% for (Specialty spec : pkg.getSpecialties()) { %>
+                                                            <li>- <%= spec.getName() %></li>
+                                                        <% } %>
+                                                    </ul>
+                                                <% } %>
+
+                                                <p class="card-text"><strong>Giá:</strong> <%= pkg.getPrice() %> VNĐ</p>
+                                                <p class="card-text"><strong>Thời lượng:</strong> <%= pkg.getDuration() %> phút</p>
+                                                <a href="<%= request.getContextPath() %>/package?id=<%= pkg.getPackageId() %>" class="btn btn-primary mt-2">Xem chi tiết</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                        <%
+                                }
+                            } else {
+                        %>
+                            <div class="col-12">
+                                <p class="text-muted text-center">Không có gói khám nào để hiển thị.</p>
+                            </div>
+                        <%
+                            }
+                        %>
+
                 </div>
             </section>
 
@@ -231,6 +286,42 @@
                     </div>
                 </div>
             </section>
+            <!-- feedback list-->
+            <section class="introduction mb-5">
+                <h2 class="text-center mb-4" style="color: #004d99;">Đánh giá</h2>
+                <div class="row g-4">
+                    <%
+                        List<Feedback> feedbacks = FeedbackDAO.getAll();
+                        for (Feedback fb : feedbacks) {
+                            Patient p = fb.getPatient();
+                            User u = p.getUser();
+                    %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning">
+                                    <%= "★".repeat(fb.getRate()) + "☆".repeat(5 - fb.getRate()) %>
+                                </h5>
+                                <p><strong>Bác sĩ:</strong> <%= fb.getDoctorFeedback() %></p>
+                                <p><strong>Dịch vụ:</strong> <%= fb.getServiceFeedback() %></p>
+                                <p><strong>Giá cả:</strong> <%= fb.getPriceFeedback() %></p>
+                                <p><strong>Ưu đãi:</strong> <%= fb.getOfferFeedback() %></p>
+                                <hr>
+                                <div class="d-flex align-items-center mt-3">
+                                    <img src="<%= p.getImage_url() != null ? p.getImage_url() : "https://via.placeholder.com/50" %>"
+                                         alt="Avatar" class="rounded-circle me-2" width="50" height="50">
+                                    <div>
+                                        <strong><%= u.getFullName() %></strong><br>
+                                        <small><%= u.getEmail() %></small><br>
+                                        <small><%= p.getGender() %> - <%= p.getDate_of_birth() %></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </section>
 
             <!-- Đội ngũ bác sĩ - Carousel động 3 bác sĩ/slide -->
             <section class="doctors mb-5">
@@ -271,42 +362,6 @@
                 </div>
             </section>
 
-            <!-- Dịch vụ - Carousel động 3 dịch vụ/slide -->
-            <section class="services mb-5">
-                <h2 class="text-center mb-4" style="color: #004d99;">Dịch vụ</h2>
-                <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <c:forEach var="slide" begin="0" end="${(services.size() - 1) / 3}" varStatus="slideStatus">
-                            <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
-                                <div class="row">
-                                    <c:forEach var="s" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, services.size() - 1)}">
-                                        <c:set var="service" value="${services[s]}" />
-                                        <div class="col-md-4 mb-4">
-                                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.service_id}'">
-                                                <img src="https://picsum.photos/300/200?random=${service.service_id}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
-                                                <div class="card-body text-center">
-                                                    <h5 class="card-title">${service.name}</h5>
-                                                    <p class="card-text">${service.detail}</p>
-                                                    <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </c:forEach>
-                                </div>
-                            </div>
-                        </c:forEach>
-                    </div>
-                    <!-- Luôn hiển thị mũi tên chuyển slide -->
-                    <button class="carousel-control-prev d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev" style="opacity:1;">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next d-block" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next" style="opacity:1;">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </section>
         </main>
 
         <!-- Bản đồ OpenStreetMap với Leaflet -->

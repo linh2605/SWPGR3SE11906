@@ -1,11 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.ServletException;
@@ -15,59 +10,36 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import dal.DBContext;
 import dal.AppointmentDao;
 import models.Appointment;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.time.LocalDateTime;
-import utils.LocalDateTimeAdapter;
 
-@WebServlet("/getAllAppointments")
+@WebServlet({"/getAllAppointments", "/receptionist/appointments"})
 public class ReceptionistAppointmentServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
+        System.out.println("[DEBUG] ReceptionistAppointmentServlet được gọi!");
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("roleId") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
+        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
             return;
         }
         int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 3) { // Chỉ cho receptionist (roleId = 3)
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+        if (roleId != 3) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
             return;
         }
-
-        try (Connection conn = DBContext.makeConnection()) {
-            if (conn == null) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot connect to database");
-                return;
-            }
-
-            // Get page and size parameters with defaults
-            int page = 1;
-            int size = 10;
-            try {
-                String pageStr = request.getParameter("page");
-                String sizeStr = request.getParameter("size");
-                if (pageStr != null) page = Integer.parseInt(pageStr);
-                if (sizeStr != null) size = Integer.parseInt(sizeStr);
-            } catch (NumberFormatException e) {
-                // Use default values if parsing fails
-            }
-            
-            List<Appointment> appointments = AppointmentDao.getAllAppointments(page, size);
-            Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
-            response.getWriter().write(gson.toJson(appointments));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage());
+        // Lễ tân xem toàn bộ lịch hẹn, không cần filter theo user
+        List<Appointment> appointments = AppointmentDao.getAllAppointments(1, 1000);
+        System.out.println("[DEBUG] Số lịch hẹn lễ tân lấy được: " + appointments.size());
+        for (Appointment appt : appointments) {
+            System.out.println("[DEBUG] Appointment ID: " + appt.getId()
+                + ", BN: " + (appt.getPatient() != null && appt.getPatient().getUser() != null ? appt.getPatient().getUser().getFullName() : "null")
+                + ", Doctor: " + (appt.getDoctor() != null && appt.getDoctor().getUser() != null ? appt.getDoctor().getUser().getFullName() : "null")
+                + ", Date: " + (appt.getAppointmentDateTime() != null ? appt.getAppointmentDateTime().toString() : "null")
+                + ", Status: " + (appt.getStatus() != null ? appt.getStatus().getDisplayName() : "null")
+            );
         }
+        request.setAttribute("appointments", appointments);
+        request.getRequestDispatcher("/views/appointment/receptionistDashboard.jsp").forward(request, response);
     }
 }

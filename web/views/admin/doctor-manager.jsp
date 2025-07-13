@@ -11,6 +11,7 @@
     <title>Admin Dashboard - G3 Hospital</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
 </head>
@@ -21,65 +22,90 @@
     <div class="main">
         <%@include file="../layouts/admin-side-bar.jsp"%>
         <div class="content">
-            <h2>Quản lý bác sĩ</h2>
-            <!-- Button trigger create modal -->
-            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createDoctorModal">Thêm bác sĩ</button>
-            <%ArrayList<Doctor> doctors  = (ArrayList<Doctor>) request.getAttribute("doctors");%>
-            <table class="table table-bordered table-striped" id="table">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Gender</th>
-                    <th>Date of Birth</th>
-                    <th>Phone</th>
-                    <th>Image</th>
-                    <th>Specialization</th>
-                    <th>Degree</th>
-                    <th>Experience</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% for (int i = 0; i < doctors.size(); i++) { %>
-                <tr>
-                    <td><%=doctors.get(i).getDoctor_id()%></td>
-                    <td><%=doctors.get(i).getUser().getFullName()%></td>
-                    <td><%=doctors.get(i).getGender()%></td>
-                    <td><%=doctors.get(i).getDob()%></td>
-                    <td><%=doctors.get(i).getUser().getPhone()%></td>
-                    <td>
-                        <% String img = doctors.get(i).getImage_url(); %>
-                        <a href="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/views/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg") %>">link avatar</a>
-                    </td>
-                    <td><%=doctors.get(i).getSpecialty().getName()%></td>
-                    <td><%=doctors.get(i).getDegree()%></td>
-                    <td><%=doctors.get(i).getExperience()%></td>
-                    <td><%=doctors.get(i).getStatus()%></td>
-                    <td>
-                        <a href="javascript:void(0)" class="text-warning"
-                           onclick="populateDoctorUpdateForm(
-                                   '<%= doctors.get(i).getDoctor_id() %>',
-                                   '<%= doctors.get(i).getUser().getUsername() %>',
-                                   '<%= doctors.get(i).getUser().getFullName() %>',
-                                   '<%= doctors.get(i).getUser().getEmail() %>',
-                                   '<%= doctors.get(i).getUser().getPhone() %>',
-                                   '<%= doctors.get(i).getGender() %>',
-                                   '<%= doctors.get(i).getDob() %>',
-                                   '<%= doctors.get(i).getSpecialty().getSpecialty_id() %>',
-                                   '<%= doctors.get(i).getDegree() %>',
-                                   '<%= doctors.get(i).getExperience() %>',
-                                   '<%= doctors.get(i).getStatus() %>'
-                                   )">Update</a>
-                        |
-                        <a href="javascript:void(0)" class="text-danger ms-2"
-                           onclick="showDoctorDeleteModal('<%= doctors.get(i).getUser().getUserId() %>')">Delete</a>
-                    </td>
-                </tr>
-                <% } %>
-                </tbody>
-            </table>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title">Quản lý bác sĩ</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createDoctorModal" title="Thêm bác sĩ">
+                    <i class="bi bi-plus-circle"></i>
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Danh sách bác sĩ</h5>
+                </div>
+                <div class="card-body">
+                    <% ArrayList<Doctor> doctors = (ArrayList<Doctor>) request.getAttribute("doctors"); %>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle text-center" id="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">ID</th>
+                                    <th class="text-start">Họ tên</th>
+                                    <th class="text-center">Giới tính</th>
+                                    <th class="text-center">Ngày sinh</th>
+                                    <th class="text-center">Số điện thoại</th>
+                                    <th class="text-center">Ảnh</th>
+                                    <th class="text-start">Chuyên khoa</th>
+                                    <th class="text-center">Bằng cấp</th>
+                                    <th class="text-start">Kinh nghiệm</th>
+                                    <th class="text-center">Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (int i = 0; i < doctors.size(); i++) { %>
+                                <tr>
+                                    <td class="text-center"><%=doctors.get(i).getDoctor_id()%></td>
+                                    <td class="text-start"><%=doctors.get(i).getUser().getFullName()%></td>
+                                    <td class="text-center"><%=doctors.get(i).getGender()%></td>
+                                    <td class="text-center"><%=doctors.get(i).getDob()%></td>
+                                    <td class="text-center"><%=doctors.get(i).getUser().getPhone()%></td>
+                                    <td class="text-center">
+                                        <% String img = doctors.get(i).getImage_url(); %>
+                                        <% if (img == null || img.isEmpty()) { %>
+                                            <i class="bi bi-person-circle" style="font-size:2rem;color:#bbb;"></i>
+                                        <% } else { %>
+                                            <img src="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg") %>" alt="avatar" style="width:40px;height:40px;object-fit:cover;border-radius:50%;border:1px solid #ccc;">
+                                        <% } %>
+                                    </td>
+                                    <td class="text-start"><%=doctors.get(i).getSpecialty().getName()%></td>
+                                    <td class="text-center"><%=doctors.get(i).getDegree()%></td>
+                                    <td class="text-start"><%=doctors.get(i).getExperience()%></td>
+                                    <td class="text-center">
+                                        <% if ("active".equalsIgnoreCase(doctors.get(i).getStatus()+"")) { %>
+                                            <span class="badge bg-success">active</span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary">inactive</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-warning" title="Chỉnh sửa"
+                                            onclick="populateDoctorUpdateForm(
+                                                '<%= doctors.get(i).getDoctor_id() %>',
+                                                '<%= doctors.get(i).getUser().getUsername() %>',
+                                                '<%= doctors.get(i).getUser().getFullName() %>',
+                                                '<%= doctors.get(i).getUser().getEmail() %>',
+                                                '<%= doctors.get(i).getUser().getPhone() %>',
+                                                '<%= doctors.get(i).getGender() %>',
+                                                '<%= doctors.get(i).getDob() %>',
+                                                '<%= doctors.get(i).getSpecialty().getSpecialtyId()%>',
+                                                '<%= doctors.get(i).getDegree() %>',
+                                                '<%= doctors.get(i).getExperience() %>',
+                                                '<%= doctors.get(i).getStatus() %>'
+                                            )">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger" title="Xóa"
+                                            onclick="showDoctorDeleteModal('<%= doctors.get(i).getUser().getUserId() %>')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- Create Doctor Modal -->
         <div class="modal fade" id="createDoctorModal" tabindex="-1" aria-labelledby="createDoctorModalLabel" aria-hidden="true">
@@ -94,15 +120,15 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="username" class="form-label">Tên đăng nhập</label>
-                                    <input type="text" name="username" id="username" class="form-control" required>
+                                    <input maxlength="100" type="text" name="username" id="username" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="password" class="form-label">Mật khẩu</label>
                                     <input type="password" name="password" id="password" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="fullName" class="form-label">Họ tên</label>
-                                    <input type="text" name="fullName" id="fullName" class="form-control" required>
+                                        <label for="fullName" class="form-label">Họ tên</label>
+                                        <input maxlength="100" type="text" name="fullname" id="fullname" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
@@ -110,7 +136,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label">Số điện thoại</label>
-                                    <input type="text" name="phone" id="phone" class="form-control" required>
+                                    <input type="tel" name="phone" class="form-control"
+                                        pattern="0[0-9]{9}" maxlength="10"
+                                        title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="gender" class="form-label">Giới tính</label>
@@ -126,7 +154,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="image" class="form-label">Ảnh đại diện</label>
-                                    <input type="file" name="image" id="image" class="form-control">
+                                    <input required type="file" name="image" id="image" class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="specialty_id" class="form-label">Chuyên khoa</label>
@@ -135,17 +163,17 @@
                                             List<Specialty> specialties = (ArrayList<Specialty>) request.getAttribute("specialties");
                                             for (Specialty spec : specialties) {
                                         %>
-                                        <option value="<%= spec.getSpecialty_id() %>"><%= spec.getName() %></option>
+                                        <option value="<%= spec.getSpecialtyId() %>"><%= spec.getName() %></option>
                                         <% } %>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="degree" class="form-label">Bằng cấp</label>
-                                    <input type="text" name="degree" id="degree" class="form-control" required>
+                                    <input maxlength="100" type="text" name="degree" id="degree" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="experience" class="form-label">Kinh nghiệm</label>
-                                    <input type="text" name="experience" id="experience" class="form-control" required min="0">
+                                    <input maxlength="100" type="text" name="experience" id="experience" class="form-control" required min="0">
                                 </div>
                             </div>
                         </div>
@@ -187,11 +215,11 @@
                         <input type="hidden" id="update_doctor_id" name="doctor_id">
                         <div class="col-md-6">
                             <label>Username</label>
-                            <input name="username" id="update_username" class="form-control" required>
+                            <input maxlength="100" name="username" id="update_username" class="form-control" required disabled>
                         </div>
                         <div class="col-md-6">
                             <label>Full Name</label>
-                            <input name="fullName" id="update_fullName" class="form-control" required>
+                            <input maxlength="100" name="fullname" id="update_fullname" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Email</label>
@@ -199,14 +227,15 @@
                         </div>
                         <div class="col-md-6">
                             <label>Phone</label>
-                            <input name="phone" id="update_phone" class="form-control" required>
+                            <input pattern="0[0-9]{9}" maxlength="10"
+       title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" name="phone" id="update_phone" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Gender</label>
                             <select name="gender" id="update_gender" class="form-control">
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -217,17 +246,17 @@
                             <label>Specialization</label>
                             <select name="specialty_id" id="update_specialty_id" class="form-control">
                                 <% for (Specialty s : specialties) { %>
-                                <option value="<%= s.getSpecialty_id() %>"><%= s.getName() %></option>
+                                <option value="<%= s.getSpecialtyId()%>"><%= s.getName() %></option>
                                 <% } %>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label>Degree</label>
-                            <input name="degree" id="update_degree" class="form-control" required>
+                            <input maxlength="100" name="degree" id="update_degree" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Experience</label>
-                            <input name="experience" id="update_experience" class="form-control" required>
+                            <input maxlength="100" name="experience" id="update_experience" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Status</label>
@@ -238,7 +267,7 @@
                         </div>
                         <div class="col-md-12">
                             <label>Image (Leave empty if not updating)</label>
-                            <input required type="file" name="image" class="form-control">
+                            <input type="file" name="image" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -256,10 +285,12 @@
 <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+<script>
+    new DataTable("#table");
+</script>
 </body>
 <%@include file="../layouts/toastr.jsp"%>
 <script>
-    new DataTable("#table")
     function showDoctorDeleteModal(userId) {
         document.getElementById("deleteDoctorUserId").value = userId;
         var deleteModal = new bootstrap.Modal(document.getElementById('deleteDoctorModal'));
@@ -269,7 +300,7 @@
     function populateDoctorUpdateForm(doctorId, username, fullName, email, phone, gender, dob, specialty_id, degree, experience, status) {
         document.getElementById("update_doctor_id").value = doctorId;
         document.getElementById("update_username").value = username;
-        document.getElementById("update_fullName").value = fullName;
+        document.getElementById("update_fullname").value = fullName;
         document.getElementById("update_email").value = email;
         document.getElementById("update_phone").value = phone;
         document.getElementById("update_gender").value = gender;
@@ -283,5 +314,17 @@
         updateModal.show();
     }
 
+</script>
+<script>
+    // Tính ngày tối đa được chọn (tức là cách đây 18 năm)
+    const today = new Date();
+    const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+    // Định dạng YYYY-MM-DD
+    const formatted = minDate.toISOString().split("T")[0];
+
+    // Áp dụng vào input
+    document.getElementById("dob").setAttribute("max", formatted);
+    document.getElementById("update_dob").setAttribute("max", formatted);
 </script>
 </html>

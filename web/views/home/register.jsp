@@ -17,7 +17,8 @@
         <meta charset="UTF-8">
         <title>Đăng ký - G3 Hospital</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
         <style>
@@ -88,11 +89,16 @@
 </div>
 
 
-                    <div class="mb-3">
-                        <label for="fullName" class="form-label">Họ và tên</label>
-                        <input type="text" class="form-control" id="fullName" name="fullName" pattern=".{2,}" required>
-                        <div class="invalid-feedback">Vui lòng nhập họ và tên hợp lệ.</div>
-                    </div>
+                <div class="mb-3">
+    <label for="fullName" class="form-label">Họ và tên</label>
+    <input type="text" class="form-control" id="fullName" name="fullName" 
+           pattern="^[\p{L}\s]+$" 
+           title="Họ và tên chỉ được chứa chữ cái có dấu (tiếng Việt) và dấu cách." 
+           required>
+    <div class="invalid-feedback">Vui lòng nhập họ và tên hợp lệ.</div>
+</div>
+
+
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>

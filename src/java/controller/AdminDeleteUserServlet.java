@@ -14,7 +14,7 @@ import java.io.IOException;
 public class AdminDeleteUserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int user_id = Integer.parseInt(req.getParameter("user_id"));
+        int user_id = Integer.parseInt(req.getParameter("userId"));
         UserDAO.deleteUser(user_id);
         req.getSession().setAttribute("flash_success", "Xóa người dùng thành công.");
         resp.sendRedirect(req.getHeader("referer"));

@@ -3,10 +3,11 @@ package dal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import models.Service;
-import models.ServiceType;
 import java.util.ArrayList;
 import java.util.List;
+
+import models.Service;
+import models.ServiceType;
 
 public class ServiceDAO {
 
@@ -17,11 +18,21 @@ public class ServiceDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Service s = new Service();
-                    s.setService_id(rs.getInt("service_id"));
+                    s.setServiceId(rs.getInt("service_id"));
                     s.setName(rs.getString("name"));
                     s.setDetail(rs.getString("detail"));
                     s.setPrice(rs.getLong("price"));
-                    s.setType(ServiceType.valueOf(rs.getString("type")));
+                    String typeStr = rs.getString("type");
+                    if (typeStr != null && !typeStr.trim().isEmpty()) {
+                        try {
+                            s.setType(ServiceType.valueOf(typeStr));
+                        } catch (IllegalArgumentException e) {
+                            System.err.println("Invalid service type value in database: " + typeStr);
+                            s.setType(ServiceType.SPECIALIST);
+                        }
+                    } else {
+                        s.setType(ServiceType.SPECIALIST);
+                    }
                     return s;
                 }
             }
@@ -39,11 +50,21 @@ public class ServiceDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Service s = new Service();
-                    s.setService_id(rs.getInt("service_id"));
+                    s.setServiceId(rs.getInt("service_id"));
                     s.setName(rs.getString("name"));
                     s.setDetail(rs.getString("detail"));
                     s.setPrice(rs.getLong("price"));
-                    s.setType(models.ServiceType.valueOf(rs.getString("type")));
+                    String typeStr = rs.getString("type");
+                    if (typeStr != null && !typeStr.trim().isEmpty()) {
+                        try {
+                            s.setType(ServiceType.valueOf(typeStr));
+                        } catch (IllegalArgumentException e) {
+                            System.err.println("Invalid service type value in database: " + typeStr);
+                            s.setType(ServiceType.SPECIALIST);
+                        }
+                    } else {
+                        s.setType(ServiceType.SPECIALIST);
+                    }
                     list.add(s);
                 }
             }
@@ -64,11 +85,21 @@ public class ServiceDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Service s = new Service();
-                    s.setService_id(rs.getInt("service_id"));
+                    s.setServiceId(rs.getInt("service_id"));
                     s.setName(rs.getString("name"));
                     s.setDetail(rs.getString("detail"));
                     s.setPrice(rs.getLong("price"));
-                    s.setType(ServiceType.valueOf(rs.getString("type")));
+                    String typeStr = rs.getString("type");
+                    if (typeStr != null && !typeStr.trim().isEmpty()) {
+                        try {
+                            s.setType(ServiceType.valueOf(typeStr));
+                        } catch (IllegalArgumentException e) {
+                            System.err.println("Invalid service type value in database: " + typeStr);
+                            s.setType(ServiceType.SPECIALIST);
+                        }
+                    } else {
+                        s.setType(ServiceType.SPECIALIST);
+                    }
                     list.add(s);
                 }
             }

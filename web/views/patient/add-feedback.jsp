@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../layouts/header.jsp" %>
 
@@ -7,7 +7,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Đánh giá dịch vụ - G3 Hospital</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
     <style>
@@ -56,6 +57,7 @@
             <h3 class="text-primary mb-4">Đánh giá dịch vụ</h3>
 
             <form method="post" action="${pageContext.request.contextPath}/patient/feedback">
+                <input type="hidden" name="action" value="add">
                 <div class="mb-4">
                     <label class="form-label">Mức độ hài lòng tổng thể</label>
                     <div class="star-rating">

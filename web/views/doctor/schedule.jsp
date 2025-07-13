@@ -8,8 +8,10 @@
     <title>Lịch làm việc - G3 Hospital</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
@@ -48,7 +50,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped" id="scheduleTable">
                                 <thead>
                                     <tr>
                                         <th>Thứ</th>
@@ -97,7 +99,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped" id="exceptionsTable">
                                 <thead>
                                     <tr>
                                         <th>Ngày</th>
@@ -129,11 +131,11 @@
                                             <td>
                                                 <c:if test="${exception.status == 'Chờ duyệt'}">
                                                     <a href="${pageContext.request.contextPath}/doctor-schedule?action=edit-exception&id=${exception.exceptionId}" 
-                                                       class="btn btn-sm btn-outline-primary">
+                                                       class="btn btn-sm btn-outline-primary" title="Chỉnh sửa">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
                                                     <button class="btn btn-sm btn-outline-danger" 
-                                                            onclick="deleteException(${exception.exceptionId})">
+                                                            onclick="deleteException(${exception.exceptionId})" title="Xóa">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </c:if>

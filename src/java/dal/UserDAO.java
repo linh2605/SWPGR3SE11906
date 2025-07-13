@@ -84,23 +84,36 @@ public class UserDAO {
     }
 
     public static boolean updateUser(User user) {
-        String sql = "UPDATE users SET username = ?, password = ?, full_name = ?, email = ?, phone = ?, role_id = ? WHERE user_id = ?";
-        try (Connection conn = DBContext.makeConnection();
-             PreparedStatement st = conn.prepareStatement(sql)) {
-
-            st.setString(1, user.getUsername());
-            st.setString(2, user.getPassword()); // Ensure hashing if updating password
-            st.setString(3, user.getFullName());
-            st.setString(4, user.getEmail());
-            st.setString(5, user.getPhone());
-            st.setInt(6, user.getRole().getRoleId());
-            st.setInt(7, user.getUserId());
-
-            return st.executeUpdate() > 0; // Return true if update successful
-        } catch (SQLException e) {
-            e.printStackTrace(); // Consider using a logger
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String sql = "UPDATE users SET username = ?, password = ?, full_name = ?, email = ?, phone = ? WHERE user_id = ?";
+            try (Connection conn = DBContext.makeConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getPassword());
+                ps.setString(3, user.getFullName());
+                ps.setString(4, user.getEmail());
+                ps.setString(5, user.getPhone());
+                ps.setInt(6, user.getUserId());
+                return ps.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            String sql = "UPDATE users SET username = ?, full_name = ?, email = ?, phone = ? WHERE user_id = ?";
+            try (Connection conn = DBContext.makeConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, user.getUsername());
+                ps.setString(2, user.getFullName());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getPhone());
+                ps.setInt(5, user.getUserId());
+                return ps.executeUpdate() > 0;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
-        return false; // Return false if update fails
     }
 
     public static void deleteUser(int userId) {

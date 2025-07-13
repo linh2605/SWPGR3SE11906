@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
@@ -84,7 +85,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover" id="table">
                                 <thead>
                                     <tr>
                                         <th>Bác sĩ</th>
@@ -134,21 +135,21 @@
                                                             <form method="post" action="${pageContext.request.contextPath}/admin/schedule-exceptions" style="display: inline;">
                                                                 <input type="hidden" name="action" value="approve">
                                                                 <input type="hidden" name="exceptionId" value="${exception.exceptionId}">
-                                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')">
+                                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')" title="Duyệt">
                                                                     <i class="bi bi-check"></i>
                                                                 </button>
                                                             </form>
                                                             <form method="post" action="${pageContext.request.contextPath}/admin/schedule-exceptions" style="display: inline;">
                                                                 <input type="hidden" name="action" value="reject">
                                                                 <input type="hidden" name="exceptionId" value="${exception.exceptionId}">
-                                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này?')">
+                                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này?')" title="Từ chối">
                                                                     <i class="bi bi-x"></i>
                                                                 </button>
                                                             </form>
                                                         </c:if>
                                                         <!-- Nút xem chi tiết luôn hiển thị -->
-                                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#exceptionDetailModal${exception.exceptionId}">
-                                                            <i class="bi bi-eye"></i> Xem chi tiết
+                                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#exceptionDetailModal${exception.exceptionId}" title="Xem chi tiết">
+                                                            <i class="bi bi-eye"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -167,7 +168,21 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#table').DataTable({
+                language: {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                },
+                pageLength: 10,
+                responsive: true,
+                order: [[6, 'desc']]
+            });
+        });
+    </script>
 
     <!-- Modal chi tiết ngoại lệ cho từng exception -->
     <c:forEach var="exception" items="${exceptions}">

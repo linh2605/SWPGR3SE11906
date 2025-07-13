@@ -110,13 +110,12 @@ public class AdminScheduleChangeServlet extends HttpServlet {
                 if (specialtyId != null) {
                     Doctor suggested = AppointmentDao.findAvailableDoctorForAppointment(
                         specialtyId,
-                        appt.getAppointmentDate(),
-                        appt.getAppointmentTime(),
+                        appt.getAppointmentDateTime().toLocalDate().toString(),
+                        appt.getAppointmentDateTime().toLocalTime().toString(),
                         change.getDoctorId()
                     );
-                    appt.setSuggestedDoctor(suggested);
-                } else {
-                    appt.setSuggestedDoctor(null);
+                    // appt.setSuggestedDoctor(suggested);
+                    // appt.setSuggestedDoctor(null);
                 }
             }
             request.setAttribute("change", change);
@@ -173,8 +172,8 @@ public class AdminScheduleChangeServlet extends HttpServlet {
                 if (specialtyId != null) {
                     replacementDoctor = AppointmentDao.findAvailableDoctorForAppointment(
                         specialtyId,
-                        appt.getAppointmentDate(),
-                        appt.getAppointmentTime(),
+                        appt.getAppointmentDateTime().toLocalDate().toString(),
+                        appt.getAppointmentDateTime().toLocalTime().toString(),
                         change.getDoctorId()
                     );
                 }

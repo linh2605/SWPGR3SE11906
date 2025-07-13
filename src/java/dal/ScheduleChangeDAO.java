@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.Doctor;
 import models.ScheduleChange;
 import models.Shift;
+import models.User;
 
 public class ScheduleChangeDAO extends DBContext {
     
@@ -285,6 +287,16 @@ public class ScheduleChangeDAO extends DBContext {
             newShift.setEndTime(rs.getTime("new_end_time"));
             change.setNewShift(newShift);
         }
+        
+        // Bổ sung set thông tin Doctor (bao gồm user và fullName)
+        Doctor doctor = new Doctor();
+        doctor.setDoctor_id(rs.getInt("doctor_id"));
+        doctor.setFullName(rs.getString("doctor_name"));
+        User user = new User();
+        user.setUserId(rs.getInt("user_id"));
+        user.setFullName(rs.getString("doctor_name"));
+        doctor.setUser(user);
+        change.setDoctor(doctor);
         
         return change;
     }

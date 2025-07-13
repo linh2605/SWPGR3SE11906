@@ -28,6 +28,8 @@ CREATE TABLE `appointments` (
   `doctor_id` int NOT NULL,
   `service_id` int DEFAULT NULL,
   `appointment_date` datetime NOT NULL,
+  `shift_id` int NOT NULL,
+  `queue_number` int NOT NULL,
   `status` enum('pending','completed','canceled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
   `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `payment_status` enum('PENDING','RESERVED','PAID') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'PENDING',
@@ -37,10 +39,13 @@ CREATE TABLE `appointments` (
   KEY `fk_appointment_patient` (`patient_id`),
   KEY `fk_appointment_doctor` (`doctor_id`),
   KEY `fk_appointment_service` (`service_id`),
+  KEY `fk_appointment_shift` (`shift_id`),
+  KEY `idx_appointment_shift_queue` (`doctor_id`,`appointment_date`,`shift_id`,`queue_number`),
   CONSTRAINT `fk_appointment_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_appointment_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_appointment_service` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `fk_appointment_service` FOREIGN KEY (`service_id`) REFERENCES `services` (`service_id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_appointment_shift` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`shift_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,7 +54,7 @@ CREATE TABLE `appointments` (
 
 LOCK TABLES `appointments` WRITE;
 /*!40000 ALTER TABLE `appointments` DISABLE KEYS */;
-INSERT INTO `appointments` VALUES (1,1,1,2,'2025-06-01 10:00:00','pending','Đau khớp gối, cần khám','PENDING','2025-05-31 12:00:00','2025-06-28 17:01:01'),(2,2,2,13,'2025-06-01 11:00:00','pending','Đau bụng, nghi viêm ruột','PENDING','2025-05-31 12:00:00','2025-06-28 17:01:01');
+INSERT INTO `appointments` VALUES (1,1,1,2,'2025-06-01 10:00:00',1,1,'pending','Đau khớp gối, cần khám','PENDING','2025-05-31 12:00:00','2025-06-29 15:46:22'),(2,2,2,13,'2025-06-01 11:00:00',1,1,'pending','Đau bụng, nghi viêm ruột','PENDING','2025-05-31 12:00:00','2025-06-29 15:46:22'),(3,25,4,2,'2025-06-30 08:00:00',1,1,'pending','Khám cho con, bị đau họng, sốt','PENDING','2025-06-29 13:08:14','2025-06-29 15:46:22'),(4,15,4,2,'2025-06-30 08:00:00',1,2,'pending','khám cho cháu gái, đau họng, ho, sốt','PENDING','2025-06-29 13:51:57','2025-06-29 15:46:22'),(5,15,4,2,'2025-07-01 08:00:00',1,1,'pending','Khám tiếp lần nữa','PENDING','2025-06-29 15:55:36','2025-06-29 15:55:36');
 /*!40000 ALTER TABLE `appointments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,6 +164,89 @@ LOCK TABLES `doctors` WRITE;
 /*!40000 ALTER TABLE `doctors` DISABLE KEYS */;
 INSERT INTO `doctors` VALUES (1,3,'Male','1980-03-15',NULL,1,'ThS.BSCKI','10 năm kinh nghiệm tại BV Chợ Rẫy','inactive','2025-05-31 12:00:00'),(2,4,'Male','1985-07-20','https://example.com/doctor2.jpg',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-05-31 12:00:00'),(4,54,'Male','1985-07-20','https://picsum.photos/600/400',3,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33'),(5,55,'Male','1985-07-20','https://picsum.photos/600/400',1,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33'),(6,56,'Male','1985-07-20','https://picsum.photos/600/400',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33'),(7,57,'Male','1985-07-20','https://picsum.photos/600/400',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33');
 /*!40000 ALTER TABLE `doctors` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `examination_package_specialities`
+--
+
+DROP TABLE IF EXISTS `examination_package_specialities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `examination_package_specialities` (
+  `package_id` int NOT NULL,
+  `speciality_id` int NOT NULL,
+  PRIMARY KEY (`package_id`,`speciality_id`),
+  KEY `speciality_id` (`speciality_id`),
+  CONSTRAINT `examination_package_specialities_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `examination_packages` (`package_id`) ON DELETE CASCADE,
+  CONSTRAINT `examination_package_specialities_ibfk_2` FOREIGN KEY (`speciality_id`) REFERENCES `specialties` (`specialty_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `examination_package_specialities`
+--
+
+LOCK TABLES `examination_package_specialities` WRITE;
+/*!40000 ALTER TABLE `examination_package_specialities` DISABLE KEYS */;
+/*!40000 ALTER TABLE `examination_package_specialities` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `examination_packages`
+--
+
+DROP TABLE IF EXISTS `examination_packages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `examination_packages` (
+  `package_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `price` decimal(10,2) NOT NULL,
+  `duration` int NOT NULL,
+  PRIMARY KEY (`package_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `examination_packages`
+--
+
+LOCK TABLES `examination_packages` WRITE;
+/*!40000 ALTER TABLE `examination_packages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `examination_packages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `feedback`
+--
+
+DROP TABLE IF EXISTS `feedback`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `feedback` (
+  `feedback_id` int NOT NULL AUTO_INCREMENT,
+  `rate` int NOT NULL,
+  `doctor_feedback` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `service_feedback` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `price_feedback` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `offer_feedback` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `patient_id` int NOT NULL,
+  PRIMARY KEY (`feedback_id`),
+  KEY `patient_id` (`patient_id`),
+  CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`),
+  CONSTRAINT `feedback_chk_1` CHECK ((`rate` in (1,2,3,4,5)))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `feedback`
+--
+
+LOCK TABLES `feedback` WRITE;
+/*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
+/*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -637,33 +725,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-28 17:03:00
-
-
-
-create table feedback(
-    feedback_id int not null AUTO_INCREMENT PRIMARY KEY,
-    rate int not null check ( rate in (1,2,3,4,5)),
-    doctor_feedback nvarchar(255) not null,
-    service_feedback nvarchar(255) not null,
-    price_feedback nvarchar(255) not null,
-    offer_feedback nvarchar(255) not null,
-    patient_id int not null,
-    foreign key (patient_id) references patients(patient_id)
-);
-create table examination_packages
-(
-    package_id  int            NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name        NVARCHAR(100)  NOT NULL,
-    description TEXT,
-    price       DECIMAL(10, 2) NOT NULL,
-    duration    INT            NOT NULL
-);
-CREATE TABLE examination_package_specialities
-(
-    package_id    INT NOT NULL,
-    speciality_id INT NOT NULL,
-    PRIMARY KEY (package_id, speciality_id),
-    FOREIGN KEY (package_id) REFERENCES examination_packages (package_id) ON DELETE CASCADE,
-    FOREIGN KEY (speciality_id) REFERENCES specialties (specialty_id)
-);
+-- Dump completed on 2025-06-29 22:21:31

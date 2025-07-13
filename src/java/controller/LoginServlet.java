@@ -86,7 +86,7 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("doctorId", doctorId);
                 response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
             } else {
-                response.sendRedirect(request.getContextPath() + "/views/home/index.jsp");
+                response.sendRedirect(request.getContextPath() + "/home");
             }
         } else {
             request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");

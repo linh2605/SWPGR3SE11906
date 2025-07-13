@@ -7,7 +7,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Hồ sơ bệnh nhân - G3 Hospital</title>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
         <style>
@@ -59,8 +60,9 @@
                                 <div class="mb-3">
                                     <label class="form-label">Giới tính</label>
                                     <select class="form-select" name="gender" required>
-                                        <option value="Male" ${profile.gender == 'Male' ? 'selected' : ''}>Nam</option>
-                                        <option value="Female" ${profile.gender == 'Female' ? 'selected' : ''}>Nữ</option>
+                                        <option value="MALE" ${profile.gender == 'MALE' ? 'selected' : ''}>Nam</option>
+                                        <option value="FEMALE" ${profile.gender == 'FEMALE' ? 'selected' : ''}>Nữ</option>
+                                        <option value="OTHER" ${profile.gender == 'OTHER' ? 'selected' : ''}>Khác</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -89,6 +91,7 @@
                         <div class="d-flex justify-content-end mt-4">
                             <a href="${pageContext.request.contextPath}/new-password" class="btn btn-outline-secondary me-3">Đổi mật khẩu</a>
                             <button type="submit" class="btn btn-primary">Cập nhật hồ sơ</button>
+                            <a href="${pageContext.request.contextPath}/patient/feedback" class="btn btn-outline-secondary me-3">Đánh giá</a>
                         </div>
                     </form>
                 </div>

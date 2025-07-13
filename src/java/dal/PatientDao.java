@@ -1,17 +1,16 @@
 package dal;
 
-import dal.DBContext;
-import models.Gender;
-import models.Patient;
-import models.Role;
-import models.User;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import models.Gender;
+import models.Patient;
+import models.Role;
+import models.User;
 
 public class PatientDao {
 
@@ -77,7 +76,17 @@ public class PatientDao {
                 u.setEmail(rs.getString("email"));
                 u.setPhone(rs.getString("phone"));
                 p.setUser(u);
-                p.setGender(Gender.valueOf(rs.getString("gender")));
+                String genderStr = rs.getString("gender");
+                if (genderStr != null && !genderStr.trim().isEmpty()) {
+                    try {
+                        p.setGender(Gender.valueOf(genderStr.toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Invalid gender value in database: " + genderStr);
+                        p.setGender(Gender.OTHER);
+                    }
+                } else {
+                    p.setGender(Gender.OTHER);
+                }
                 p.setDate_of_birth(rs.getDate("date_of_birth"));
                 p.setAddress(rs.getString("address"));
                 p.setImage_url(rs.getString("image_url"));
@@ -110,7 +119,17 @@ public class PatientDao {
     private static Patient mappingPatient(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
         patient.setPatient_id(rs.getInt("patient_id"));
-        patient.setGender(Gender.valueOf(rs.getString("gender")));
+        String genderStr = rs.getString("gender");
+        if (genderStr != null && !genderStr.trim().isEmpty()) {
+            try {
+                patient.setGender(Gender.valueOf(genderStr.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Invalid gender value in database: " + genderStr);
+                patient.setGender(Gender.OTHER);
+            }
+        } else {
+            patient.setGender(Gender.OTHER);
+        }
         patient.setDate_of_birth(rs.getDate("date_of_birth"));
         patient.setAddress(rs.getString("address"));
         patient.setImage_url(rs.getString("image_url"));
@@ -148,5 +167,8 @@ public class PatientDao {
             e.printStackTrace();
             return false;
         }
+    }
+    public static void main(String[] args) {
+        System.out.println(getAllPatients().size());
     }
 }

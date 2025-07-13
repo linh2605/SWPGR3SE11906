@@ -69,7 +69,7 @@ public class EmailServices {
         String content = String.format(
             "Xin chào %s,\n\nLịch hẹn của bạn vào ngày %s đã được chuyển sang bác sĩ %s do bác sĩ cũ đổi ca.\nThông tin bác sĩ mới: %s.\nNếu bạn không đồng ý, vui lòng liên hệ lại bệnh viện.\n\nTrân trọng!",
             appt.getPatient().getUser().getFullName(),
-            appt.getAppointmentDate(),
+            appt.getAppointmentDateTime().toLocalDate().toString(),
             newDoctor.getUser().getFullName(),
             newDoctor.getUser().getFullName()
         );
@@ -84,7 +84,7 @@ public class EmailServices {
         String content = String.format(
             "Xin chào %s,\n\nLịch hẹn của bạn vào ngày %s đã bị huỷ do bác sĩ đổi ca.\nVui lòng đặt lại lịch mới hoặc liên hệ bệnh viện để được hỗ trợ.\n\nTrân trọng!",
             appt.getPatient().getUser().getFullName(),
-            appt.getAppointmentDate()
+            appt.getAppointmentDateTime().toLocalDate().toString()
         );
         sendEmail(to, subject, content);
     }
@@ -106,13 +106,13 @@ public class EmailServices {
         if (reassigned != null && !reassigned.isEmpty()) {
             content.append("\nCác lịch hẹn đã được chuyển sang bác sĩ khác:\n");
             for (models.Appointment appt : reassigned) {
-                content.append(String.format("- %s\n", appt.getAppointmentDate()));
+                content.append(String.format("- %s\n", appt.getAppointmentDateTime().toLocalDate().toString()));
             }
         }
         if (cancelled != null && !cancelled.isEmpty()) {
             content.append("\nCác lịch hẹn đã bị huỷ:\n");
             for (models.Appointment appt : cancelled) {
-                content.append(String.format("- %s\n", appt.getAppointmentDate()));
+                content.append(String.format("- %s\n", appt.getAppointmentDateTime().toLocalDate().toString()));
             }
         }
         content.append("\nTrân trọng!");

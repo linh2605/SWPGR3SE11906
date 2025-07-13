@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 
@@ -23,8 +24,8 @@
             <div class="content">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="section-title">Quản lý ca làm việc</h2>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addShiftModal">
-                        <i class="bi bi-plus-circle"></i> Thêm ca làm việc
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addShiftModal" title="Thêm ca làm việc">
+                        <i class="bi bi-plus-circle"></i>
                     </button>
                 </div>
 
@@ -49,7 +50,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table class="table table-striped table-hover" id="table">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -74,15 +75,11 @@
                                                       title="${shift.description}">${shift.description}</span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-outline-primary btn-view-detail" 
-                                                        onclick="viewShiftDetail(${shift.shiftId})" 
-                                                        style="display: inline-block !important;">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-warning" onclick="editShift(${shift.shiftId})">
+                                                <button type="button" class="btn btn-sm btn-warning" title="Chỉnh sửa"
+                                                        onclick="editShift(${shift.shiftId})">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
-                                                <button class="btn btn-sm btn-outline-danger" 
+                                                <button type="button" class="btn btn-sm btn-danger" title="Xóa"
                                                         onclick="deleteShift(${shift.shiftId}, this)" 
                                                         data-shift-name="${shift.name}">
                                                     <i class="bi bi-trash"></i>
@@ -142,7 +139,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="submit" class="btn btn-primary">Thêm ca làm việc</button>
+                        <button type="submit" class="btn btn-primary" title="Thêm ca làm việc">Thêm ca làm việc</button>
                     </div>
                 </form>
             </div>
@@ -211,8 +208,22 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/admin-shifts.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#table').DataTable({
+                language: {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                },
+                pageLength: 10,
+                responsive: true,
+                order: [[1, 'asc']]
+            });
+        });
+    </script>
 </body>
 </html> 

@@ -1,12 +1,5 @@
 package dal;
 
-import models.Specialty;
-import models.User;
-import models.Gender;
-import models.Role;
-import models.Status;
-import models.Doctor;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,22 +7,31 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.Doctor;
+import models.Gender;
+import models.Role;
+import models.Specialty;
+import models.Status;
+import models.User;
+
 public class DoctorDao {
 
     public static List<Doctor> getAllDoctors() {
 
         try {
             Connection connection = DBContext.makeConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id");
+            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id where doctors.status = 'active'");
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Doctor> doctors = new ArrayList<>();
             while (resultSet.next()) {
                 Doctor doctor = mappingDoctor(resultSet);
                 doctors.add(doctor);
             }
+            System.out.println("DoctorDao.getAllDoctors() - Retrieved " + doctors.size() + " active doctors");
             return doctors;
         } catch (Exception e) {
             e.printStackTrace();
+            System.err.println("Error in DoctorDao.getAllDoctors(): " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -91,12 +93,35 @@ public class DoctorDao {
     private static Doctor mappingDoctor(ResultSet resultSet) throws SQLException {
         Doctor doctor = new Doctor();
         doctor.setDoctor_id(resultSet.getInt("doctor_id"));
-        doctor.setGender(Gender.valueOf(resultSet.getString("gender")));
+        String genderStr = resultSet.getString("gender");
+        if (genderStr != null && !genderStr.trim().isEmpty()) {
+            try {
+                doctor.setGender(Gender.valueOf(genderStr.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                // Log error and set default
+                System.err.println("Invalid gender value in database: " + genderStr);
+                doctor.setGender(Gender.OTHER);
+            }
+        } else {
+            doctor.setGender(Gender.OTHER);
+        }
         doctor.setDob(resultSet.getDate("dob"));
         doctor.setImage_url(resultSet.getString("image_url"));
         doctor.setDegree(resultSet.getString("degree"));
         doctor.setExperience(resultSet.getString("experience"));
-        doctor.setStatus(Status.valueOf(resultSet.getString("status")));
+        
+        String statusStr = resultSet.getString("status");
+        if (statusStr != null && !statusStr.trim().isEmpty()) {
+            try {
+                doctor.setStatus(Status.valueOf(statusStr));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Invalid status value in database: " + statusStr);
+                doctor.setStatus(Status.active);
+            }
+        } else {
+            doctor.setStatus(Status.active);
+        }
+        
         doctor.setCreated_at(resultSet.getTimestamp("doctors.created_at"));
         User user = new User();
         user.setUserId(resultSet.getInt("users.user_id"));
@@ -198,9 +223,11 @@ public class DoctorDao {
         String sql = "SELECT COUNT(DISTINCT d.doctor_id) " +
                 "FROM doctors d " +
                 "JOIN working_schedules ws ON d.doctor_id = ws.doctor_id AND ws.is_active = 1 " +
+                "JOIN shifts s ON ws.shift_id = s.shift_id " +
                 "WHERE d.status = 'active' " +
-                "AND ws.week_day = DAYNAME(CURDATE()) " +
-                "AND d.doctor_id NOT IN (SELECT doctor_id FROM schedule_exceptions WHERE exception_date = CURDATE() AND status = 'approved' AND (exception_type = 'Nghỉ phép' OR exception_type = 'Khẩn cấp'))";
+                "AND ws.week_day = DAYNAME(NOW()) " +
+                "AND TIME(NOW()) BETWEEN s.start_time AND s.end_time " +
+                "AND d.doctor_id NOT IN (SELECT doctor_id FROM schedule_exceptions WHERE exception_date = CURDATE())";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -210,6 +237,42 @@ public class DoctorDao {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * Lấy danh sách doctors có thể cung cấp service cụ thể
+     */
+    public static List<Doctor> getDoctorsByServiceId(int serviceId) {
+        List<Doctor> doctors = new ArrayList<>();
+        String sql = "SELECT DISTINCT d.doctor_id, d.user_id, u.full_name, d.specialty_id, d.degree, d.experience " +
+                "FROM doctors d " +
+                "JOIN users u ON d.user_id = u.user_id " +
+                "JOIN doctor_services ds ON d.doctor_id = ds.doctor_id " +
+                "WHERE ds.service_id = ? AND d.status = 'active' " +
+                "ORDER BY u.full_name";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, serviceId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Doctor d = new Doctor();
+                    d.setDoctor_id(rs.getInt("doctor_id"));
+                    User u = new User();
+                    u.setUserId(rs.getInt("user_id"));
+                    u.setFullName(rs.getString("full_name"));
+                    d.setUser(u);
+                    d.setFullName(rs.getString("full_name"));
+                    Specialty s = new Specialty();
+                    s.setSpecialtyId(rs.getInt("specialty_id"));
+                    d.setSpecialty(s);
+                    d.setDegree(rs.getString("degree"));
+                    d.setExperience(rs.getString("experience"));
+                    doctors.add(d);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return doctors;
     }
 
     public static void main(String[] args) {

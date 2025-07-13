@@ -12,6 +12,8 @@
     <title>Quản lý liên hệ - G3 Hospital Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
 </head>
 <body>
@@ -20,32 +22,40 @@
     <div class="main">
 <%@include file="../layouts/admin-side-bar.jsp"%>
         <div class="content">
-            <h2 class="mb-4">Quản lý liên hệ (Contact Us)</h2>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title">Quản lý liên hệ (Contact Us)</h2>
+            </div>
+            
             <c:if test="${not empty messages}">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
-                        <thead class="table-light">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Danh sách tin nhắn liên hệ</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle" id="table">
+                        <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Họ tên</th>
-                            <th>Email</th>
-                            <th>SĐT</th>
-                            <th>Chủ đề</th>
-                            <th>Nội dung</th>
-                            <th>Trạng thái</th>
-                            <th>Ưu tiên</th>
-                            <th>Ngày gửi</th>
-                            <th>Thao tác</th>
+                            <th class="text-center">#</th>
+                            <th class="text-start">Họ tên</th>
+                            <th class="text-start">Email</th>
+                            <th class="text-center">SĐT</th>
+                            <th class="text-center">Chủ đề</th>
+                            <th class="text-start">Nội dung</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-center">Ưu tiên</th>
+                            <th class="text-center">Ngày gửi</th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
                         <c:forEach var="msg" items="${messages}" varStatus="loop">
                             <tr>
-                                <td><c:out value="${loop.index + 1}"/></td>
-                                <td><c:out value="${msg.name}"/></td>
-                                <td><c:out value="${msg.email}"/></td>
-                                <td><c:out value="${msg.phone}"/></td>
-                                <td>
+                                <td class="text-center"><c:out value="${loop.index + 1}"/></td>
+                                <td class="text-start"><c:out value="${msg.name}"/></td>
+                                <td class="text-start"><c:out value="${msg.email}"/></td>
+                                <td class="text-center"><c:out value="${msg.phone}"/></td>
+                                <td class="text-center">
                                     <c:choose>
                                         <c:when test="${msg.subject eq 'service_feedback'}">Góp ý dịch vụ</c:when>
                                         <c:when test="${msg.subject eq 'incident_report'}">Báo cáo sự cố</c:when>
@@ -54,8 +64,8 @@
                                         <c:otherwise>Khác</c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td><c:out value="${fn:length(msg.message) > 40 ? fn:substring(msg.message, 0, 40) : msg.message}"/><c:if test="${fn:length(msg.message) > 40}">...</c:if></td>
-                                <td>
+                                <td class="text-start"><c:out value="${fn:length(msg.message) > 40 ? fn:substring(msg.message, 0, 40) : msg.message}"/><c:if test="${fn:length(msg.message) > 40}">...</c:if></td>
+                                <td class="text-center">
                                     <form method="post" action="${pageContext.request.contextPath}/contactManager" style="display:inline;">
                                         <input type="hidden" name="action" value="updateStatus" />
                                         <input type="hidden" name="id" value="${msg.message_id}" />
@@ -66,7 +76,7 @@
                                         </select>
                                     </form>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <form method="post" action="${pageContext.request.contextPath}/contactManager" style="display:inline;">
                                         <input type="hidden" name="action" value="updatePriority" />
                                         <input type="hidden" name="id" value="${msg.message_id}" />
@@ -77,29 +87,53 @@
                                         </select>
                                     </form>
                                 </td>
-                                <td><c:out value="${msg.created_at}"/></td>
-                                <td>
-                                    <a href="${pageContext.request.contextPath}/contactManager?view=${msg.message_id}" class="btn btn-sm btn-info mb-1">Xem</a>
+                                <td class="text-center"><c:out value="${msg.created_at}"/></td>
+                                <td class="text-center">
+                                    <a href="${pageContext.request.contextPath}/contactManager?view=${msg.message_id}" class="btn btn-sm btn-info mb-1" title="Xem">
+                            <i class="bi bi-eye"></i>
+                        </a>
                                     <form method="post" action="${pageContext.request.contextPath}/contactDetail" style="display:inline;">
                                         <input type="hidden" name="action" value="delete" />
                                         <input type="hidden" name="id" value="${msg.message_id}" />
-                                        <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Xóa tin nhắn này?')">Xóa</button>
+                                        <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Xóa tin nhắn này?')" title="Xóa">
+                            <i class="bi bi-trash"></i>
+                        </button>
                                     </form>
                                 </td>
                             </tr>
                         </c:forEach>
                         </tbody>
-                    </table>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </c:if>
             <c:if test="${empty messages}">
-                <div class="alert alert-info">Chưa có tin nhắn liên hệ nào.</div>
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="alert alert-info mb-0">Chưa có tin nhắn liên hệ nào.</div>
+                    </div>
+                </div>
             </c:if>
         </div>
     </div>
     <%@ include file="../layouts/footer.jsp" %>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#table').DataTable({
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+            },
+            pageLength: 10,
+            responsive: true,
+            order: [[8, 'desc']]
+        });
+    });
+</script>
 </body>
 </html>

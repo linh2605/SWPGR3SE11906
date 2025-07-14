@@ -40,17 +40,14 @@ public class ProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
-        Object userIdObj = session.getAttribute("userId");
-        Object roleIdObj = session.getAttribute("roleId");
-
-        if (userIdObj == null || roleIdObj == null) {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.isAuthenticated(request)) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        int userId = Integer.parseInt(userIdObj.toString());
-        int roleId = Integer.parseInt(roleIdObj.toString());
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
 
         try (Connection conn = DBContext.makeConnection()) {
             UserProfileDAO dao = new UserProfileDAO(conn);
@@ -85,17 +82,15 @@ public class ProfileServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession();
-        Object userIdObj = session.getAttribute("userId");
-        Object roleIdObj = session.getAttribute("roleId");
-
-        if (userIdObj == null || roleIdObj == null) {
+        
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.isAuthenticated(request)) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        int userId = Integer.parseInt(userIdObj.toString());
-        int roleId = Integer.parseInt(roleIdObj.toString());
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
 
         // Lấy dữ liệu cơ bản từ form
         String fullName = request.getParameter("fullName");

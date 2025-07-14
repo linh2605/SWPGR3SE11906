@@ -44,7 +44,7 @@
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctors">Bác sĩ</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/news">Bài viết</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Thư viện media</a></li>
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 1}">
@@ -53,7 +53,7 @@
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctors">Bác sĩ</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/news">Bài viết</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Thư viện media</a></li>
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 2}">
@@ -62,6 +62,7 @@
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctorupdate">Danh sách bệnh nhân chờ</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctor-schedule">Lịch làm việc</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/news">Bài viết</a></li>
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 3}">
                             <!-- Receptionist -->

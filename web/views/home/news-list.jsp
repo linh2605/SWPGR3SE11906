@@ -23,28 +23,28 @@
 
         <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/favicon.svg" />
 
-        <title>Danh sách bác sĩ - Hệ thống Quản lý Phòng khám</title>
+        <title>Bài viết - Hệ thống Quản lý Phòng khám</title>
         <style>
             /* Fix header overlap issue */
             body {
                 padding-top: 0;
                 font-family: 'Montserrat', sans-serif !important;
             }
-            
+
             main {
                 margin-top: 20px;
             }
-            
+
             .page-btn.active {
                 background-color: #004D99;
                 color: white;
             }
-            
+
             .doctor-list-container {
                 padding: 60px 0;
                 background-color: #f8f9fa;
             }
-            
+
             .doctor-card {
                 background: white;
                 border-radius: 15px;
@@ -53,19 +53,19 @@
                 margin-bottom: 30px;
                 overflow: hidden;
             }
-            
+
             .doctor-card:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             }
-            
+
             .doctor-image {
                 width: 100%;
                 height: 200px;
                 object-fit: cover;
                 border-radius: 10px;
             }
-            
+
             .doctor-name {
                 font-size: 1.2rem;
                 font-weight: 600;
@@ -73,16 +73,16 @@
                 margin-bottom: 10px;
                 text-decoration: none;
             }
-            
+
             .doctor-name:hover {
                 color: #0066cc;
                 text-decoration: none;
             }
-            
+
             .doctor-info {
                 padding: 20px;
             }
-            
+
             .doctor-detail-btn {
                 background-color: #004d99;
                 color: white;
@@ -93,13 +93,13 @@
                 font-size: 0.9rem;
                 transition: all 0.3s ease;
             }
-            
+
             .doctor-detail-btn:hover {
                 background-color: #003366;
                 color: white;
                 text-decoration: none;
             }
-            
+
             .specialty-filter {
                 background: white;
                 border-radius: 15px;
@@ -107,7 +107,7 @@
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
                 margin-bottom: 30px;
             }
-            
+
             .filter-tab {
                 background: #f8f9fa;
                 border: 2px solid #e9ecef;
@@ -119,7 +119,7 @@
                 transition: all 0.3s ease;
                 display: inline-block;
             }
-            
+
             .filter-tab.active,
             .filter-tab:hover {
                 background: #004d99;
@@ -127,30 +127,30 @@
                 border-color: #004d99;
                 text-decoration: none;
             }
-            
+
             .banner-section {
-                background: linear-gradient(rgba(0,77,153,0.7), rgba(0,77,153,0.7)), 
-                           url('${pageContext.request.contextPath}/assets/pexels-photo-5327590.png');
+                background: linear-gradient(rgba(0,77,153,0.7), rgba(0,77,153,0.7)),
+                    url('${pageContext.request.contextPath}/assets/pexels-photo-5327590.png');
                 background-size: cover;
                 background-position: center;
                 color: white;
                 padding: 100px 0;
                 text-align: center;
             }
-            
+
             .banner-title {
                 font-size: 3rem;
                 font-weight: 700;
                 margin-bottom: 20px;
             }
-            
+
             .search-box {
                 background: white;
                 border-radius: 25px;
                 padding: 5px;
                 margin: 20px 0;
             }
-            
+
             .search-input {
                 border: none;
                 padding: 10px 20px;
@@ -158,27 +158,27 @@
                 width: 100%;
                 outline: none;
             }
-            
+
             .breadcrumb {
                 background: transparent;
                 padding: 0;
                 margin: 20px 0;
             }
-            
+
             .breadcrumb-item a {
                 color: white;
                 text-decoration: none;
             }
-            
+
             .breadcrumb-item.active {
                 color: #ffd700;
             }
-            
+
             /* Map section styling */
             .map-section {
                 margin: 40px 0;
             }
-            
+
             #map {
                 border-radius: 15px;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -196,8 +196,8 @@
             <!-- Banner Section -->
             <section class="banner-section">
                 <div class="container">
-                    <h1 class="banner-title">Danh sách bác sĩ</h1>
-                    
+                    <h1 class="banner-title">Danh sách bài viết</h1>
+
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center">
                             <li class="breadcrumb-item">
@@ -206,11 +206,11 @@
                                 </a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
-                                Danh sách bác sĩ
+                                Danh sách bài viết
                             </li>
                         </ol>
                     </nav>
-                    
+
                     <!-- Search Box -->
                     <div class="row justify-content-center">
                         <div class="col-md-6">
@@ -218,7 +218,7 @@
                                 <input type="text" 
                                        id="doctor-search" 
                                        class="search-input" 
-                                       placeholder="Tìm kiếm bác sĩ theo tên...">
+                                       placeholder="Tìm kiếm bài viết...">
                             </div>
                         </div>
                     </div>
@@ -229,79 +229,50 @@
             <section class="doctor-list-container">
                 <div class="container">
                     <div class="row">
-                        <!-- Specialty Filter Sidebar -->
-                        <div class="col-md-3">
-                            <div class="specialty-filter">
-                                <h5 class="mb-3">
-                                    <i class="bi bi-filter"></i> Lọc theo chuyên khoa
-                                </h5>
-                                
-                                <div class="filter-tabs">
-                                    <button class="filter-tab active w-100 mb-2" 
-                                            data-specialist-id="all">
-                                        Tất cả
-                                        <span class="badge bg-primary float-end">${countAllSpecialties}</span>
-                                    </button>
-                                    
-                                    <c:forEach var="s" items="${specialties}">
-                                        <button class="filter-tab w-100 mb-2" 
-                                                data-specialist-id="${s.key.specialtyId}">
-                                            ${s.key.name}
-                                            <span class="badge bg-secondary float-end">${s.value}</span>
-                                        </button>
-                                    </c:forEach>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Doctor Grid -->
-                        <div class="col-md-9">
+                        <div class="col-md-12">
                             <div class="row" id="doctor-grid">
-                                
                                 <c:choose>
-                                    <c:when test="${not empty doctors}">
-                                        <c:forEach var="d" items="${doctors}">
-                                            <div class="col-md-6 doctor-item" data-specialist-id="${d.specialty.specialtyId}">
+                                    <c:when test="${not empty newsList}">
+                                        <c:forEach var="n" items="${newsList}">
+                                            <div class="col-md-12 doctor-item">
                                                 <div class="doctor-card">
                                                     <div class="p-3">
                                                         <div class="row">
-                                                            <div class="col-4">
-                                                                <img src="${not empty d.image_url ? d.image_url : defaultAvatar}" 
-                                                                     alt="${d.user.fullName}" 
-                                                                     class="doctor-image">
-                                                            </div>
-                                                            <div class="col-8 doctor-info">
-                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
+                                                            <div class="col-11 doctor-info">
+                                                                <a href="${pageContext.request.contextPath}/news/${n.newsID}" 
                                                                    class="doctor-name">
-                                                                    ${d.user.fullName}
+                                                                    ${n.title}
                                                                 </a>
-                                                                
+
                                                                 <p class="text-muted mb-2">
-                                                                    <i class="bi bi-hospital"></i> 
-                                                                    ${d.specialty.name}
+                                                                    ${n.description}
                                                                 </p>
-                                                                
+
                                                                 <div class="mb-2">
                                                                     <small class="text-muted">
-                                                                        <i class="bi bi-mortarboard"></i> 
-                                                                        ${d.degree}
+                                                                        Tác giả: ${n.createdBy.fullName}
                                                                     </small>
                                                                 </div>
-                                                                
+
                                                                 <div class="mb-3">
                                                                     <small class="text-muted">
-                                                                        <i class="bi bi-briefcase"></i> 
-                                                                        ${d.experience}
+                                                                        Đăng ngày: ${n.formattedCreatedAt}
                                                                     </small>
                                                                 </div>
-                                                                
-                                                                <a href="${pageContext.request.contextPath}/appointment-doctor/${d.doctor_id}" 
-                                                                   class="doctor-detail-btn badge bg-success">
-                                                                    <i class="bi bi-eye"></i> Đặt lịch
+                                                            </div>
+                                                            <div class="col-1 d-flex flex-column align-items-center justify-content-center">
+                                                                <a href="${pageContext.request.contextPath}/news/${n.newsID}" 
+                                                                   class="doctor-detail-btn bg-light-blue justify-content-center gap-2 mt-2 d-flex">
+                                                                    <i class="bi bi-eye"></i>
                                                                 </a>
-                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
-                                                                   class="doctor-detail-btn">
-                                                                    <i class="bi bi-eye"></i> Xem chi tiết
+                                                                <a href="#" 
+                                                                   class="doctor-detail-btn bg-warning justify-content-center gap-2 mt-2 d-flex">
+                                                                    <i class="bi bi-pen"></i>
+                                                                </a>
+                                                                <a href="#" 
+                                                                   class="doctor-detail-btn bg-danger justify-content-center gap-2 mt-2 d-flex">
+                                                                    <i class="bi bi-trash"></i>
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -314,8 +285,8 @@
                                         <div class="col-12">
                                             <div class="alert alert-info text-center">
                                                 <i class="bi bi-info-circle"></i>
-                                                <h5>Không có bác sĩ nào được tìm thấy</h5>
-                                                <p class="mb-0">Hiện tại chưa có thông tin bác sĩ trong hệ thống hoặc tất cả bác sĩ đang bận.</p>
+                                                <h5>Không có bài viết nào được tìm thấy</h5>
+                                                <p class="mb-0">Hiện tại bài viết nào trong hệ thống.</p>
                                             </div>
                                         </div>
                                     </c:otherwise>
@@ -350,16 +321,14 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
-        
+
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const specialistButtons = document.querySelectorAll('[data-specialist-id]');
                 const allDoctors = Array.from(document.querySelectorAll('.doctor-item'));
                 const paginationContainer = document.getElementById('pagination-container');
                 const searchInput = document.getElementById('doctor-search');
 
-                const doctorsPerPage = 6; // 6 bác sĩ trên 1 trang
-                let currentSpecialistId = 'all';
+                const doctorsPerPage = 2; // 6 bác sĩ trên 1 trang
                 let currentPage = 1;
                 let currentKeyword = '';
 
@@ -371,9 +340,8 @@
                     return allDoctors.filter(doc => {
                         const docSpecId = doc.getAttribute('data-specialist-id');
                         const name = doc.querySelector('.doctor-name')?.textContent || '';
-                        const matchSpec = currentSpecialistId === 'all' || docSpecId === currentSpecialistId;
                         const matchKeyword = currentKeyword === '' || normalize(name).includes(normalize(currentKeyword));
-                        return matchSpec && matchKeyword;
+                        return matchKeyword;
                     });
                 }
 
@@ -389,7 +357,7 @@
 
                     // Hide all doctors
                     allDoctors.forEach(doc => doc.style.display = 'none');
-                    
+
                     // Show filtered doctors for current page
                     filteredDoctors.slice(start, end).forEach(doc => doc.style.display = 'block');
 
@@ -398,13 +366,14 @@
 
                 function renderPagination(totalPages) {
                     paginationContainer.innerHTML = '';
-                    
-                    if (totalPages <= 1) return;
-                    
+
+                    if (totalPages <= 1)
+                        return;
+
                     const pagination = document.createElement('nav');
                     const ul = document.createElement('ul');
                     ul.className = 'pagination justify-content-center';
-                    
+
                     // Previous button
                     const prevLi = document.createElement('li');
                     prevLi.className = 'page-item ' + (currentPage === 1 ? 'disabled' : '');
@@ -421,7 +390,7 @@
                     }
                     prevLi.appendChild(prevLink);
                     ul.appendChild(prevLi);
-                    
+
                     // Page numbers
                     for (let i = 1; i <= totalPages; i++) {
                         const li = document.createElement('li');
@@ -438,7 +407,7 @@
                         li.appendChild(link);
                         ul.appendChild(li);
                     }
-                    
+
                     // Next button
                     const nextLi = document.createElement('li');
                     nextLi.className = 'page-item ' + (currentPage === totalPages ? 'disabled' : '');
@@ -455,24 +424,10 @@
                     }
                     nextLi.appendChild(nextLink);
                     ul.appendChild(nextLi);
-                    
+
                     pagination.appendChild(ul);
                     paginationContainer.appendChild(pagination);
                 }
-
-                // Specialty filter handlers
-                specialistButtons.forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        currentSpecialistId = btn.getAttribute('data-specialist-id');
-                        currentPage = 1;
-
-                        // Update active state
-                        specialistButtons.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-
-                        renderDoctors();
-                    });
-                });
 
                 // Search handler
                 searchInput.addEventListener('input', function () {
@@ -480,6 +435,7 @@
                     currentPage = 1;
                     renderDoctors();
                 });
+                renderDoctors();
 
                 // Initialize map
                 if (typeof L !== 'undefined') {
@@ -487,10 +443,10 @@
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors'
                     }).addTo(map);
-                    
+
                     L.marker([21.0285, 105.8542]).addTo(map)
-                        .bindPopup('Hệ thống Quản lý Phòng khám')
-                        .openPopup();
+                            .bindPopup('Hệ thống Quản lý Phòng khám')
+                            .openPopup();
                 }
 
                 // Initial render

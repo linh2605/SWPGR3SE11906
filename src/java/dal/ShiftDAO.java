@@ -60,6 +60,31 @@ public class ShiftDAO extends DBContext {
         return null;
     }
     
+    public Shift getShiftByDoctorId(int shiftId) {
+        String sql = "SELECT * FROM shifts WHERE shift_id = ?";
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, shiftId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                Shift shift = new Shift();
+                shift.setShiftId(rs.getInt("shift_id"));
+                shift.setName(rs.getString("name"));
+                shift.setStartTime(rs.getTime("start_time"));
+                shift.setEndTime(rs.getTime("end_time"));
+                shift.setDescription(rs.getString("description"));
+                return shift;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+    
     public boolean addShift(Shift shift) {
         String sql = "INSERT INTO shifts (name, start_time, end_time, description) VALUES (?, ?, ?, ?)";
         

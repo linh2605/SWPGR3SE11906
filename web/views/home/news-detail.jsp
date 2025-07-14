@@ -18,7 +18,7 @@
 
         <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/favicon.svg" />
 
-        <title>Danh sách bác sĩ - Hệ thống Quản lý Phòng khám</title>
+        <title>${n.title} - Hệ thống Quản lý Phòng khám</title>
         <style>
             /* Fix header overlap issue */
             body {
@@ -193,54 +193,39 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row" id="doctor-grid">
-                                <div class="col-md-12 doctor-item" data-specialist-id="${d.specialty.specialtyId}">
+                                <div class="col-md-12 doctor-item">
                                     <div class="doctor-card">
                                         <div class="p-3">
                                             <div class="row">
-                                                <div class="col-4">
-                                                    <img src="${not empty d.image_url ? d.image_url : defaultAvatar}" 
-                                                         alt="${d.user.fullName}" 
-                                                         class="doctor-image"
-                                                         style="height: 400px !important">
-
-                                                    <div class="doctor-info" style="text-align: center;">
-                                                        <div class="mb-2">
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-mortarboard"></i> 
-                                                                ${d.degree}
-                                                            </small>
-                                                        </div>
-                                                        <p class="doctor-name" style="font-size: 2rem">
-                                                            ${d.user.fullName}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-8 doctor-info">
+                                                <div class="col-11 doctor-info">
                                                     <p class="doctor-name" style="font-size: 1.5rem">
-                                                        ${d.user.fullName}
+                                                        ${n.title}
                                                     </p>
-
-                                                    <p class="text-muted mb-2" style="font-size: 1.2rem">
-                                                        <i class="bi bi-hospital"></i> Chuyên khoa: 
-                                                        ${d.specialty.name}
+                                                    <p class="text-muted mb-0">
+                                                        Tác giả: ${n.createdBy.fullName}
                                                     </p>
-                                                    <p class="doctor-name" style="font-size: 1.2rem">
-                                                        Kinh nghiệm:
+                                                    <p class="text-muted mb-0">
+                                                        Đăng ngày: ${n.formattedCreatedAt}
                                                     </p>
-                                                    <p class="text-muted mb-2" style="font-size: 1.2rem">
-                                                        <i class="bi bi-mortarboard"></i> Bằng cấp, học vị: 
-                                                        ${d.degree}
+                                                    <p class="text-muted mb-2">
+                                                        Cập nhật lần cuối: ${n.formattedUpdatedAt}
                                                     </p>
                                                     <p class="text-muted mb-2" style="font-size: 1.2rem">
-                                                        <i class="bi bi-briefcase"></i> Kinh nghiệm: 
-                                                        ${d.experience}
+                                                        ${n.description}
                                                     </p>
-                                                    <a href="${pageContext.request.contextPath}/appointment-doctor/${d.doctor_id}" class="btn btn-primary bg-success mt-3">
-                                                        Đặt lịch khám <i class="bi bi-calendar-plus"></i>
+                                                </div>
+                                                <div class="col-1 doctor-info">
+                                                    <a href="javascript:history.back()" 
+                                                       class="doctor-detail-btn bg-light-blue justify-content-center gap-2 mt-2 d-flex">
+                                                        <i class="bi bi-arrow-return-left me-1"></i>
                                                     </a>
-                                                    
-                                                    <a href="javascript:history.back()" class="btn btn-primary mt-3">
-                                                        Quay lại <i class="bi bi-arrow-return-left me-1"></i>
+                                                    <a href="#" 
+                                                       class="doctor-detail-btn bg-warning justify-content-center gap-2 mt-2 d-flex">
+                                                        <i class="bi bi-pen"></i>
+                                                    </a>
+                                                    <a href="#" 
+                                                       class="doctor-detail-btn bg-danger justify-content-center gap-2 mt-2 d-flex">
+                                                        <i class="bi bi-trash"></i>
                                                     </a>
                                                 </div>
                                             </div>

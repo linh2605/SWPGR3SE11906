@@ -1,5 +1,6 @@
+<%@ page import="utils.AuthHelper" %>
 <%
-    Integer roleId = (session == null) ? null : (Integer) session.getAttribute("roleId");
+    Integer roleId = AuthHelper.getCurrentUserRoleId(request);
     if (roleId == null || roleId != 4) {
         response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
         return;

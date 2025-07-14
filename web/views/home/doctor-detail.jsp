@@ -235,6 +235,10 @@
                                                         <i class="bi bi-briefcase"></i> Kinh nghiệm: 
                                                         ${d.experience}
                                                     </p>
+                                                    <a href="${pageContext.request.contextPath}/appointment-doctor/${d.doctor_id}" class="btn btn-primary bg-success mt-3">
+                                                        Đặt lịch khám <i class="bi bi-calendar-plus"></i>
+                                                    </a>
+                                                    
                                                     <a href="javascript:history.back()" class="btn btn-primary mt-3">
                                                         Quay lại <i class="bi bi-arrow-return-left me-1"></i>
                                                     </a>

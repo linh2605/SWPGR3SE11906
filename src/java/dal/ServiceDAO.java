@@ -89,6 +89,42 @@ public class ServiceDAO {
         return list;
     }
 
+    public static List<Service> getServicesByDoctorId(int doctorId) {
+        List<Service> list = new ArrayList<>();
+        String sql = "SELECT s.service_id, name, detail, price, type, image\n"
+                + "  FROM services s\n"
+                + "	JOIN doctor_services ds ON s.service_id = ds.service_id\n"
+                + " WHERE ds.doctor_id = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Service s = new Service();
+                    s.setServiceId(rs.getInt("service_id"));
+                    s.setName(rs.getString("name"));
+                    s.setDetail(rs.getString("detail"));
+                    s.setPrice(rs.getLong("price"));
+                    String typeStr = rs.getString("type");
+                    s.setImage(rs.getString("image"));
+                    if (typeStr != null && !typeStr.trim().isEmpty()) {
+                        try {
+                            s.setType(ServiceType.valueOf(typeStr));
+                        } catch (IllegalArgumentException e) {
+                            System.err.println("Invalid service type value in database: " + typeStr);
+                            s.setType(ServiceType.SPECIALIST);
+                        }
+                    } else {
+                        s.setType(ServiceType.SPECIALIST);
+                    }
+                    list.add(s);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
     public static List<Service> getTopPopularServices(int limit) {
         List<Service> list = new ArrayList<>();
         String sql = "SELECT s.service_id, s.name, s.detail, s.price, s.image, s.type, COUNT(a.appointment_id) as count " +

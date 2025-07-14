@@ -295,6 +295,10 @@
                                                                     </small>
                                                                 </div>
                                                                 
+                                                                <a href="${pageContext.request.contextPath}/appointment-doctor/${d.doctor_id}" 
+                                                                   class="doctor-detail-btn badge bg-success">
+                                                                    <i class="bi bi-eye"></i> Đặt lịch
+                                                                </a>
                                                                 <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
                                                                    class="doctor-detail-btn">
                                                                     <i class="bi bi-eye"></i> Xem chi tiết

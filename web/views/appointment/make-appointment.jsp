@@ -53,7 +53,10 @@
                             <select class="form-select" id="service" name="service" required>
                                 <option value="" disabled selected>Chọn dịch vụ khám</option>
                                 <c:forEach var="s" items="${services}">
-                                    <option value="${s.serviceId}" data-price="${s.price}">${s.name} - ${s.detail}</option>
+                                    <option value="${s.serviceId}" 
+                                            data-price="${s.price}"
+                                            ${s.serviceId eq service_id ? 'selected' : ''}
+                                            >${s.name} - ${s.detail}</option>
                                 </c:forEach>
                             </select>
                         </div>

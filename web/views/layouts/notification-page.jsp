@@ -24,9 +24,18 @@
                 <div class="alert alert-success fs-5" role="alert">
                     ${successMsg}
                 </div>
-                <a href="${pageContext.request.contextPath}/" class="btn btn-primary mt-3">
-                    <i class="bi bi-house-door-fill me-1"></i> Trở về trang chủ
-                </a>
+                <c:choose>
+                    <c:when test="${note == 'appointmentSuccess'}">
+                        <a href="${pageContext.request.contextPath}/patient/appointments" class="btn btn-primary mt-3">
+                            <i class="bi bi-house-door-fill me-1"></i> Lịch hẹn của tôi
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="${pageContext.request.contextPath}/" class="btn btn-primary mt-3">
+                            <i class="bi bi-house-door-fill me-1"></i> Trở về trang chủ
+                        </a>
+                    </c:otherwise>
+                </c:choose>
             </c:if>
             <c:if test="${errorMsg != null}">
                 <div class="alert alert-danger fs-5" role="alert">

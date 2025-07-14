@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const price = this.options[this.selectedIndex].getAttribute('data-price');
             if (price && price !== 'null') {
                 servicePrice.textContent = new Intl.NumberFormat('vi-VN').format(price);
-                priceDisplay.style.display = 'block';
+                priceDisplay.style.display = 'flex';
             } else {
                 priceDisplay.style.display = 'none';
             }
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
+    
     // Form góp ý
     const feedbackForm = document.querySelector('form[action="feedback"]');
     if (feedbackForm) {

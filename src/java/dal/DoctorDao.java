@@ -15,20 +15,18 @@ import models.Status;
 import models.User;
 
 public class DoctorDao {
-    
-    public static void deleteDoctor(int userId){
+
+    public static void deleteDoctor(int userId) {
         try {
             String sql = "update doctors set status = 'inactive' where user_id = ?";
             Connection conn = DBContext.makeConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, userId);
             ps.executeUpdate();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    
 
     public static List<Doctor> getAllDoctors() {
 
@@ -49,8 +47,8 @@ public class DoctorDao {
             return new ArrayList<>();
         }
     }
-    
-    public static List<Doctor> getAllDeletedDoctors(){
+
+    public static List<Doctor> getAllDeletedDoctors() {
         try {
             Connection connection = DBContext.makeConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id");
@@ -142,7 +140,7 @@ public class DoctorDao {
         doctor.setImage_url(resultSet.getString("image_url"));
         doctor.setDegree(resultSet.getString("degree"));
         doctor.setExperience(resultSet.getString("experience"));
-        
+
         String statusStr = resultSet.getString("status");
         if (statusStr != null && !statusStr.trim().isEmpty()) {
             try {
@@ -154,7 +152,7 @@ public class DoctorDao {
         } else {
             doctor.setStatus(Status.active);
         }
-        
+
         doctor.setCreated_at(resultSet.getTimestamp("doctors.created_at"));
         User user = new User();
         user.setUserId(resultSet.getInt("users.user_id"));
@@ -253,14 +251,14 @@ public class DoctorDao {
 
     // Đếm số bác sĩ có sẵn (active, có lịch làm việc hôm nay, không bị ngoại lệ/nghỉ)
     public int countAvailableDoctors() {
-        String sql = "SELECT COUNT(DISTINCT d.doctor_id) " +
-                "FROM doctors d " +
-                "JOIN working_schedules ws ON d.doctor_id = ws.doctor_id AND ws.is_active = 1 " +
-                "JOIN shifts s ON ws.shift_id = s.shift_id " +
-                "WHERE d.status = 'active' " +
-                "AND ws.week_day = DAYNAME(NOW()) " +
-                "AND TIME(NOW()) BETWEEN s.start_time AND s.end_time " +
-                "AND d.doctor_id NOT IN (SELECT doctor_id FROM schedule_exceptions WHERE exception_date = CURDATE())";
+        String sql = "SELECT COUNT(DISTINCT d.doctor_id) "
+                + "FROM doctors d "
+                + "JOIN working_schedules ws ON d.doctor_id = ws.doctor_id AND ws.is_active = 1 "
+                + "JOIN shifts s ON ws.shift_id = s.shift_id "
+                + "WHERE d.status = 'active' "
+                + "AND ws.week_day = DAYNAME(NOW()) "
+                + "AND TIME(NOW()) BETWEEN s.start_time AND s.end_time "
+                + "AND d.doctor_id NOT IN (SELECT doctor_id FROM schedule_exceptions WHERE exception_date = CURDATE())";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -277,12 +275,23 @@ public class DoctorDao {
      */
     public static List<Doctor> getDoctorsByServiceId(int serviceId) {
         List<Doctor> doctors = new ArrayList<>();
-        String sql = "SELECT DISTINCT d.doctor_id, d.user_id, u.full_name, d.specialty_id, d.degree, d.experience " +
-                "FROM doctors d " +
-                "JOIN users u ON d.user_id = u.user_id " +
-                "JOIN doctor_services ds ON d.doctor_id = ds.doctor_id " +
-                "WHERE ds.service_id = ? AND d.status = 'active' " +
-                "ORDER BY u.full_name";
+        String sql = "SELECT DISTINCT d.doctor_id\n"
+                + "              , d.user_id\n"
+                + "              , u.full_name\n"
+                + "              , d.specialty_id\n"
+                + "              , s.name AS specialty_name\n"
+                + "              , d.degree\n"
+                + "              , d.experience\n"
+                + "  FROM doctors d\n"
+                + "	       JOIN users u\n"
+                + "	       ON d.user_id = u.user_id\n"
+                + "	       JOIN doctor_services ds\n"
+                + "	       ON d.doctor_id = ds.doctor_id\n"
+                + "	       JOIN specialties s\n"
+                + "	       ON d.specialty_id = s.specialty_id\n"
+                + " WHERE ds.service_id = ?\n"
+                + "   AND d.status = 'active'\n"
+                + " ORDER BY u.full_name";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, serviceId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -296,6 +305,7 @@ public class DoctorDao {
                     d.setFullName(rs.getString("full_name"));
                     Specialty s = new Specialty();
                     s.setSpecialtyId(rs.getInt("specialty_id"));
+                    s.setName(rs.getString("specialty_name"));
                     d.setSpecialty(s);
                     d.setDegree(rs.getString("degree"));
                     d.setExperience(rs.getString("experience"));

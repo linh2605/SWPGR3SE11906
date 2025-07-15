@@ -21,9 +21,25 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/update-status")
 public class UpdateStatusServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // Use AuthHelper for unified authentication (for medical staff only)
+        if (!utils.AuthHelper.isAuthenticated(req)) {
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(req);
+        if (roleId == null || (roleId != 2 && roleId != 3 && roleId != 5)) { // Doctor, Receptionist, Technician only
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         int patientId = Integer.parseInt(req.getParameter("patientId"));
         int statusCode = Integer.parseInt(req.getParameter("statusCode"));
-        int userId = (int) req.getSession().getAttribute("userId");
+        Integer userId = utils.AuthHelper.getCurrentUserId(req);
+        if (userId == null) {
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
 
         PatientStatusDao.updateStatus(patientId, statusCode, userId);
         resp.sendRedirect(req.getHeader("referer"));

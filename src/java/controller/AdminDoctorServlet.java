@@ -23,6 +23,12 @@ import java.util.List;
 public class AdminDoctorServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
         System.out.println("check doctor size:" + doctors.size());
@@ -33,6 +39,12 @@ public class AdminDoctorServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         HttpSession session = req.getSession();
         String username = req.getParameter("username");
         if (UserDAO.doesUsernameExist(username)) {

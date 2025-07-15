@@ -21,6 +21,12 @@ public class TechnicianServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        // Use AuthHelper for unified authentication  
+        if (!utils.AuthHelper.hasRole(req, 5)) { // 5 = technician
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+
         // Lọc bệnh nhân mà technician có thể xử lý (được phân quyền theo trạng thái)
         List<PatientStatus> patients = PatientStatusDao.getByHandledRole(5);  // role_id = 5: technician
         req.setAttribute("statuses", StatusDAO.getStatusesByRole(5));  // Trạng thái dành cho technician
@@ -51,10 +57,20 @@ public class TechnicianServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        // Use AuthHelper for unified authentication  
+        if (!utils.AuthHelper.hasRole(req, 5)) { // 5 = technician
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+
         try {
             int patientId = Integer.parseInt(req.getParameter("patientId"));
             int statusCode = Integer.parseInt(req.getParameter("statusCode"));
-            int changedBy = (int) req.getSession().getAttribute("userId");
+            Integer changedBy = utils.AuthHelper.getCurrentUserId(req);
+            if (changedBy == null) {
+                req.setAttribute("error", "Không thể xác định người dùng!");
+                return;
+            }
 
             // Cập nhật trạng thái bệnh nhân và ghi lại log
             PatientStatusDao.updateStatus(patientId, statusCode, changedBy);

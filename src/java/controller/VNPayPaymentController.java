@@ -35,6 +35,12 @@ public class VNPayPaymentController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Use AuthHelper for unified authentication (for patients making payment)
+        if (!utils.AuthHelper.hasRole(request, 1)) { // 1 = patient
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+
 //        String amount = request.getParameter("amount");
         int apptID = Integer.parseInt(request.getParameter("id"));
         System.out.println("id:" + apptID);

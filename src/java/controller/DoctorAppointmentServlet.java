@@ -31,17 +31,17 @@ public class DoctorAppointmentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 2)) { // 2 = doctor
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 2) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        if (userId == null) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        int userId = (int) session.getAttribute("userId");
 
         // Lấy doctorId từ userId
         int doctorId = new dal.WorkingScheduleDAO().getDoctorIdByUserId(userId);
@@ -59,17 +59,17 @@ public class DoctorAppointmentServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
-            return;
-        }
-        int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 2) { // Chỉ cho doctor (roleId = 2)
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 2)) { // 2 = doctor
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }
-        int userId = (int) session.getAttribute("userId");
+        
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        if (userId == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
+            return;
+        }
 
         try (Connection conn = DBContext.makeConnection()) {
             if (conn == null) {
@@ -116,26 +116,23 @@ public class DoctorAppointmentServlet extends HttpServlet {
     }
     
     private void handlePageRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        
-        if (user == null || user.getRole().getRoleId() != 2) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 2)) { // 2 = doctor
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         
-        // Get doctorId from session or database
-        Integer doctorIdObj = (Integer) session.getAttribute("doctorId");
-        int doctorId;
-        if (doctorIdObj == null) {
-            doctorId = new WorkingScheduleDAO().getDoctorIdByUserId(user.getUserId());
-            if (doctorId == -1) {
-                response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=doctor_not_found");
-                return;
-            }
-            session.setAttribute("doctorId", doctorId);
-        } else {
-            doctorId = doctorIdObj;
+        User user = utils.AuthHelper.getCurrentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
+        // Get doctorId from database
+        int doctorId = new WorkingScheduleDAO().getDoctorIdByUserId(user.getUserId());
+        if (doctorId == -1) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=doctor_not_found");
+            return;
         }
         
         // Get appointments for the doctor

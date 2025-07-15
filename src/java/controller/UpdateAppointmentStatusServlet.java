@@ -21,11 +21,8 @@ public class UpdateAppointmentStatusServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String role = (String) session.getAttribute("role");
-        
-        // Check if user is receptionist
-        if (!"receptionist".equals(role)) {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 3)) { // 3 = receptionist
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }

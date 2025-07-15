@@ -18,36 +18,42 @@ import java.util.List;
 public class FeedbackServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getSession().getAttribute("user") != null){
-            User user = (User) req.getSession().getAttribute("user");
-            if (!"patient".equals(user.getRole().getName())){
-                resp.sendRedirect(req.getContextPath() + "/login?error=must be patient");
-                return;
-            }
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 1)) { // 1 = patient
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
 
-            String action = req.getParameter("action");
-            if ("add".equals(action)) {
-                req.getRequestDispatcher("/views/patient/add-feedback.jsp").forward(req, resp);
-            } else {
-                // Lấy danh sách feedback của bệnh nhân hiện tại
-                Patient patient = PatientDao.getPatientByUserId(user.getUserId());
-                List<Feedback> feedbacks = FeedbackDAO.getByPatientId(patient.getPatient_id());
-                req.setAttribute("feedbacks", feedbacks);
-                req.getRequestDispatcher("/views/patient/list-feedback.jsp").forward(req, resp);
-            }
-
-        } else {
+        User user = utils.AuthHelper.getCurrentUser(req);
+        if (user == null) {
             resp.sendRedirect(req.getContextPath() + "/login?error=must login");
+            return;
+        }
+
+        String action = req.getParameter("action");
+        if ("add".equals(action)) {
+            req.getRequestDispatcher("/views/patient/add-feedback.jsp").forward(req, resp);
+        } else {
+            // Lấy danh sách feedback của bệnh nhân hiện tại
+            Patient patient = PatientDao.getPatientByUserId(user.getUserId());
+            List<Feedback> feedbacks = FeedbackDAO.getByPatientId(patient.getPatient_id());
+            req.setAttribute("feedbacks", feedbacks);
+            req.getRequestDispatcher("/views/patient/list-feedback.jsp").forward(req, resp);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String action = req.getParameter("action");
-        User user = (User) req.getSession().getAttribute("user");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 1)) { // 1 = patient
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
 
-        if (user == null || !"patient".equals(user.getRole().getName())) {
-            resp.sendRedirect(req.getContextPath() + "/login?error=must login as patient");
+        String action = req.getParameter("action");
+        User user = utils.AuthHelper.getCurrentUser(req);
+        if (user == null) {
+            resp.sendRedirect(req.getContextPath() + "/login?error=must login");
             return;
         }
 

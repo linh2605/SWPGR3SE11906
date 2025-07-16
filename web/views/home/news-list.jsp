@@ -226,11 +226,21 @@
             </section>
 
             <!-- Doctor List Section -->
-            <section class="doctor-list-container">
+            <section class="doctor-list-container" style="padding: 10px 0 !important">
                 <div class="container">
-                    <div class="row">
+                    <div class="row mb-3">
                         <!-- Doctor Grid -->
                         <div class="col-md-12">
+                            <div class="row mb-3 p-3">
+                                <div class="col-11">
+                                </div>
+                                <div class="col-1 d-flex flex-column align-items-center justify-content-center">
+                                    <a href="#" 
+                                       class="doctor-detail-btn bg-success justify-content-center gap-2 mt-2 d-flex">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </a>
+                                </div>
+                            </div>
                             <div class="row" id="doctor-grid">
                                 <c:choose>
                                     <c:when test="${not empty newsList}">

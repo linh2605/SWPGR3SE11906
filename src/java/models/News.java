@@ -7,6 +7,8 @@ public class News {
 
     private int newsID;
     private String title;
+    private String imagePreview;
+    private String shortDescription;
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -15,9 +17,11 @@ public class News {
     public News() {
     }
 
-    public News(int newsID, String title, String description, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy) {
+    public News(int newsID, String title, String imagePreview, String shortDescription, String description, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy) {
         this.newsID = newsID;
         this.title = title;
+        this.imagePreview = imagePreview;
+        this.shortDescription = shortDescription;
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -38,6 +42,22 @@ public class News {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getImagePreview() {
+        return imagePreview;
+    }
+
+    public void setImagePreview(String imagePreview) {
+        this.imagePreview = imagePreview;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
     }
 
     public String getDescription() {
@@ -71,12 +91,12 @@ public class News {
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
     }
-    
+
     public String getFormattedCreatedAt() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         return createdAt.format(formatter);
     }
-    
+
     public String getFormattedUpdatedAt() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         return updatedAt.format(formatter);

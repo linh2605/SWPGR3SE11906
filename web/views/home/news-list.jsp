@@ -249,27 +249,29 @@
                                                 <div class="doctor-card">
                                                     <div class="p-3">
                                                         <div class="row">
-                                                            <div class="col-11 doctor-info">
+                                                            <div class="col-3 doctor-info">
+                                                                <img src="${not empty n.imagePreview ? n.imagePreview : defaultAvatar}" 
+                                                                     alt="${d.user.fullName}" 
+                                                                     class="doctor-image"/>
+                                                            </div>
+                                                            <div class="col-8 doctor-info">
                                                                 <a href="${pageContext.request.contextPath}/news/${n.newsID}" 
                                                                    class="doctor-name">
                                                                     ${n.title}
                                                                 </a>
-
+                                                                <br/>
+                                                                <small class="text-muted">
+                                                                    Tác giả: ${n.createdBy.fullName}
+                                                                </small>
+                                                                <br/>
+                                                                <small class="text-muted">
+                                                                    Đăng ngày: ${n.formattedCreatedAt}
+                                                                </small>
                                                                 <p class="text-muted mb-2">
-                                                                    ${n.description}
+                                                                    ${n.shortDescription}
                                                                 </p>
 
-                                                                <div class="mb-2">
-                                                                    <small class="text-muted">
-                                                                        Tác giả: ${n.createdBy.fullName}
-                                                                    </small>
-                                                                </div>
 
-                                                                <div class="mb-3">
-                                                                    <small class="text-muted">
-                                                                        Đăng ngày: ${n.formattedCreatedAt}
-                                                                    </small>
-                                                                </div>
                                                             </div>
                                                             <div class="col-1 d-flex flex-column align-items-center justify-content-center">
                                                                 <a href="${pageContext.request.contextPath}/news/${n.newsID}" 

@@ -99,6 +99,37 @@ public class NewsDAO {
         return newsList;
     }
 
+    public static boolean update(News news) {
+        String sql = "UPDATE news\n"
+                + "    SET title             = ?\n"
+                + "	 , image_preview     = ?\n"
+                + "	 , short_description = ?\n"
+                + "	 , description       = ?\n"
+                + "	 , updated_at        = NOW()\n"
+                + "	 , created_by        = ?\n"
+                + " WHERE id = ?;";
+        try {
+            Connection conn = DBContext.makeConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setString(1, news.getTitle());
+            ps.setString(2, news.getImagePreview());
+            ps.setString(3, news.getShortDescription());
+            ps.setString(4, news.getDescription());
+            ps.setInt(5, news.getCreatedBy().getUserId());
+            ps.setInt(6, news.getNewsID());
+
+            int count = ps.executeUpdate();
+            if (count == 1) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
     public static News getNewsById(int newsID) {
         try {
             String sql = "SELECT id\n"

@@ -236,7 +236,7 @@
                                 </div>
                                 <div class="col-1 d-flex flex-column align-items-center justify-content-center">
                                     <a href="#" 
-                                       class="doctor-detail-btn bg-success justify-content-center gap-2 mt-2 d-flex">
+                                       class="btn btn-success quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                         <i class="bi bi-plus-lg"></i>
                                     </a>
                                 </div>
@@ -275,15 +275,15 @@
                                                             </div>
                                                             <div class="col-1 d-flex flex-column align-items-center justify-content-center">
                                                                 <a href="${pageContext.request.contextPath}/news/${n.newsID}" 
-                                                                   class="doctor-detail-btn bg-light-blue justify-content-center gap-2 mt-2 d-flex">
+                                                                   class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-eye"></i>
                                                                 </a>
                                                                 <a href="#" 
-                                                                   class="doctor-detail-btn bg-warning justify-content-center gap-2 mt-2 d-flex">
+                                                                   class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-pen"></i>
                                                                 </a>
                                                                 <a href="#" 
-                                                                   class="doctor-detail-btn bg-danger justify-content-center gap-2 mt-2 d-flex">
+                                                                   class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-trash"></i>
                                                                 </a>
                                                             </div>

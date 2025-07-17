@@ -31,19 +31,19 @@
                     <div class="carousel-item active">
                         <img src="assets/Blue White Modern Professional Medical Business Facebook Cover.png" class="d-block w-100" alt="Banner 1">
                         <div class="carousel-caption d-none d-md-block">
-                           
+
                         </div>
                     </div>
                     <div class="carousel-item">
                         <img src="assets/Blue White Modern Professional Medical Business Facebook Cover (1).png" class="d-block w-100" alt="Banner 2">
                         <div class="carousel-caption d-none d-md-block">
-                            
+
                         </div>
                     </div>
                     <div class="carousel-item">
                         <img src="assets/Blue White Modern Professional Medical Business Facebook Cover (2).png" class="d-block w-100" alt="Banner 2">
                         <div class="carousel-caption d-none d-md-block">
-                            
+
                         </div>
                     </div>
                 </div>
@@ -63,11 +63,11 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-auto">
-<!--                        <a class="btn btn-outline-success me-2"
-                           href="${pageContext.request.contextPath}/views/appointment/make-appointment.jsp"
-                           >
-                            <i class="bi bi-calendar-plus"></i> Đặt lịch khám
-                        </a>-->
+                        <!--                        <a class="btn btn-outline-success me-2"
+                                                   href="${pageContext.request.contextPath}/views/appointment/make-appointment.jsp"
+                                                   >
+                                                    <i class="bi bi-calendar-plus"></i> Đặt lịch khám
+                                                </a>-->
                         <a class="btn btn-outline-success me-2"
                            href="${pageContext.request.contextPath}/appointment"
                            >
@@ -156,7 +156,7 @@
                 <div class="row">
                     <c:forEach var="service" items="${popularServices}">
                         <div class="col-md-4 mb-4">
-                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
+                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
                                 <img src="<%=request.getContextPath()%>/assets/${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body text-center">
                                     <h5 class="card-title">${service.name}</h5>
@@ -288,7 +288,7 @@
                                     <c:forEach var="d" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, doctors.size() - 1)}">
                                         <c:set var="doctor" value="${doctors[d]}" />
                                         <div class="col-md-4 mb-4">
-                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href='${pageContext.request.contextPath}/doctors/${doctor.doctor_id}'">
+                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/doctors/${doctor.doctor_id}'">
                                                 <img src="${doctor.image_url}" class="card-img-top" alt="${doctor.user.fullName}" style="height: 200px; object-fit: cover;">
                                                 <div class="card-body">
                                                     <h5 class="card-title">${doctor.user.fullName}</h5>
@@ -313,6 +313,51 @@
                 </div>
                 <div class="text-center mt-4">
                     <a href="${pageContext.request.contextPath}/doctors" class="btn btn-primary">Xem danh sách bác sĩ</a>
+                </div>
+            </section>
+
+            <!-- Tin tức gần đây - Carousel động 3 news/slide -->
+            <section class="doctors mb-5">
+                <h2 class="text-center mb-4" style="color: #004d99;">Bài viết mới nhất</h2>
+                <div id="newsCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <c:forEach var="slide" begin="0" end="${(lastestNews.size() - 1) / 3}" varStatus="slideStatus">
+                            <div class="carousel-item${slideStatus.index == 0 ? ' active' : ''}">
+                                <div class="row">
+                                    <c:forEach var="n" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, lastestNews.size() - 1)}">
+                                        <c:set var="news" value="${lastestNews[n]}" />
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/news/${news.newsID}'">
+                                                <img src="${news.imagePreview}" class="card-img-top" alt="${news.title}" style="height: 200px; object-fit: cover;">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${news.title}</h5>
+                                                    <p class="card-text mb-0">
+                                                        <small>
+                                                            Tác giả: ${news.createdBy.fullName}
+                                                            <br/>
+                                                            Đăng ngày: ${news.formattedCreatedAt}
+                                                        </small>
+                                                    </p>
+                                                    <p style="text-align: justify;"><small>${news.shortDescription}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <div class="text-center mt-2">
+                    <a href="${pageContext.request.contextPath}/news" class="btn btn-primary">Xem danh sách bài viết</a>
                 </div>
             </section>
 

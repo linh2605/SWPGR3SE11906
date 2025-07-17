@@ -197,36 +197,50 @@
                                     <div class="doctor-card">
                                         <div class="p-3">
                                             <div class="row">
-                                                <div class="col-11 doctor-info">
-                                                    <p class="doctor-name" style="font-size: 1.5rem">
-                                                        ${n.title}
-                                                    </p>
-                                                    <p class="text-muted mb-0">
-                                                        Tác giả: ${n.createdBy.fullName}
-                                                    </p>
-                                                    <p class="text-muted mb-0">
-                                                        Đăng ngày: ${n.formattedCreatedAt}
-                                                    </p>
-                                                    <p class="text-muted mb-2">
-                                                        Cập nhật lần cuối: ${n.formattedUpdatedAt}
-                                                    </p>
-                                                    <p class="text-muted mb-2" style="font-size: 1.2rem">
-                                                        ${n.description}
-                                                    </p>
-                                                </div>
-                                                <div class="col-1 doctor-info">
-                                                    <a href="javascript:history.back()" 
-                                                       class="doctor-detail-btn bg-light-blue justify-content-center gap-2 mt-2 d-flex">
-                                                        <i class="bi bi-arrow-return-left me-1"></i>
-                                                    </a>
-                                                    <a href="#" 
-                                                       class="doctor-detail-btn bg-warning justify-content-center gap-2 mt-2 d-flex">
-                                                        <i class="bi bi-pen"></i>
-                                                    </a>
-                                                    <a href="#" 
-                                                       class="doctor-detail-btn bg-danger justify-content-center gap-2 mt-2 d-flex">
-                                                        <i class="bi bi-trash"></i>
-                                                    </a>
+                                                <div class="doctor-info">
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <img src="${not empty n.imagePreview ? n.imagePreview : defaultAvatar}" 
+                                                                 alt="${d.user.fullName}" 
+                                                                 class="doctor-image"/>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <p class="doctor-name" style="font-size: 1.5rem">
+                                                                ${n.title}
+                                                            </p>
+                                                            <p class="text-muted mb-0">
+                                                                Tác giả: ${n.createdBy.fullName}
+                                                            </p>
+                                                            <p class="text-muted mb-0">
+                                                                Đăng ngày: ${n.formattedCreatedAt}
+                                                            </p>
+                                                            <p class="text-muted mb-2">
+                                                                Cập nhật lần cuối: ${n.formattedUpdatedAt}
+                                                            </p>
+                                                            <p class="text-muted mb-2">
+                                                                ${n.shortDescription}
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-1 doctor-info">
+                                                            <a href="javascript:history.back()" 
+                                                               class="doctor-detail-btn bg-light-blue justify-content-center gap-2 mt-2 d-flex">
+                                                                <i class="bi bi-arrow-return-left me-1"></i>
+                                                            </a>
+                                                            <a href="#" 
+                                                               class="doctor-detail-btn bg-warning justify-content-center gap-2 mt-2 d-flex">
+                                                                <i class="bi bi-pen"></i>
+                                                            </a>
+                                                            <a href="#" 
+                                                               class="doctor-detail-btn bg-danger justify-content-center gap-2 mt-2 d-flex">
+                                                                <i class="bi bi-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <p class="text-muted mb-2" style="font-size: 1.2rem">
+                                                            ${n.description}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

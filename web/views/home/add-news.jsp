@@ -185,61 +185,71 @@
         <!-- Nhúng header và navbar -->
         <%@ include file="../layouts/header.jsp" %>
 
-        <c:set var="defaultAvatar" value="${pageContext.request.contextPath}/assets/default-avatar.jpg" />
-
         <main>
             <section class="doctor-list-container">
                 <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="row" id="doctor-grid">
-                                <div class="col-md-12 doctor-item">
-                                    <div class="doctor-card">
-                                        <div class="p-3">
-                                            <div class="row">
-                                                <div class="doctor-info">
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <img src="${not empty n.imagePreview ? n.imagePreview : defaultAvatar}" 
-                                                                 alt="${d.user.fullName}" 
-                                                                 class="doctor-image"/>
+                    <form method="POST" action="${pageContext.request.contextPath}/news/add" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row" id="doctor-grid">
+                                    <div class="col-md-12 doctor-item">
+                                        <div class="doctor-card">
+                                            <div class="p-3">
+                                                <div class="row">
+                                                    <div class="doctor-info">
+                                                        <div class="row">
+                                                            <div class="col-3">
+                                                                <img src="${n.imagePreview}" 
+                                                                     alt="Image preview" 
+                                                                     class="doctor-image"
+                                                                     onerror="this.src='https://www.svgrepo.com/show/506507/image.svg';">
+                                                                <!-- Giữ imageUrl cũ -->
+                                                                <input type="hidden" name="existingImageUrl" value="${n.imagePreview}">
+
+                                                                <label class="form-label mt-3 justify-content-center gap-2 d-flex">Chọn ảnh minh họa mới</label>
+                                                                <input type="file" class="form-control justify-content-center gap-2 d-flex" name="imageFile" accept="image/*">
+                                                            </div>  
+                                                            <div class="col-7">
+                                                                <label class="form-label">Tiêu đề:</label>
+                                                                <input type="text" class="form-control doctor-name" name="title" value="${n.title}" required>
+
+                                                                <label class="form-label">Tác giả:</label>
+                                                                <input type="text" class="form-control text-muted mb-2" name="createdBy" value="${n.createdBy.fullName}" readonly>
+
+                                                                <label class="form-label">Đăng ngày:</label>
+                                                                <input type="datetime-local" class="form-control text-muted mb-2" name="createdAt" value="${n.createdAt}" readonly>
+
+                                                                <label class="form-label">Cập nhật lần cuối:</label>
+                                                                <input type="datetime-local" class="form-control text-muted mb-2" name="updatedAt" value="${n.updatedAt}" readonly>
+                                                            </div>
+                                                            <div class="col-2 doctor-info">
+                                                                <button 
+                                                                    type="submit"
+                                                                    class="btn btn-success quick-action-btn justify-content-center gap-2 mt-2 d-flex w-100">
+                                                                    Đăng bài<i class="bi bi-file-check"> </i></button>
+
+                                                                <a href="javascript:history.back()" 
+                                                                   class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex w-100">
+                                                                    Quay lại<i class="bi bi-arrow-return-left"></i>
+                                                                </a>
+                                                            </div>
                                                         </div>
-                                                        <div class="col-8">
-                                                            <p class="doctor-name" style="font-size: 1.5rem">
-                                                                ${n.title}
-                                                            </p>
-                                                            <p class="text-muted mb-0">
-                                                                Tác giả: ${n.createdBy.fullName}
-                                                            </p>
-                                                            <p class="text-muted mb-0">
-                                                                Đăng ngày: ${n.formattedCreatedAt}
-                                                            </p>
-                                                            <p class="text-muted mb-2">
-                                                                Cập nhật lần cuối: ${n.formattedUpdatedAt}
-                                                            </p>
-                                                            <p class="text-muted mb-2">
-                                                                ${n.shortDescription}
-                                                            </p>
+                                                        <div class="row">
+                                                            <label class="form-label mt-3">Nội dung chính:</label>
+                                                            <textarea 
+                                                                class="form-control text-muted mb-2" 
+                                                                name="shortDescription" 
+                                                                rows="3" 
+                                                                required>${n.shortDescription}</textarea>
+
+                                                            <label class="form-label">Nội dung bài viết:</label>
+                                                            <textarea 
+                                                                class="form-control text-muted mb-2" 
+                                                                name="description" 
+                                                                rows="20" 
+                                                                style="font-size: 1.2rem" 
+                                                                required>${n.description}</textarea>
                                                         </div>
-                                                        <div class="col-1 doctor-info">
-                                                            <a href="javascript:history.back()" 
-                                                               class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex">
-                                                                <i class="bi bi-arrow-return-left me-1"></i>
-                                                            </a>
-                                                            <a href="${pageContext.request.contextPath}/news/edit/${n.newsID}" 
-                                                               class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
-                                                                <i class="bi bi-pen"></i>
-                                                            </a>
-                                                            <a href="#" 
-                                                               class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex">
-                                                                <i class="bi bi-trash"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <p class="text-muted mb-2" style="font-size: 1.2rem">
-                                                            ${n.description}
-                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -248,7 +258,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </section>
             <!-- Map Section -->

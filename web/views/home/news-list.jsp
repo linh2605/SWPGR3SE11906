@@ -278,7 +278,7 @@
                                                                    class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-eye"></i>
                                                                 </a>
-                                                                <a href="#" 
+                                                                <a href="${pageContext.request.contextPath}/news/edit/${n.newsID}" 
                                                                    class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-pen"></i>
                                                                 </a>

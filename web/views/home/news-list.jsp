@@ -235,7 +235,7 @@
                                 <div class="col-11">
                                 </div>
                                 <div class="col-1 d-flex flex-column align-items-center justify-content-center">
-                                    <a href="#" 
+                                    <a href="${pageContext.request.contextPath}/news/create" 
                                        class="btn btn-success quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                         <i class="bi bi-plus-lg"></i>
                                     </a>
@@ -255,7 +255,7 @@
                                                                      class="doctor-image"/>
                                                             </div>
                                                             <div class="col-8 doctor-info">
-                                                                <a href="${pageContext.request.contextPath}/news/${n.newsID}" 
+                                                                <a href="${pageContext.request.contextPath}/news/view?id=${n.newsID}" 
                                                                    class="doctor-name">
                                                                     ${n.title}
                                                                 </a>
@@ -274,11 +274,11 @@
 
                                                             </div>
                                                             <div class="col-1 d-flex flex-column align-items-center justify-content-center">
-                                                                <a href="${pageContext.request.contextPath}/news/${n.newsID}" 
+                                                                <a href="${pageContext.request.contextPath}/news/view?id=${n.newsID}" 
                                                                    class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-eye"></i>
                                                                 </a>
-                                                                <a href="${pageContext.request.contextPath}/news/edit/${n.newsID}" 
+                                                                <a href="${pageContext.request.contextPath}/news/edit?id=${n.newsID}" 
                                                                    class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-pen"></i>
                                                                 </a>

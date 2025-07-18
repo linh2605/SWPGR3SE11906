@@ -17,8 +17,9 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/doctor-list.css">
 
         <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/favicon.svg" />
+        <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
-        <title>${n.title} - Hệ thống Quản lý Phòng khám</title>
+        <title>Tạo bài viết - Hệ thống Quản lý Phòng khám</title>
         <style>
             /* Fix header overlap issue */
             body {
@@ -173,10 +174,19 @@
             .map-section {
                 margin: 40px 0;
             }
-
             #map {
                 border-radius: 15px;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+
+            /* Ẩn thông báo update ckeditor */
+            .cke_notifications_area
+            {
+                display: none !important;
+            }
+            /* config độ dài tối thiểu của ckeditor */
+            .cke_contents {
+                min-height: 500px !important;
             }
         </style>
     </head>
@@ -189,12 +199,23 @@
             <section class="doctor-list-container">
                 <div class="container">
                     <form method="POST" action="${pageContext.request.contextPath}/news/add" enctype="multipart/form-data">
+                        <input type="hidden" name="newsID" value="${n.newsID}"/>
+
                         <div class="row">
                             <div class="col-md-12">
+                                <c:if test="${param.success eq 'true'}">
+                                    <div class="alert alert-success mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
+                                         >Đăng bài viết thành công!</div>
+                                </c:if>
+                                <c:if test="${param.success eq 'false'}">
+                                    <div class="alert alert-danger mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
+                                         >Đăng bài viết thất bại!</div>
+                                </c:if>
                                 <div class="row" id="doctor-grid">
                                     <div class="col-md-12 doctor-item">
                                         <div class="doctor-card">
                                             <div class="p-3">
+
                                                 <div class="row">
                                                     <div class="doctor-info">
                                                         <div class="row">
@@ -215,6 +236,7 @@
 
                                                                 <label class="form-label">Tác giả:</label>
                                                                 <input type="text" class="form-control text-muted mb-2" name="createdBy" value="${n.createdBy.fullName}" readonly>
+                                                                <input type="hidden" name="createdByID" value="${n.createdBy.userId}"/>
 
                                                                 <label class="form-label">Đăng ngày:</label>
                                                                 <input type="datetime-local" class="form-control text-muted mb-2" name="createdAt" value="${n.createdAt}" readonly>
@@ -235,15 +257,16 @@
                                                             </div>
                                                         </div>
                                                         <div class="row">
-                                                            <label class="form-label mt-3">Nội dung chính:</label>
-                                                            <textarea 
+                                                            <label class="form-label mt-0">Nội dung chính:</label>
+                                                            <textarea
                                                                 class="form-control text-muted mb-2" 
                                                                 name="shortDescription" 
                                                                 rows="3" 
                                                                 required>${n.shortDescription}</textarea>
 
-                                                            <label class="form-label">Nội dung bài viết:</label>
+                                                            <label class="form-label mt-3">Nội dung bài viết:</label>
                                                             <textarea 
+                                                                id="description"
                                                                 class="form-control text-muted mb-2" 
                                                                 name="description" 
                                                                 rows="20" 
@@ -280,5 +303,11 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+        <script>
+            CKEDITOR.replace('description', {
+                language: 'vi',
+                width: '100%'
+            });
+        </script>
     </body>
 </html>

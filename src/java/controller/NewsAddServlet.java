@@ -16,26 +16,26 @@ import java.time.LocalDateTime;
 import models.News;
 import models.User;
 
-@WebServlet("/news/edit")
+@WebServlet("/news/create")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024, // 1MB
         maxFileSize = 5 * 1024 * 1024, // 5MB
         maxRequestSize = 10 * 1024 * 1024 // 10MB
 )
-public class NewsEditServlet extends HttpServlet {
+public class NewsAddServlet extends HttpServlet {
 
     private static final String UPLOAD_DIR = "assets/uploads/news";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getParameter("id") != null 
-                && req.getParameter("id").length() > 0) {
-            int news_id = Integer.parseInt(req.getParameter("id"));
+        String pathInfo = req.getPathInfo();
+        if (pathInfo != null && pathInfo.length() > 1) {
+            int news_id = Integer.parseInt(pathInfo.substring(1));
             News news = NewsDAO.getNewsById(news_id);
             System.out.println("news:" + news.getNewsID() + ":" + news.getTitle());
             if (news.getNewsID() != 0) {
                 req.setAttribute("n", news);
-                req.getRequestDispatcher("/views/home/edit-news.jsp").forward(req, resp);
+                req.getRequestDispatcher("/views/home/add-news.jsp").forward(req, resp);
             } else {
                 req.setAttribute("errorMsg", "Không tìm thấy bài viết");
                 req.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(req, resp);

@@ -288,7 +288,7 @@
                                     <c:forEach var="d" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, doctors.size() - 1)}">
                                         <c:set var="doctor" value="${doctors[d]}" />
                                         <div class="col-md-4 mb-4">
-                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/doctors/${doctor.doctor_id}'">
+                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/doctors/view?id=${doctor.doctor_id}'">
                                                 <img src="${doctor.image_url}" class="card-img-top" alt="${doctor.user.fullName}" style="height: 200px; object-fit: cover;">
                                                 <div class="card-body">
                                                     <h5 class="card-title">${doctor.user.fullName}</h5>

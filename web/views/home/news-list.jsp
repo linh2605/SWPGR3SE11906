@@ -203,9 +203,10 @@
                         <ol class="breadcrumb justify-content-center">
                             <li class="breadcrumb-item">
                                 <a href="${pageContext.request.contextPath}/">
-                                    <i class="bi bi-house-door"></i> Trang chủ
+                                    <i class="bi bi-house-door"></i> Trang chủ 
                                 </a>
                             </li>
+                            <i class="bi bi-chevron-right" style="font-size: 0.8rem"> </i>
                             <li class="breadcrumb-item active" aria-current="page">
                                 Danh sách bài viết
                             </li>
@@ -392,7 +393,7 @@
                                                                                     const paginationContainer = document.getElementById('pagination-container');
                                                                                     const searchInput = document.getElementById('doctor-search');
 
-                                                                                    const doctorsPerPage = 2; // 6 bác sĩ trên 1 trang
+                                                                                    const doctorsPerPage = 4; // 4 bài 1 trang
                                                                                     let currentPage = 1;
                                                                                     let currentKeyword = '';
 

@@ -4,6 +4,7 @@
     Author     : tuan
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
@@ -189,8 +190,8 @@
     <body>
         <!-- Nhúng header và navbar -->
         <%@ include file="../layouts/header.jsp" %>
-
-        <c:set var="defaultAvatar" value="${pageContext.request.contextPath}/assets/default-avatar.jpg" />
+        <c:set var="userRole" value="${empty sessionScope.user ? 'Guest' : sessionScope.user.role.name}" />
+        <c:set var="defaultImage" value="${pageContext.request.contextPath}/assets/default-image.svg" />
 
         <main>
             <!-- Banner Section -->
@@ -243,16 +244,20 @@
                                 <div class="alert alert-danger my-3 p-3 d-flex flex-column align-items-center justify-content-center"
                                      >Xoá viết thất bại: Lỗi hệ thống!</div>
                             </c:if>
+
                             <div class="row mb-3 p-3">
-                                <div class="col-11">
-                                </div>
-                                <div class="col-1 d-flex flex-column align-items-center justify-content-center">
-                                    <a href="${pageContext.request.contextPath}/news/create" 
-                                       class="btn btn-success quick-action-btn justify-content-center gap-2 mt-2 d-flex">
-                                        <i class="bi bi-plus-lg"></i>
-                                    </a>
-                                </div>
+                                <c:if test="${fn:contains('doctor receptionist admin technician', userRole)}">
+                                    <div class="col-11">
+                                    </div>
+                                    <div class="col-1 d-flex flex-column align-items-center justify-content-center">
+                                        <a href="${pageContext.request.contextPath}/news/create" 
+                                           class="btn btn-success quick-action-btn justify-content-center gap-2 mt-2 d-flex">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </a>
+                                    </div>
+                                </c:if>
                             </div>
+
                             <div class="row" id="doctor-grid">
                                 <c:choose>
                                     <c:when test="${not empty newsList}">
@@ -262,7 +267,7 @@
                                                     <div class="p-3">
                                                         <div class="row">
                                                             <div class="col-3 doctor-info">
-                                                                <img src="${not empty n.imagePreview ? n.imagePreview : defaultAvatar}" 
+                                                                <img src="${not empty n.imagePreview ? n.imagePreview : defaultImage}" 
                                                                      alt="${d.user.fullName}" 
                                                                      class="doctor-image"/>
                                                             </div>
@@ -285,22 +290,24 @@
 
 
                                                             </div>
-                                                            <div class="col-1 d-flex flex-column align-items-center justify-content-center">
+                                                            <div class="col-1 d-flex flex-column align-items-center">
                                                                 <a href="${pageContext.request.contextPath}/news/view?id=${n.newsID}" 
-                                                                   class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex">
+                                                                   class="btn btn-primary quick-action-btn gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-eye"></i>
                                                                 </a>
-                                                                <a href="${pageContext.request.contextPath}/news/edit?id=${n.newsID}" 
-                                                                   class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
-                                                                    <i class="bi bi-pen"></i>
-                                                                </a>
-                                                                <button type="button"
-                                                                        class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex"
-                                                                        data-bs-toggle="modal"
-                                                                        data-bs-target="#confirmDeleteModal"
-                                                                        onclick="prepareDelete(${n.newsID})">
-                                                                    <i class="bi bi-trash"></i>
-                                                                </button>
+                                                                <c:if test="${fn:contains('doctor receptionist admin technician', userRole)}">
+                                                                    <a href="${pageContext.request.contextPath}/news/edit?id=${n.newsID}" 
+                                                                       class="btn btn-warning quick-action-btn gap-2 mt-2 d-flex">
+                                                                        <i class="bi bi-pen"></i>
+                                                                    </a>
+                                                                    <button type="button"
+                                                                            class="btn btn-danger quick-action-btn gap-2 mt-2 d-flex"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#confirmDeleteModal"
+                                                                            onclick="prepareDelete(${n.newsID})">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </button>
+                                                                </c:if>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -377,138 +384,138 @@
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 
         <script>
-            function prepareDelete(newsID) {
-                document.getElementById('deleteNewsID').value = newsID;
-            }
-            document.addEventListener('DOMContentLoaded', function () {
-                const allDoctors = Array.from(document.querySelectorAll('.doctor-item'));
-                const paginationContainer = document.getElementById('pagination-container');
-                const searchInput = document.getElementById('doctor-search');
+                                                                                function prepareDelete(newsID) {
+                                                                                    document.getElementById('deleteNewsID').value = newsID;
+                                                                                }
+                                                                                document.addEventListener('DOMContentLoaded', function () {
+                                                                                    const allDoctors = Array.from(document.querySelectorAll('.doctor-item'));
+                                                                                    const paginationContainer = document.getElementById('pagination-container');
+                                                                                    const searchInput = document.getElementById('doctor-search');
 
-                const doctorsPerPage = 2; // 6 bác sĩ trên 1 trang
-                let currentPage = 1;
-                let currentKeyword = '';
+                                                                                    const doctorsPerPage = 2; // 6 bác sĩ trên 1 trang
+                                                                                    let currentPage = 1;
+                                                                                    let currentKeyword = '';
 
-                function normalize(str) {
-                    return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                }
+                                                                                    function normalize(str) {
+                                                                                        return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                                                                                    }
 
-                function getFilteredDoctors() {
-                    return allDoctors.filter(doc => {
-                        const docSpecId = doc.getAttribute('data-specialist-id');
-                        const name = doc.querySelector('.doctor-name')?.textContent || '';
-                        const matchKeyword = currentKeyword === '' || normalize(name).includes(normalize(currentKeyword));
-                        return matchKeyword;
-                    });
-                }
+                                                                                    function getFilteredDoctors() {
+                                                                                        return allDoctors.filter(doc => {
+                                                                                            const docSpecId = doc.getAttribute('data-specialist-id');
+                                                                                            const name = doc.querySelector('.doctor-name')?.textContent || '';
+                                                                                            const matchKeyword = currentKeyword === '' || normalize(name).includes(normalize(currentKeyword));
+                                                                                            return matchKeyword;
+                                                                                        });
+                                                                                    }
 
-                function renderDoctors() {
-                    const filteredDoctors = getFilteredDoctors();
-                    const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage);
-                    if (currentPage > totalPages && totalPages > 0) {
-                        currentPage = 1;
-                    }
+                                                                                    function renderDoctors() {
+                                                                                        const filteredDoctors = getFilteredDoctors();
+                                                                                        const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage);
+                                                                                        if (currentPage > totalPages && totalPages > 0) {
+                                                                                            currentPage = 1;
+                                                                                        }
 
-                    const start = (currentPage - 1) * doctorsPerPage;
-                    const end = start + doctorsPerPage;
+                                                                                        const start = (currentPage - 1) * doctorsPerPage;
+                                                                                        const end = start + doctorsPerPage;
 
-                    // Hide all doctors
-                    allDoctors.forEach(doc => doc.style.display = 'none');
+                                                                                        // Hide all doctors
+                                                                                        allDoctors.forEach(doc => doc.style.display = 'none');
 
-                    // Show filtered doctors for current page
-                    filteredDoctors.slice(start, end).forEach(doc => doc.style.display = 'block');
+                                                                                        // Show filtered doctors for current page
+                                                                                        filteredDoctors.slice(start, end).forEach(doc => doc.style.display = 'block');
 
-                    renderPagination(totalPages);
-                }
+                                                                                        renderPagination(totalPages);
+                                                                                    }
 
-                function renderPagination(totalPages) {
-                    paginationContainer.innerHTML = '';
+                                                                                    function renderPagination(totalPages) {
+                                                                                        paginationContainer.innerHTML = '';
 
-                    if (totalPages <= 1)
-                        return;
+                                                                                        if (totalPages <= 1)
+                                                                                            return;
 
-                    const pagination = document.createElement('nav');
-                    const ul = document.createElement('ul');
-                    ul.className = 'pagination justify-content-center';
+                                                                                        const pagination = document.createElement('nav');
+                                                                                        const ul = document.createElement('ul');
+                                                                                        ul.className = 'pagination justify-content-center';
 
-                    // Previous button
-                    const prevLi = document.createElement('li');
-                    prevLi.className = 'page-item ' + (currentPage === 1 ? 'disabled' : '');
-                    const prevLink = document.createElement('a');
-                    prevLink.className = 'page-link';
-                    prevLink.innerHTML = '<i class="bi bi-chevron-left"></i>';
-                    prevLink.href = '#';
-                    if (currentPage > 1) {
-                        prevLink.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            currentPage--;
-                            renderDoctors();
-                        });
-                    }
-                    prevLi.appendChild(prevLink);
-                    ul.appendChild(prevLi);
+                                                                                        // Previous button
+                                                                                        const prevLi = document.createElement('li');
+                                                                                        prevLi.className = 'page-item ' + (currentPage === 1 ? 'disabled' : '');
+                                                                                        const prevLink = document.createElement('a');
+                                                                                        prevLink.className = 'page-link';
+                                                                                        prevLink.innerHTML = '<i class="bi bi-chevron-left"></i>';
+                                                                                        prevLink.href = '#';
+                                                                                        if (currentPage > 1) {
+                                                                                            prevLink.addEventListener('click', (e) => {
+                                                                                                e.preventDefault();
+                                                                                                currentPage--;
+                                                                                                renderDoctors();
+                                                                                            });
+                                                                                        }
+                                                                                        prevLi.appendChild(prevLink);
+                                                                                        ul.appendChild(prevLi);
 
-                    // Page numbers
-                    for (let i = 1; i <= totalPages; i++) {
-                        const li = document.createElement('li');
-                        li.className = 'page-item ' + (i === currentPage ? 'active' : '');
-                        const link = document.createElement('a');
-                        link.className = 'page-link';
-                        link.textContent = i;
-                        link.href = '#';
-                        link.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            currentPage = i;
-                            renderDoctors();
-                        });
-                        li.appendChild(link);
-                        ul.appendChild(li);
-                    }
+                                                                                        // Page numbers
+                                                                                        for (let i = 1; i <= totalPages; i++) {
+                                                                                            const li = document.createElement('li');
+                                                                                            li.className = 'page-item ' + (i === currentPage ? 'active' : '');
+                                                                                            const link = document.createElement('a');
+                                                                                            link.className = 'page-link';
+                                                                                            link.textContent = i;
+                                                                                            link.href = '#';
+                                                                                            link.addEventListener('click', (e) => {
+                                                                                                e.preventDefault();
+                                                                                                currentPage = i;
+                                                                                                renderDoctors();
+                                                                                            });
+                                                                                            li.appendChild(link);
+                                                                                            ul.appendChild(li);
+                                                                                        }
 
-                    // Next button
-                    const nextLi = document.createElement('li');
-                    nextLi.className = 'page-item ' + (currentPage === totalPages ? 'disabled' : '');
-                    const nextLink = document.createElement('a');
-                    nextLink.className = 'page-link';
-                    nextLink.innerHTML = '<i class="bi bi-chevron-right"></i>';
-                    nextLink.href = '#';
-                    if (currentPage < totalPages) {
-                        nextLink.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            currentPage++;
-                            renderDoctors();
-                        });
-                    }
-                    nextLi.appendChild(nextLink);
-                    ul.appendChild(nextLi);
+                                                                                        // Next button
+                                                                                        const nextLi = document.createElement('li');
+                                                                                        nextLi.className = 'page-item ' + (currentPage === totalPages ? 'disabled' : '');
+                                                                                        const nextLink = document.createElement('a');
+                                                                                        nextLink.className = 'page-link';
+                                                                                        nextLink.innerHTML = '<i class="bi bi-chevron-right"></i>';
+                                                                                        nextLink.href = '#';
+                                                                                        if (currentPage < totalPages) {
+                                                                                            nextLink.addEventListener('click', (e) => {
+                                                                                                e.preventDefault();
+                                                                                                currentPage++;
+                                                                                                renderDoctors();
+                                                                                            });
+                                                                                        }
+                                                                                        nextLi.appendChild(nextLink);
+                                                                                        ul.appendChild(nextLi);
 
-                    pagination.appendChild(ul);
-                    paginationContainer.appendChild(pagination);
-                }
+                                                                                        pagination.appendChild(ul);
+                                                                                        paginationContainer.appendChild(pagination);
+                                                                                    }
 
-                // Search handler
-                searchInput.addEventListener('input', function () {
-                    currentKeyword = this.value;
-                    currentPage = 1;
-                    renderDoctors();
-                });
-                renderDoctors();
+                                                                                    // Search handler
+                                                                                    searchInput.addEventListener('input', function () {
+                                                                                        currentKeyword = this.value;
+                                                                                        currentPage = 1;
+                                                                                        renderDoctors();
+                                                                                    });
+                                                                                    renderDoctors();
 
-                // Initialize map
-                if (typeof L !== 'undefined') {
-                    const map = L.map('map').setView([21.0285, 105.8542], 13);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors'
-                    }).addTo(map);
+                                                                                    // Initialize map
+                                                                                    if (typeof L !== 'undefined') {
+                                                                                        const map = L.map('map').setView([21.0285, 105.8542], 13);
+                                                                                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                                                                            attribution: '© OpenStreetMap contributors'
+                                                                                        }).addTo(map);
 
-                    L.marker([21.0285, 105.8542]).addTo(map)
-                            .bindPopup('Hệ thống Quản lý Phòng khám')
-                            .openPopup();
-                }
+                                                                                        L.marker([21.0285, 105.8542]).addTo(map)
+                                                                                                .bindPopup('Hệ thống Quản lý Phòng khám')
+                                                                                                .openPopup();
+                                                                                    }
 
-                // Initial render
-                renderDoctors();
-            });
+                                                                                    // Initial render
+                                                                                    renderDoctors();
+                                                                                });
         </script>
     </body>
 </html>

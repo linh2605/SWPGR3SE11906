@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.File;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -27,22 +26,31 @@ public class NewsEditServlet extends HttpServlet {
     private static final String UPLOAD_DIR = "assets/uploads/news";
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (req.getParameter("id") != null 
-                && req.getParameter("id").length() > 0) {
-            int news_id = Integer.parseInt(req.getParameter("id"));
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Use AuthHelper for unified authentication: 2-doctor, 3-receptionist, 4-admin, 5-technician
+        if (!utils.AuthHelper.hasRole(request, 2)
+                && !utils.AuthHelper.hasRole(request, 3)
+                && !utils.AuthHelper.hasRole(request, 4)
+                && !utils.AuthHelper.hasRole(request, 5)) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+
+        if (request.getParameter("id") != null
+                && request.getParameter("id").length() > 0) {
+            int news_id = Integer.parseInt(request.getParameter("id"));
             News news = NewsDAO.getNewsById(news_id);
             System.out.println("news:" + news.getNewsID() + ":" + news.getTitle());
             if (news.getNewsID() != 0) {
-                req.setAttribute("n", news);
-                req.getRequestDispatcher("/views/home/edit-news.jsp").forward(req, resp);
+                request.setAttribute("n", news);
+                request.getRequestDispatcher("/views/home/edit-news.jsp").forward(request, response);
             } else {
-                req.setAttribute("errorMsg", "Không tìm thấy bài viết");
-                req.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(req, resp);
+                request.setAttribute("errorMsg", "Không tìm thấy bài viết");
+                request.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(request, response);
             }
         } else {
-            req.setAttribute("errorMsg", "Không tìm thấy bài viết");
-            req.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(req, resp);
+            request.setAttribute("errorMsg", "Không tìm thấy bài viết");
+            request.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(request, response);
         }
     }
 
@@ -51,8 +59,12 @@ public class NewsEditServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        if (!utils.AuthHelper.isAuthenticated(request)) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        // Use AuthHelper for unified authentication: 2-doctor, 3-receptionist, 4-admin, 5-technician
+        if (!utils.AuthHelper.hasRole(request, 2)
+                && !utils.AuthHelper.hasRole(request, 3)
+                && !utils.AuthHelper.hasRole(request, 4)
+                && !utils.AuthHelper.hasRole(request, 5)) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
 

@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
@@ -185,7 +186,8 @@
         <!-- Nhúng header và navbar -->
         <%@ include file="../layouts/header.jsp" %>
 
-        <c:set var="defaultAvatar" value="${pageContext.request.contextPath}/assets/default-avatar.jpg" />
+        <c:set var="userRole" value="${empty sessionScope.user ? 'Guest' : sessionScope.user.role.name}" />
+        <c:set var="defaultImage" value="${pageContext.request.contextPath}/assets/default-image.svg" />
 
         <main>
             <section class="doctor-list-container">
@@ -200,8 +202,8 @@
                                                 <div class="doctor-info">
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <img src="${not empty n.imagePreview ? n.imagePreview : defaultAvatar}" 
-                                                                 alt="${d.user.fullName}" 
+                                                            <img src="${not empty n.imagePreview ? n.imagePreview : defaultImage}" 
+                                                                 alt="imagePreview" 
                                                                  class="doctor-image"/>
                                                         </div>
                                                         <div class="col-8">
@@ -226,17 +228,19 @@
                                                                class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                 <i class="bi bi-arrow-return-left me-1"></i>
                                                             </a>
-                                                            <a href="${pageContext.request.contextPath}/news/edit?id=${n.newsID}" 
-                                                               class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
-                                                                <i class="bi bi-pen"></i>
-                                                            </a>
-                                                            <button type="button"
-                                                                    class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex w-100"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#confirmDeleteModal"
-                                                                    onclick="prepareDelete(${n.newsID})">
-                                                                <i class="bi bi-trash"></i>
-                                                            </button>
+                                                            <c:if test="${fn:contains('doctor receptionist admin technician', userRole)}">
+                                                                <a href="${pageContext.request.contextPath}/news/edit?id=${n.newsID}" 
+                                                                   class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
+                                                                    <i class="bi bi-pen"></i>
+                                                                </a>
+                                                                <button type="button"
+                                                                        class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex w-100"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#confirmDeleteModal"
+                                                                        onclick="prepareDelete(${n.newsID})">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
+                                                            </c:if>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -301,9 +305,9 @@
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
         <script>
-            function prepareDelete(newsID) {
-                document.getElementById('deleteNewsID').value = newsID;
-            }
+                                                                            function prepareDelete(newsID) {
+                                                                                document.getElementById('deleteNewsID').value = newsID;
+                                                                            }
         </script>
 
     </body>

@@ -17,8 +17,12 @@ public class NewsDeleteServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        if (!utils.AuthHelper.isAuthenticated(request)) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        // Use AuthHelper for unified authentication: 2-doctor, 3-receptionist, 4-admin, 5-technician
+        if (!utils.AuthHelper.hasRole(request, 2)
+                && !utils.AuthHelper.hasRole(request, 3)
+                && !utils.AuthHelper.hasRole(request, 4)
+                && !utils.AuthHelper.hasRole(request, 5)) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
 

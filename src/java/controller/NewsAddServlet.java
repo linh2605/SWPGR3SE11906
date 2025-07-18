@@ -27,22 +27,15 @@ public class NewsAddServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        String pathInfo = request.getPathInfo();
-//        if (pathInfo != null && pathInfo.length() > 1) {
-//            int news_id = Integer.parseInt(pathInfo.substring(1));
-//            News news = NewsDAO.getNewsById(news_id);
-//            System.out.println("news:" + news.getNewsID() + ":" + news.getTitle());
-//            if (news.getNewsID() != 0) {
-//                request.setAttribute("n", news);
-//                request.getRequestDispatcher("/views/home/add-news.jsp").forward(request, response);
-//            } else {
-//                request.setAttribute("errorMsg", "Không tìm thấy bài viết");
-//                request.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(request, response);
-//            }
-//        } else {
-//            request.setAttribute("errorMsg", "Không tìm thấy bài viết");
-//            request.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(request, response);
-//        }
+        // Use AuthHelper for unified authentication: 2-doctor, 3-receptionist, 4-admin, 5-technician
+        if (!utils.AuthHelper.hasRole(request, 2)
+                && !utils.AuthHelper.hasRole(request, 3)
+                && !utils.AuthHelper.hasRole(request, 4)
+                && !utils.AuthHelper.hasRole(request, 5)) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         News news = new News();
         news.setCreatedBy(AuthHelper.getCurrentUser(request));
         request.setAttribute("n", news);
@@ -53,8 +46,16 @@ public class NewsAddServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Use AuthHelper for unified authentication: 2-doctor, 3-receptionist, 4-admin, 5-technician
+        if (!utils.AuthHelper.hasRole(request, 2)
+                && !utils.AuthHelper.hasRole(request, 3)
+                && !utils.AuthHelper.hasRole(request, 4)
+                && !utils.AuthHelper.hasRole(request, 5)) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         request.setCharacterEncoding("UTF-8");
-
         if (!utils.AuthHelper.isAuthenticated(request)) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;

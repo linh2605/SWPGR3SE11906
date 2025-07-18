@@ -327,7 +327,7 @@
                                     <c:forEach var="n" begin="${slideStatus.index * 3}" end="${Math.min((slideStatus.index + 1) * 3 - 1, lastestNews.size() - 1)}">
                                         <c:set var="news" value="${lastestNews[n]}" />
                                         <div class="col-md-4 mb-4">
-                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/news/${news.newsID}'">
+                                            <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/news/view?id=${news.newsID}'">
                                                 <img src="${news.imagePreview}" class="card-img-top" alt="${news.title}" style="height: 200px; object-fit: cover;">
                                                 <div class="card-body">
                                                     <h5 class="card-title">${news.title}</h5>

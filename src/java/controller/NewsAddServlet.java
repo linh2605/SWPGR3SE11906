@@ -12,9 +12,8 @@ import java.io.File;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import models.News;
-import models.User;
+import utils.AuthHelper;
 
 @WebServlet("/news/create")
 @MultipartConfig(
@@ -27,23 +26,28 @@ public class NewsAddServlet extends HttpServlet {
     private static final String UPLOAD_DIR = "assets/uploads/news";
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        if (pathInfo != null && pathInfo.length() > 1) {
-            int news_id = Integer.parseInt(pathInfo.substring(1));
-            News news = NewsDAO.getNewsById(news_id);
-            System.out.println("news:" + news.getNewsID() + ":" + news.getTitle());
-            if (news.getNewsID() != 0) {
-                req.setAttribute("n", news);
-                req.getRequestDispatcher("/views/home/add-news.jsp").forward(req, resp);
-            } else {
-                req.setAttribute("errorMsg", "Không tìm thấy bài viết");
-                req.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(req, resp);
-            }
-        } else {
-            req.setAttribute("errorMsg", "Không tìm thấy bài viết");
-            req.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(req, resp);
-        }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        String pathInfo = request.getPathInfo();
+//        if (pathInfo != null && pathInfo.length() > 1) {
+//            int news_id = Integer.parseInt(pathInfo.substring(1));
+//            News news = NewsDAO.getNewsById(news_id);
+//            System.out.println("news:" + news.getNewsID() + ":" + news.getTitle());
+//            if (news.getNewsID() != 0) {
+//                request.setAttribute("n", news);
+//                request.getRequestDispatcher("/views/home/add-news.jsp").forward(request, response);
+//            } else {
+//                request.setAttribute("errorMsg", "Không tìm thấy bài viết");
+//                request.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(request, response);
+//            }
+//        } else {
+//            request.setAttribute("errorMsg", "Không tìm thấy bài viết");
+//            request.getRequestDispatcher("/views/layouts/notification-page.jsp").forward(request, response);
+//        }
+        News news = new News();
+        news.setCreatedBy(AuthHelper.getCurrentUser(request));
+        request.setAttribute("n", news);
+        request.getRequestDispatcher("/views/home/add-news.jsp").forward(request, response);
+
     }
 
     @Override
@@ -56,12 +60,7 @@ public class NewsAddServlet extends HttpServlet {
             return;
         }
 
-        int newsID = Integer.parseInt(request.getParameter("newsID"));
-        String title = request.getParameter("title");
-        int createdByID = Integer.parseInt(request.getParameter("createdByID"));
-        String createdBy = request.getParameter("createdBy");
-        LocalDateTime createdAt = LocalDateTime.parse(request.getParameter("createdAt"));
-        LocalDateTime updatedAt = LocalDateTime.parse(request.getParameter("updatedAt"));
+        String title = request.getParameter("title").trim();
         String shortDescription = request.getParameter("shortDescription");
         String description = request.getParameter("description");
         String imageUrl = request.getParameter("existingImageUrl");
@@ -84,22 +83,31 @@ public class NewsAddServlet extends HttpServlet {
         }
 
         News news = new News();
-        news.setNewsID(newsID);
-        news.setTitle(title);
+        news.setCreatedBy(AuthHelper.getCurrentUser(request));
         news.setImagePreview(imageUrl);
+
+        // validate truong du lieu
+        String errMsg = "";
+        errMsg += title.isEmpty() ? "<span>Tiêu đề bài viết không được để trống!</span>" : "";
+        errMsg += shortDescription.trim().isEmpty() ? "<span>Nội dung chính không được để trống!</span>\n" : "";
+        errMsg += description.trim().isEmpty() ? "<span>Nội dung bài viết không được để trống!</span>" : "";
+        if (!errMsg.isEmpty()) {
+            request.setAttribute("errMsg", errMsg);
+            request.setAttribute("n", news);
+            request.getRequestDispatcher("/views/home/add-news.jsp").forward(request, response);
+            return;
+        }
+
+        news.setTitle(title);
         news.setShortDescription(shortDescription);
         news.setDescription(description);
-        news.setCreatedAt(createdAt);
-        news.setUpdatedAt(updatedAt);
-        User u = new User();
-        u.setUserId(createdByID);
-        u.setFullName(createdBy);
-        news.setCreatedBy(u);
 
-        if (NewsDAO.update(news)) {
-            response.sendRedirect(request.getContextPath() + "/news/edit/" + news.getNewsID() + "?success=true");
+        if (NewsDAO.insert(news)) {
+            response.sendRedirect(request.getContextPath() + "/news?addSuccess=true");
         } else {
-            response.sendRedirect(request.getContextPath() + "/news/edit/" + news.getNewsID() + "?success=false");
+            request.setAttribute("errMsg", "Đăng bài viết thất bại: Lỗi hệ thống!");
+            request.setAttribute("n", news);
+            request.getRequestDispatcher("/views/home/add-news.jsp").forward(request, response);
         }
     }
 }

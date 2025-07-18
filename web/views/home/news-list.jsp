@@ -231,6 +231,18 @@
                     <div class="row mb-3">
                         <!-- Doctor Grid -->
                         <div class="col-md-12">
+                            <c:if test="${param.addSuccess eq 'true'}">
+                                <div class="alert alert-success my-3 p-3 d-flex flex-column align-items-center justify-content-center"
+                                     >Đăng bài viết thành công!</div>
+                            </c:if>
+                            <c:if test="${param.deleteSuccess eq 'true'}">
+                                <div class="alert alert-success my-3 p-3 d-flex flex-column align-items-center justify-content-center"
+                                     >Xoá viết thành công!</div>
+                            </c:if>
+                            <c:if test="${param.deleteSuccess eq 'false'}">
+                                <div class="alert alert-danger my-3 p-3 d-flex flex-column align-items-center justify-content-center"
+                                     >Xoá viết thất bại: Lỗi hệ thống!</div>
+                            </c:if>
                             <div class="row mb-3 p-3">
                                 <div class="col-11">
                                 </div>
@@ -282,10 +294,13 @@
                                                                    class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-pen"></i>
                                                                 </a>
-                                                                <a href="#" 
-                                                                   class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex">
+                                                                <button type="button"
+                                                                        class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#confirmDeleteModal"
+                                                                        onclick="prepareDelete(${n.newsID})">
                                                                     <i class="bi bi-trash"></i>
-                                                                </a>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -329,12 +344,42 @@
         <!-- Footer -->
         <%@ include file="../layouts/footer.jsp" %>
 
+        <!-- Modal delete news -->
+        <div class="modal fade" 
+             id="confirmDeleteModal" 
+             tabindex="-1" 
+             aria-labelledby="confirmDeleteLabel" 
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form action="${pageContext.request.contextPath}/news/delete" 
+                          method="POST">
+                        <div class="modal-header py-2 px-3">
+                            <h6 class="modal-title" id="confirmDeleteLabel">Xác nhận xóa bài viết</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            Bạn có chắc chắn muốn xóa bài viết này không?
+                        </div>
+                        <input type="hidden" name="newsID" id="deleteNewsID">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary quick-action-btn" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-danger quick-action-btn">Xóa</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 
         <script>
+            function prepareDelete(newsID) {
+                document.getElementById('deleteNewsID').value = newsID;
+            }
             document.addEventListener('DOMContentLoaded', function () {
                 const allDoctors = Array.from(document.querySelectorAll('.doctor-item'));
                 const paginationContainer = document.getElementById('pagination-container');

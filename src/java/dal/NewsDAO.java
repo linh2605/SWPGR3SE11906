@@ -38,7 +38,7 @@ public class NewsDAO {
                 news.setDescription(rs.getString("description"));
                 news.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                 news.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-                System.out.println(news.getFormattedCreatedAt());
+//                System.out.println(news.getFormattedCreatedAt());
                 User u = new User();
                 u.setUserId(rs.getInt("created_by"));
                 u.setFullName(rs.getString("full_name"));
@@ -120,8 +120,54 @@ public class NewsDAO {
             ps.setInt(6, news.getNewsID());
 
             int count = ps.executeUpdate();
-            if (count == 1) {
+            if (count > 0) {
                 return true;
+//                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
+    public static boolean insert(News news) {
+        String sql = "INSERT INTO news (title, image_preview, short_description, description, created_by)"
+                + "VALUES (?, ?, ?, ?, ?);";
+        try {
+            Connection conn = DBContext.makeConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setString(1, news.getTitle());
+            ps.setString(2, news.getImagePreview());
+            ps.setString(3, news.getShortDescription());
+            ps.setString(4, news.getDescription());
+            ps.setInt(5, news.getCreatedBy().getUserId());
+
+            int count = ps.executeUpdate();
+            if (count > 0) {
+                return true;
+//                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+    
+    public static boolean delete(int newsID) {
+        String sql = "DELETE FROM news WHERE id = ?;";
+        try {
+            Connection conn = DBContext.makeConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, newsID);
+
+            int count = ps.executeUpdate();
+            if (count > 0) {
+                return true;
+//                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();

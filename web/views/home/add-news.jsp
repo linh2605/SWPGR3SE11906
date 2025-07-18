@@ -198,18 +198,15 @@
         <main>
             <section class="doctor-list-container">
                 <div class="container">
-                    <form method="POST" action="${pageContext.request.contextPath}/news/add" enctype="multipart/form-data">
-                        <input type="hidden" name="newsID" value="${n.newsID}"/>
-
+                    <form id="addNewsForm" 
+                          method="POST" 
+                          action="${pageContext.request.contextPath}/news/create" 
+                          enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-12">
-                                <c:if test="${param.success eq 'true'}">
-                                    <div class="alert alert-success mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
-                                         >Đăng bài viết thành công!</div>
-                                </c:if>
-                                <c:if test="${param.success eq 'false'}">
+                                <c:if test="${errMsg != null}">
                                     <div class="alert alert-danger mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
-                                         >Đăng bài viết thất bại!</div>
+                                         >${errMsg}</div>
                                 </c:if>
                                 <div class="row" id="doctor-grid">
                                     <div class="col-md-12 doctor-item">
@@ -224,10 +221,9 @@
                                                                      alt="Image preview" 
                                                                      class="doctor-image"
                                                                      onerror="this.src='https://www.svgrepo.com/show/506507/image.svg';">
-                                                                <!-- Giữ imageUrl cũ -->
-                                                                <input type="hidden" name="existingImageUrl" value="${n.imagePreview}">
+                                                                <input type="hidden" name="existingImageUrl" value="${n.imagePreview != null ? n.imagePreview : 'https://www.svgrepo.com/show/506507/image.svg'}">
 
-                                                                <label class="form-label mt-3 justify-content-center gap-2 d-flex">Chọn ảnh minh họa mới</label>
+                                                                <label class="form-label mt-3 justify-content-center gap-2 d-flex">Chọn ảnh minh họa</label>
                                                                 <input type="file" class="form-control justify-content-center gap-2 d-flex" name="imageFile" accept="image/*">
                                                             </div>  
                                                             <div class="col-7">
@@ -238,11 +234,11 @@
                                                                 <input type="text" class="form-control text-muted mb-2" name="createdBy" value="${n.createdBy.fullName}" readonly>
                                                                 <input type="hidden" name="createdByID" value="${n.createdBy.userId}"/>
 
-                                                                <label class="form-label">Đăng ngày:</label>
-                                                                <input type="datetime-local" class="form-control text-muted mb-2" name="createdAt" value="${n.createdAt}" readonly>
-
-                                                                <label class="form-label">Cập nhật lần cuối:</label>
-                                                                <input type="datetime-local" class="form-control text-muted mb-2" name="updatedAt" value="${n.updatedAt}" readonly>
+                                                                <!--                                                                <label class="form-label">Đăng ngày:</label>
+                                                                                                                                <input type="datetime-local" class="form-control text-muted mb-2" name="createdAt" value="${n.createdAt}" readonly>
+                                                                
+                                                                                                                                <label class="form-label">Cập nhật lần cuối:</label>
+                                                                                                                                <input type="datetime-local" class="form-control text-muted mb-2" name="updatedAt" value="${n.updatedAt}" readonly>-->
                                                             </div>
                                                             <div class="col-2 doctor-info">
                                                                 <button 

@@ -97,9 +97,9 @@ public class NewsEditServlet extends HttpServlet {
         news.setCreatedBy(u);
 
         if (NewsDAO.update(news)) {
-            response.sendRedirect(request.getContextPath() + "/news/edit/" + news.getNewsID() + "?success=true");
+            response.sendRedirect(request.getContextPath() + "/news/edit?id=" + news.getNewsID() + "&success=true");
         } else {
-            response.sendRedirect(request.getContextPath() + "/news/edit/" + news.getNewsID() + "?success=false");
+            response.sendRedirect(request.getContextPath() + "/news/edit?id=" + news.getNewsID() + "&success=false");
         }
     }
 }

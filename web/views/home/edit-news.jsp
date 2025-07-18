@@ -196,7 +196,7 @@
         <%@ include file="../layouts/header.jsp" %>
 
         <main>
-            <section class="doctor-list-container">
+            <section class="doctor-list-container ${param.success ne null ? 'pt-1' : ''}">
                 <div class="container">
                     <form method="POST" action="${pageContext.request.contextPath}/news/edit" enctype="multipart/form-data">
                         <input type="hidden" name="newsID" value="${n.newsID}"/>
@@ -204,12 +204,12 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <c:if test="${param.success eq 'true'}">
-                                    <div class="alert alert-success mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
+                                    <div class="alert alert-success my-3 p-3 d-flex flex-column align-items-center justify-content-center"
                                          >Cập nhật bài viết thành công!</div>
                                 </c:if>
                                 <c:if test="${param.success eq 'false'}">
-                                    <div class="alert alert-danger mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
-                                         >Cập nhật bài viết thất bại!</div>
+                                    <div class="alert alert-danger my-3 p-3 d-flex flex-column align-items-center justify-content-center"
+                                         >Cập nhật bài viết thất bại: Lỗi hệ thống!</div>
                                 </c:if>
                                 <div class="row" id="doctor-grid">
                                     <div class="col-md-12 doctor-item">

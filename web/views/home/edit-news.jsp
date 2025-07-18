@@ -205,11 +205,11 @@
                             <div class="col-md-12">
                                 <c:if test="${param.success eq 'true'}">
                                     <div class="alert alert-success mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
-                                         >Cập nhật thông tin thành công!</div>
+                                         >Cập nhật bài viết thành công!</div>
                                 </c:if>
                                 <c:if test="${param.success eq 'false'}">
                                     <div class="alert alert-danger mb-3 p-3 d-flex flex-column align-items-center justify-content-center"
-                                         >Cập nhật thông tin thất bại!</div>
+                                         >Cập nhật bài viết thất bại!</div>
                                 </c:if>
                                 <div class="row" id="doctor-grid">
                                     <div class="col-md-12 doctor-item">

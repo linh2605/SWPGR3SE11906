@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -37,7 +36,7 @@ import models.WorkingSchedule;
  *
  * @author New_user
  */
-@WebServlet(name = "PatientAddAppoinmentDoctor", urlPatterns = {"/appointment-doctor/*"})
+@WebServlet(name = "PatientAddAppoinmentDoctor", urlPatterns = {"/appointment-doctor"})
 public class PatientAddDoctorAppoinment extends HttpServlet {
 
     @Override
@@ -64,12 +63,12 @@ public class PatientAddDoctorAppoinment extends HttpServlet {
                 return;
             }
 
-            String pathInfo = request.getPathInfo();
-            if (pathInfo != null && pathInfo.length() > 1) {
-                int doctor_id = Integer.parseInt(pathInfo.substring(1));
+            
+            if (request.getParameter("id") != null 
+                && request.getParameter("id").length() > 0) {
+                int doctor_id = Integer.parseInt(request.getParameter("id"));
                 Doctor doctor = DoctorDao.getDoctorById(doctor_id);
                 if (doctor.getDoctor_id() != 0) {
-//                System.out.println("Doctor ID: " + doctor.getDoctor_id());
                     request.setAttribute("d", doctor);
                     List<Service> services = ServiceDAO.getServicesByDoctorId(doctor_id);
                     List<WorkingSchedule> schedules = new WorkingScheduleDAO().getSchedulesByDoctorId(doctor_id);

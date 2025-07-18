@@ -271,7 +271,7 @@
                                                                      class="doctor-image">
                                                             </div>
                                                             <div class="col-8 doctor-info">
-                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
+                                                                <a href="${pageContext.request.contextPath}/doctors/view?id=${d.doctor_id}" 
                                                                    class="doctor-name">
                                                                     ${d.user.fullName}
                                                                 </a>
@@ -294,12 +294,12 @@
                                                                         ${d.experience}
                                                                     </small>
                                                                 </div>
-                                                                <a href="${pageContext.request.contextPath}/appointment-doctor/${d.doctor_id}" 
+                                                                <a href="${pageContext.request.contextPath}/appointment-doctor?id=${d.doctor_id}" 
                                                                    class="btn btn-success quick-action-btn"
                                                                    style="font-size: 0.9rem">
                                                                     <i class="bi bi-calendar-plus"></i> Đặt lịch
                                                                 </a>
-                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
+                                                                <a href="${pageContext.request.contextPath}/doctors/view?id=${d.doctor_id}" 
                                                                    class="btn btn-primary quick-action-btn"
                                                                    style="font-size: 0.9rem">
                                                                     <i class="bi bi-eye"></i> Xem chi tiết

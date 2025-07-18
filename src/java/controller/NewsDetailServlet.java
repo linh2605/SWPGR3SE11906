@@ -10,14 +10,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import models.News;
 
-@WebServlet("/news/*")
+@WebServlet("/news/view")
 public class NewsDetailServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        if (pathInfo != null && pathInfo.length() > 1) {
-            int news_id = Integer.parseInt(pathInfo.substring(1));
+        if (req.getParameter("id") != null 
+                && req.getParameter("id").length() > 0) {
+            int news_id = Integer.parseInt(req.getParameter("id"));
             News news = NewsDAO.getNewsById(news_id);
             System.out.println("news:" + news.getNewsID() + ":" + news.getTitle());
             if (news.getNewsID() != 0) {

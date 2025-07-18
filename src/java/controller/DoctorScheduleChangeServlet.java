@@ -37,11 +37,15 @@ public class DoctorScheduleChangeServlet extends HttpServlet {
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 2)) { // 2 = doctor
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
         
-        // Kiểm tra quyền truy cập
-        if (user == null || user.getRole().getRoleId() != 2) { // 2 = doctor
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        User user = utils.AuthHelper.getCurrentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         
@@ -74,12 +78,15 @@ public class DoctorScheduleChangeServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 2)) { // 2 = doctor
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
         
-        // Kiểm tra quyền truy cập
-        if (user == null || user.getRole().getRoleId() != 2) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        User user = utils.AuthHelper.getCurrentUser(request);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         

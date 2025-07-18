@@ -43,10 +43,9 @@ public class AdminScheduleChangeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole().getRoleId() != 4) { // 4 = admin
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         String action = request.getParameter("action");
@@ -64,10 +63,9 @@ public class AdminScheduleChangeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole().getRoleId() != 4) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         String action = request.getParameter("action");

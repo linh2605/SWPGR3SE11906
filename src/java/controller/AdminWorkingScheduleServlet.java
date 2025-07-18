@@ -35,11 +35,9 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        
-        // Kiểm tra quyền truy cập
-        if (user == null || user.getRole().getRoleId() != 4) { // 4 = admin
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         
@@ -78,9 +76,9 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // Kiểm tra quyền truy cập
-        if (user == null || user.getRole().getRoleId() != 4) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         

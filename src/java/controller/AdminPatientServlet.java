@@ -25,6 +25,12 @@ import java.util.List;
 public class AdminPatientServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         List<Patient> patients = PatientDao.getAllPatients();
         req.setAttribute("patients", patients);
         req.getRequestDispatcher("/views/admin/patient_manager.jsp").forward(req, resp);
@@ -32,6 +38,12 @@ public class AdminPatientServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         HttpSession session = req.getSession();
         String username = req.getParameter("username");
         if (UserDAO.doesUsernameExist(username)) {

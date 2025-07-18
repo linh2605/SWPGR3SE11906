@@ -58,6 +58,12 @@ public class ContactManagerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         String viewId = request.getParameter("view");
         ContactMessageDAO dao = new ContactMessageDAO();
         
@@ -88,6 +94,12 @@ public class ContactManagerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         String action = request.getParameter("action");
         String idStr = request.getParameter("id");
         ContactMessageDAO dao = new ContactMessageDAO();

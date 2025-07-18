@@ -20,6 +20,12 @@ import java.sql.Date;
 public class AdminUpdateDoctorServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         int doctor_id = Integer.parseInt(req.getParameter("doctor_id"));
         Doctor doctor = DoctorDao.getDoctorById(doctor_id);
         User user = doctor.getUser();

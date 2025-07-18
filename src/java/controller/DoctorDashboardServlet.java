@@ -20,7 +20,7 @@ public class DoctorDashboardServlet extends HttpServlet {
             throws ServletException, IOException {
         // Use AuthHelper for unified authentication
         if (!utils.AuthHelper.hasRole(request, 2)) { // 2 = doctor
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         

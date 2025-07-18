@@ -76,21 +76,19 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            HttpSession session = request.getSession();
-            if (session.getAttribute("roleId") == null || session.getAttribute("userId") == null) {
+            // Use AuthHelper for unified authentication
+            if (!utils.AuthHelper.hasRole(request, 1)) { // 1 = patient
+                request.setAttribute("errorMsg", "Chỉ bệnh nhân mới được đặt lịch");
+                request.getRequestDispatcher("/views/error/access-denied.jsp").forward(request, response);
+                return;
+            }
+
+            Integer userId = utils.AuthHelper.getCurrentUserId(request);
+            if (userId == null) {
                 request.setAttribute("errorMsg", "Vui lòng đăng nhập để thực hiện thao tác này");
                 request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
                 return;
             }
-
-            int roleId = (int) session.getAttribute("roleId");
-            if (roleId != 1) { // 1: patient
-                request.setAttribute("errorMsg", "Chỉ bệnh nhân mới được đặt lịch");
-                request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
-                return;
-            }
-
-            int userId = (int) session.getAttribute("userId");
             Patient patient = PatientDao.getPatientByUserId(userId);
             if (patient == null || patient.getUser() == null) {
                 request.setAttribute("errorMsg", "Không tìm thấy thông tin bệnh nhân.");

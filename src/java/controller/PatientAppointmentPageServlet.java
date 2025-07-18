@@ -18,18 +18,17 @@ import java.util.List;
 public class PatientAppointmentPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
-            return;
-        }
-        int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 1) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 1)) { // 1 = patient
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         
-        int userId = (int) session.getAttribute("userId");
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        if (userId == null) {
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
         System.out.println("[DEBUG] PatientAppointmentPageServlet - userId: " + userId);
         
         // Lấy patientId từ userId

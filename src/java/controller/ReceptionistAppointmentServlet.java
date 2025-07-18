@@ -18,14 +18,9 @@ public class ReceptionistAppointmentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("[DEBUG] ReceptionistAppointmentServlet được gọi!");
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
-            return;
-        }
-        int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 3) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 3)) { // 3 = receptionist
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         // Lễ tân xem toàn bộ lịch hẹn, không cần filter theo user

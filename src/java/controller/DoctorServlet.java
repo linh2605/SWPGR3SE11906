@@ -43,6 +43,12 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
         return;
     }
 
+    // Use AuthHelper for unified authentication  
+    if (!utils.AuthHelper.hasRole(req, 2)) { // 2 = doctor
+        resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+        return;
+    }
+
     // Lấy danh sách bệnh nhân mà bác sĩ có thể xử lý (role_id = 2)
     List<PatientStatus> patients = PatientStatusDao.getByHandledRole(2);  // role_id = 2: doctor
 

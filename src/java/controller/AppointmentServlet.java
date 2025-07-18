@@ -31,17 +31,16 @@ public class AppointmentServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
-            return;
-        }
-        int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 1) { // Chỉ cho patient (roleId = 1)
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 1)) { // 1 = patient
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }
-        int userId = (int) session.getAttribute("userId");
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        if (userId == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
+            return;
+        }
 
         try (Connection conn = DBContext.makeConnection()) {
             if (conn == null) {

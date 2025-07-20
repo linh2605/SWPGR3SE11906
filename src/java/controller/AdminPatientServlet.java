@@ -30,17 +30,10 @@ public class AdminPatientServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        if (req.getParameter("id") == null) {
-            List<Patient> patients = PatientDao.getAllPatients();
-            req.setAttribute("patients", patients);
-            req.getRequestDispatcher("/views/admin/patient_manager.jsp").forward(req, resp);
-        } else {
-            int id = Integer.parseInt(req.getParameter("id"));
-            Patient patient = PatientDao.getPatientById(id);
-            req.setAttribute("patient", patient);
-            req.getRequestDispatcher("/views/admin/patient-detail.jsp").forward(req, resp);
-        }
-
+        
+        List<Patient> patients = PatientDao.getAllPatients();
+        req.setAttribute("patients", patients);
+        req.getRequestDispatcher("/views/admin/patient_manager.jsp").forward(req, resp);
     }
 
     @Override

@@ -150,24 +150,8 @@
 
         <!-- Main Content -->
         <main class="container my-5">
-            <section class="promotions mb-5">
-                <h2 class="text-center mb-4" style="color: #004d99;">Dịch Vụ Khám Nổi Bật</h2>
-                <div class="row">
-                    <c:forEach var="service" items="${popularServices}">
-                        <div class="col-md-4 mb-4">
-                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
-                                <img src="<%=request.getContextPath()%>/assets/${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">${service.name}</h5>
-                                    <p class="card-text">${service.detail}</p>
-                                    <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
-                                    <a href="<%=request.getContextPath()%>/appointment?service_id=${service.service_id}"><button class="btn btn-primary">Đặt lịch khám ngay</button></a>
-                                </div>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </div>
-            </section>
+            <!-- Dịch Vụ Khám Nổi Bật -->
+            <!-- Đã xóa block dịch vụ nổi bật theo yêu cầu -->
             <!-- Tại sao chọn G3 Hospital -->
             <section class="why-choose-us mb-5">
                 <h2 class="text-center mb-4" style="color: #004d99;">Tại sao chọn G3 Hospital?</h2>

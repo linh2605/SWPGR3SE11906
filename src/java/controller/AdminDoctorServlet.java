@@ -1,10 +1,7 @@
 package controller;
 
 import Util.UploadImage;
-import dal.DoctorDao;
-import dal.RoleDao;
-import dal.SpecialtyDao;
-import dal.UserDAO;
+import dal.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +13,7 @@ import models.*;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @WebServlet("/admin/doctor")
@@ -28,13 +26,22 @@ public class AdminDoctorServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        
-        List<Doctor> doctors = DoctorDao.getAllDoctors();
-        List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
-        System.out.println("check doctor size:" + doctors.size());
-        req.setAttribute("doctors", doctors);
-        req.setAttribute("specialties", specialties);
-        req.getRequestDispatcher("/views/admin/doctor-manager.jsp").forward(req, resp);
+        if (req.getParameter("id") == null) {
+            List<Doctor> doctors = DoctorDao.getAllDoctors();
+            List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
+            System.out.println("check doctor size:" + doctors.size());
+            req.setAttribute("doctors", doctors);
+            req.setAttribute("specialties", specialties);
+            req.getRequestDispatcher("/views/admin/doctor-manager.jsp").forward(req, resp);
+        } else {
+            int id = Integer.parseInt(req.getParameter("id"));
+            Doctor doctor = DoctorDao.getDoctorById(id);
+            List<Service> services = ServiceDAO.getServicesByDoctorId(doctor.getDoctor_id());
+            doctor.setServices(services);
+            req.setAttribute("doctor", doctor);
+            req.getRequestDispatcher("/views/admin/doctor-detail.jsp").forward(req, resp);
+        }
+
     }
 
     @Override
@@ -72,6 +79,9 @@ public class AdminDoctorServlet extends HttpServlet {
                 Status status = Status.active;
 
                 Doctor doctor = new Doctor(user, gender, dob, image_url, specialty, degree, experience, status);
+                doctor.setContract_status(ContractStatus.valueOf(req.getParameter("contract_status")));
+                doctor.setContract_start_date(LocalDate.parse(req.getParameter("contract_start_date")));
+                doctor.setContract_end_date(LocalDate.parse(req.getParameter("contract_end_date")));
                 DoctorDao.insertDoctor(doctor);
 
                 session.setAttribute("flash_success", "Thêm bác sĩ thành công.");

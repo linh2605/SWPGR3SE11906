@@ -2,7 +2,6 @@ package models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.List;
 
 public class Doctor {
@@ -16,35 +15,8 @@ public class Doctor {
     private String degree;
     private String experience;
     private Status status;
-    private ContractStatus contract_status;
-    private LocalDate contract_start_date;
-    private LocalDate contract_end_date;
     private Timestamp created_at;
     private List<Service> services;
-    
-    public ContractStatus getContract_status() {
-        return contract_status;
-    }
-
-    public void setContract_status(ContractStatus contract_status) {
-        this.contract_status = contract_status;
-    }
-
-    public LocalDate getContract_start_date() {
-        return contract_start_date;
-    }
-
-    public void setContract_start_date(LocalDate contract_start_date) {
-        this.contract_start_date = contract_start_date;
-    }
-
-    public LocalDate getContract_end_date() {
-        return contract_end_date;
-    }
-
-    public void setContract_end_date(LocalDate contract_end_date) {
-        this.contract_end_date = contract_end_date;
-    }
 
     public Doctor() {}
     

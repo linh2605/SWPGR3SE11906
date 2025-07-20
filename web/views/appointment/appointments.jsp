@@ -52,42 +52,23 @@
                 <button id="exportIcsBtn" class="btn btn-primary">
                     <i class="bi bi-calendar-plus"></i> Đồng bộ với lịch ngoài
                 </button>
-                <button id="googleSyncBtn" class="btn btn-success">
-                    <i class="bi bi-google"></i> Đồng bộ Google Calendar (tự động)
-                </button>
             </div>
 
             <!-- Bộ lọc -->
-            <div class="filter-bar row g-3">
-                <div class="col-md-3">
+            <div class="filter-bar row g-3 mb-3">
+                <div class="col-md-6">
                     <label for="filterDate" class="form-label">Lọc theo ngày</label>
-                    <select id="filterDate" class="form-select">
-                        <option value="">Tất cả</option>
-                    </select>
+                    <input type="date" id="filterDate" class="form-control">
                 </div>
-                <div class="col-md-3">
-                    <label for="filterDoctor" class="form-label">Lọc theo bác sĩ</label>
-                    <select id="filterDoctor" class="form-select">
-                        <option value="">Tất cả</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label for="filterStatus" class="form-label">Lọc theo trạng thái</label>
                     <select id="filterStatus" class="form-select">
                         <option value="">Tất cả</option>
-                        <option value="pending">Đang chờ</option>
+                        <option value="pending">Chờ xác nhận</option>
+                        <option value="confirmed">Đã xác nhận</option>
                         <option value="completed">Hoàn thành</option>
                         <option value="canceled">Đã hủy</option>
                     </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="search" class="form-label">Tìm kiếm</label>
-                    <input type="text" id="search" class="form-control" placeholder="Tìm theo bác sĩ...">
-                </div>
-                <div class="col-md-12 text-end">
-                    <button class="btn btn-primary mt-3" id="filterButton">
-                        <i class="bi bi-funnel"></i> Lọc lịch hẹn
-                    </button>
                 </div>
             </div>
 
@@ -104,13 +85,14 @@
                             <th>Ngày</th>
                             <th class="text-center">Ca làm</th>
                             <th>Bệnh nhân</th>
+                            <th>Bác sĩ</th>
                             <th>Dịch vụ</th>
                             <th class="text-center">Trạng thái</th>
                             <th class="text-center">Thanh toán</th>
                             <th class="text-center">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="appointmentList">
                         <c:forEach var="appointment" items="${appointments}">
                             <tr>
                                 <td class="text-center">${appointment.queueNumber}</td>
@@ -141,6 +123,16 @@
                                     </c:choose>
                                 </td>
                                 <td>${appointment.patient.user.fullName}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty appointment.doctor && not empty appointment.doctor.user}">
+                                            ${appointment.doctor.user.fullName}
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="text-muted">Không có thông tin</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${not empty appointment.service}">
@@ -202,7 +194,7 @@
                         </c:forEach>
                         <c:if test="${empty appointments}">
                             <tr>
-                                <td colspan="7" class="text-center py-4">
+                                <td colspan="9" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="bi bi-calendar-x fs-1"></i>
                                         <p class="mt-2">Chưa có lịch hẹn nào</p>

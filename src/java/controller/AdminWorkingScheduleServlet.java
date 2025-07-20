@@ -3,10 +3,13 @@ package controller;
 import dal.WorkingScheduleDAO;
 import dal.DoctorDao;
 import dal.ShiftDAO;
+import dal.ScheduleExceptionDAO;
 import models.WorkingSchedule;
 import models.Doctor;
 import models.Shift;
 import models.User;
+import models.ScheduleException;
+import java.sql.Date;
 import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.ServletException;
@@ -22,12 +25,14 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
     private WorkingScheduleDAO scheduleDAO;
     private DoctorDao doctorDAO;
     private ShiftDAO shiftDAO;
+    private ScheduleExceptionDAO exceptionDAO;
     
     @Override
     public void init() {
         scheduleDAO = new WorkingScheduleDAO();
         doctorDAO = new DoctorDao();
         shiftDAO = new ShiftDAO();
+        exceptionDAO = new ScheduleExceptionDAO();
     }
     
     @Override
@@ -199,6 +204,24 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
                 return;
             }
             
+            // Validate ngày ngoại lệ (exception)
+            List<ScheduleException> exceptions = exceptionDAO.getExceptionsByDoctorId(doctorId);
+            for (ScheduleException ex : exceptions) {
+                // Nếu exception có trạng thái đang chờ duyệt hoặc đã duyệt
+                if ("Chờ duyệt".equals(ex.getStatus()) || "Đã duyệt".equals(ex.getStatus())) {
+                    // Nếu exception trùng thứ (weekDay) với lịch làm việc đang thêm
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(ex.getExceptionDate());
+                    int exDayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK);
+                    int scheduleDayOfWeek = getDayOfWeek(weekDay);
+                    if (exDayOfWeek == scheduleDayOfWeek) {
+                        request.getSession().setAttribute("error", "Bác sĩ đã có ngoại lệ (" + ex.getExceptionType() + ") vào ngày này!");
+                        response.sendRedirect(request.getContextPath() + "/admin/working-schedules?action=add");
+                        return;
+                    }
+                }
+            }
+            
             // Kiểm tra trùng lặp
             if (scheduleDAO.checkScheduleExists(doctorId, weekDay, shiftId)) {
                 request.getSession().setAttribute("error", "Bác sĩ đã có lịch làm việc cho thứ này và ca này!");
@@ -242,6 +265,22 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
                 request.getSession().setAttribute("error", "Vui lòng chọn thứ!");
                 response.sendRedirect(request.getContextPath() + "/admin/working-schedules?action=edit&id=" + scheduleId);
                 return;
+            }
+
+            // Validate ngày ngoại lệ (exception)
+            List<ScheduleException> exceptions = exceptionDAO.getExceptionsByDoctorId(doctorId);
+            for (ScheduleException ex : exceptions) {
+                if ("Chờ duyệt".equals(ex.getStatus()) || "Đã duyệt".equals(ex.getStatus())) {
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(ex.getExceptionDate());
+                    int exDayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK);
+                    int scheduleDayOfWeek = getDayOfWeek(weekDay);
+                    if (exDayOfWeek == scheduleDayOfWeek) {
+                        request.getSession().setAttribute("error", "Bác sĩ đã có ngoại lệ (" + ex.getExceptionType() + ") vào ngày này!");
+                        response.sendRedirect(request.getContextPath() + "/admin/working-schedules?action=edit&id=" + scheduleId);
+                        return;
+                    }
+                }
             }
             
             // Kiểm tra trùng lặp (trừ schedule hiện tại)
@@ -289,5 +328,19 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
         }
         
         response.sendRedirect(request.getContextPath() + "/admin/working-schedules");
+    }
+
+    // Hàm chuyển thứ tiếng Việt sang Calendar.DAY_OF_WEEK
+    private int getDayOfWeek(String weekDay) {
+        switch (weekDay.trim().toLowerCase()) {
+            case "chủ nhật": return java.util.Calendar.SUNDAY;
+            case "thứ 2": return java.util.Calendar.MONDAY;
+            case "thứ 3": return java.util.Calendar.TUESDAY;
+            case "thứ 4": return java.util.Calendar.WEDNESDAY;
+            case "thứ 5": return java.util.Calendar.THURSDAY;
+            case "thứ 6": return java.util.Calendar.FRIDAY;
+            case "thứ 7": return java.util.Calendar.SATURDAY;
+            default: return -1;
+        }
     }
 } 

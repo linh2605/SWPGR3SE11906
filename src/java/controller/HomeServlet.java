@@ -48,11 +48,9 @@ public class HomeServlet extends HttpServlet {
             doctors = doctors.subList(0, 6);
         }
         List<Service> services = ServiceDAO.getTopServices(6);
-        List<Service> popularServices = ServiceDAO.getTopPopularServices(3);
         List<News> lastestNews = NewsDAO.getLastestNewsLimit(4);
         request.setAttribute("doctors", doctors);
         request.setAttribute("services", services);
-        request.setAttribute("popularServices", popularServices);
         request.setAttribute("lastestNews", lastestNews);
 
         request.getRequestDispatcher("/views/home/index.jsp").forward(request, response);

@@ -62,7 +62,8 @@ public class AppointmentDao {
     public static List<Appointment> getAppointmentsByDoctorId(int doctorId, int page, int size) {
         List<Appointment> appointments = new ArrayList<>();
         String sql = "SELECT a.appointment_id, a.appointment_date, a.shift_id, a.queue_number, a.note, a.created_at, a.updated_at, "
-                + "a.status, a.service_id, a.payment_status, "
+                + "a.status, a.service_id, s.name AS service_name, s.detail AS service_detail, s.price AS service_price, s.type AS service_type, "
+                + "a.payment_status, "
                 + "a.patient_id, p.user_id AS patient_user_id, up.full_name AS patient_name, "
                 + "a.doctor_id, d.user_id AS doctor_user_id, ud.full_name AS doctor_name "
                 + "FROM appointments a "
@@ -70,6 +71,7 @@ public class AppointmentDao {
                 + "JOIN users ud ON d.user_id = ud.user_id "
                 + "JOIN patients p ON a.patient_id = p.patient_id "
                 + "JOIN users up ON p.user_id = up.user_id "
+                + "LEFT JOIN services s ON a.service_id = s.service_id "
                 + "WHERE a.doctor_id = ? "
                 + "ORDER BY a.appointment_date DESC, a.shift_id, a.queue_number "
                 + "LIMIT ? OFFSET ?";
@@ -79,10 +81,49 @@ public class AppointmentDao {
             stmt.setInt(3, (page - 1) * size);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    appointments.add(mappingAppointment(rs));
+                    Appointment appt = new Appointment();
+                    appt.setId(rs.getInt("appointment_id"));
+                    appt.setAppointmentDateTime(rs.getTimestamp("appointment_date").toLocalDateTime());
+                    appt.setShiftId(rs.getInt("shift_id"));
+                    appt.setQueueNumber(rs.getInt("queue_number"));
+                    appt.setStatus(AppointmentStatus.fromCode(rs.getString("status")));
+                    appt.setNote(rs.getString("note"));
+                    appt.setPaymentStatus(PaymentStatus.valueOf(rs.getString("payment_status")));
+
+                    // Set patient info
+                    models.Patient patient = new models.Patient();
+                    patient.setPatient_id(rs.getInt("patient_id"));
+                    User patientUser = new User();
+                    patientUser.setUserId(rs.getInt("patient_user_id"));
+                    patientUser.setFullName(rs.getString("patient_name"));
+                    patient.setUser(patientUser);
+                    appt.setPatient(patient);
+
+                    // Set doctor info
+                    models.Doctor doctor = new models.Doctor();
+                    doctor.setDoctor_id(rs.getInt("doctor_id"));
+                    User doctorUser = new User();
+                    doctorUser.setUserId(rs.getInt("doctor_user_id"));
+                    doctorUser.setFullName(rs.getString("doctor_name"));
+                    doctor.setUser(doctorUser);
+                    appt.setDoctor(doctor);
+
+                    // Set service info
+                    if (rs.getInt("service_id") > 0) {
+                        Service service = new Service();
+                        service.setServiceId(rs.getInt("service_id"));
+                        service.setName(rs.getString("service_name"));
+                        service.setDetail(rs.getString("service_detail"));
+                        service.setPrice(rs.getLong("service_price"));
+                        service.setType(ServiceType.valueOf(rs.getString("service_type")));
+                        appt.setService(service);
+                    }
+
+                    appointments.add(appt);
                 }
             }
         } catch (Exception e) {
+            System.out.println("[ERROR] getAppointmentsByDoctorId: " + e.getMessage());
             e.printStackTrace();
         }
         return appointments;

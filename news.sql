@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS `news`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE news (
 	id                int AUTO_INCREMENT
@@ -16,7 +16,8 @@ CREATE TABLE news (
 );
 
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 1, 'Chỉ số loãng xương và những ai nên đo loãng xương?', 'https://picsum.photos/600/400'
+VALUES ( 1, 'Chỉ số loãng xương và những ai nên đo loãng xương?'
+       , 'https://www.vinmec.com/static/uploads/large_dau_lung_la_trieu_chung_loang_xuong_can_do_chi_so_loang_xuong_ff053cd458.jpg'
        , 'Chỉ số loãng xương là thước đo quan trọng để phát hiện sớm bệnh lý này, từ đó có thể ngăn ngừa các biến chứng nguy hiểm. Thông thường, loãng xương không có triệu chứng rõ ràng ở giai đoạn đầu nhưng khi tình trạng trở nên nghiêm trọng, xương sẽ yếu đi và dễ gãy. Do đó, việc theo dõi chỉ số loãng xương, đặc biệt ở nhóm người có nguy cơ cao là điều cần thiết để bảo vệ sức khỏe xương.'
        , '<p><strong>B&agrave;i viết n&agrave;y được viết dưới sự hướng dẫn chuy&ecirc;n m&ocirc;n của c&aacute;c b&aacute;c sĩ thuộc khoa Chấn thương chỉnh h&igrave;nh &amp; Y học thể thao Bệnh viện Đa khoa Quốc tế Vinmec.</strong></p>
 
@@ -96,9 +97,10 @@ VALUES ( 1, 'Chỉ số loãng xương và những ai nên đo loãng xương?',
 <p>Mọi người n&ecirc;n đi đo chỉ số lo&atilde;ng xương định kỳ để sớm ph&aacute;t hiện t&igrave;nh trạng bệnh.</p>
 
 <p>Nh&igrave;n chung, việc ph&aacute;t hiện v&agrave; điều trị sớm lo&atilde;ng xương rất quan trọng trong việc giảm thiểu nguy cơ g&atilde;y xương v&agrave; c&aacute;c biến chứng nghi&ecirc;m trọng. Do đ&oacute;, đo mật độ xương định kỳ v&agrave; duy tr&igrave; lối sống l&agrave;nh mạnh l&agrave; cần thiết, gi&uacute;p bảo vệ sức khỏe xương, n&acirc;ng cao chất lượng cuộc sống cũng như ph&ograve;ng ngừa c&aacute;c bệnh l&yacute; li&ecirc;n quan.</p>
-', '2025-07-14 13:00:24', '2025-07-19 03:45:15', 4);
+', '2025-07-14 13:00:24', '2025-07-19 14:11:40', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 2, 'Viêm cơ, áp xe cơ: Nguyên nhân, triệu chứng, chẩn đoán và điều trị', 'https://picsum.photos/600/400'
+VALUES ( 2, 'Viêm cơ, áp xe cơ: Nguyên nhân, triệu chứng, chẩn đoán và điều trị'
+       , 'https://www.vinmec.com/static/uploads/20191230_092803_722036_viem_co_can_max_1800x1800_jpg_cd3d93fa27.jpg'
        , 'Viêm cơ, áp xe cơ nhiễm khuẩn là tổn thương viêm hoặc áp xe tại cơ vân do vi khuẩn gây nên. Bệnh thường khởi phát khi có các vết thương ở da gây viêm nhiễm, sau khi thực hiện các thủ thuật trên da không được đảm bảo vệ sinh, vô khuẩn.'
        , '<h2>Nguy&ecirc;n nh&acirc;n bệnh Vi&ecirc;m cơ, &aacute;p xe cơ</h2>
 
@@ -164,9 +166,10 @@ Viêm cơ vai
 	<li>Điều trị n&acirc;ng cao thể trạng cho người bệnh, tăng cường khả năng miễn dịch gi&uacute;p tăng khả năng điều trị của người bệnh.</li>
 	<li>Trong qu&aacute; tr&igrave;nh điều trị cần kiểm tra thường xuy&ecirc;n nhằm đ&aacute;nh gi&aacute; khả năng phục hồi v&agrave; tiến triển bệnh để c&oacute; phương &aacute;n điều trị ph&ugrave; hợp.</li>
 </ul>
-', '2025-07-14 14:00:25', '2025-07-19 03:46:33', 4);
+', '2025-07-14 14:00:25', '2025-07-19 14:11:40', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 3, 'Viêm khớp: Nguyên nhân, triệu chứng, chẩn đoán và điều trị', 'https://picsum.photos/600/400'
+VALUES ( 3, 'Viêm khớp: Nguyên nhân, triệu chứng, chẩn đoán và điều trị'
+       , 'https://tamanhhospital.vn/wp-content/uploads/2021/05/benh-viem-khop-1.jpg'
        , 'Mục tiêu chính của điều trị viêm khớp là giảm đau, giúp khôi phục khả năng vận động của khớp và tránh khớp bị tổn thương thêm. Các phương pháp điều trị nội khoa, ngoại khoa kết hợp cùng duy trì lối sống lành mạnh và chế độ ăn uống cân đối sẽ giúp kiểm soát và giảm triệu chứng bệnh tốt hơn.'
        , '<p><strong>B&agrave;i viết n&agrave;y được viết dưới sự hướng dẫn chuy&ecirc;n m&ocirc;n của c&aacute;c b&aacute;c sĩ thuộc khoa Chấn thương chỉnh h&igrave;nh &amp; Y học thể thao Bệnh viện Đa khoa Quốc tế Vinmec.</strong></p>
 
@@ -466,9 +469,10 @@ VALUES ( 3, 'Viêm khớp: Nguyên nhân, triệu chứng, chẩn đoán và đi
 	<li>L&agrave;m việc đ&uacute;ng tư thế.</li>
 	<li>Thăm kh&aacute;m, kiểm tra sức khỏe định kỳ để kịp thời ph&aacute;t hiện v&agrave; điều trị c&aacute;c rối loạn chuyển ho&aacute; trong cơ thể.&nbsp;</li>
 </ul>
-', '2025-07-14 15:00:25', '2025-07-19 03:47:48', 4);
+', '2025-07-14 15:00:25', '2025-07-19 14:09:13', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 4, 'Các bệnh tim mạch thường gặp ở trẻ em', 'https://picsum.photos/600/400'
+VALUES ( 4, 'Các bệnh tim mạch thường gặp ở trẻ em'
+       , 'https://www.vinmec.com/static/uploads/20210404_151245_052891_Benh_tim_bam_sinh_max_1800x1800_jpg_4f3916463d.jpg'
        , 'Các bệnh tim mạch không chỉ phổ biến ở người lớn mà còn có tỷ lệ xảy ra khá cao ở trẻ em. Các bệnh tim mạch thường gặp ở trẻ em thường có diễn biến nghiêm trọng nếu không được phát hiện, điều trị tích cực. Vậy đó là những căn bệnh gì?'
        , '<h2>. Bệnh tim bẩm sinh ở trẻ em</h2>
 
@@ -562,9 +566,10 @@ VALUES ( 4, 'Các bệnh tim mạch thường gặp ở trẻ em', 'https://pics
 <p>Virus cũng l&agrave; t&aacute;c nh&acirc;n g&acirc;y bệnh tim mạch. Nhiễm virus c&oacute; thể dẫn tới vi&ecirc;m cơ tim, g&acirc;y ảnh hưởng đến khả năng bơm m&aacute;u của tim. C&aacute;c bệnh tim mạch do virus thường hiếm gặp, &iacute;t c&oacute; triệu chứng. Nếu c&oacute;, c&aacute;c triệu chứng thường kh&aacute; giống với bệnh c&uacute;m như kh&oacute; thở, mệt mỏi, tức ngực. Lựa chọn điều trị bệnh tim do virus ở trẻ em bao gồm d&ugrave;ng thuốc v&agrave; c&aacute;c liệu ph&aacute;p l&agrave;m giảm triệu chứng của vi&ecirc;m cơ tim.</p>
 
 <p><strong>C&aacute;c bệnh tim mạch thường gặp ở trẻ em</strong>&nbsp;c&oacute; thể dự ph&ograve;ng được hoặc kh&ocirc;ng t&ugrave;y từng bệnh l&yacute; cụ thể. Do vậy, cha mẹ n&ecirc;n quan t&acirc;m tới sức khỏe của trẻ để ph&ograve;ng ngừa, ph&aacute;t hiện kịp thời c&aacute;c bệnh l&yacute; tim mạch để điều trị t&iacute;ch cực, đảm bảo tương lai cho b&eacute;.</p>
-', '2025-07-14 16:00:25', '2025-07-19 03:50:53', 4);
+', '2025-07-14 16:00:25', '2025-07-19 14:09:13', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 5, 'Tiêm phòng uốn ván khi mang thai 20 tuần có sao không?', 'https://picsum.photos/600/400'
+VALUES ( 5, 'Tiêm phòng uốn ván khi mang thai 20 tuần có sao không?'
+       , 'https://www.vinmec.com/static/uploads/small_20191028_101250_994957_tiem_phong_cho_ba_b_max_1800x1800_png_1fc1a868d5.png'
        , 'Được giải đáp bởi Bác sĩ Nguyễn Vân Anh - Khoa Nhi - Sơ sinh, Bệnh viện Đa khoa ABC123', '<p><strong>Hỏi</strong></p>
 
 <p><em>Ch&agrave;o b&aacute;c sĩ,</em></p>
@@ -590,9 +595,10 @@ VALUES ( 5, 'Tiêm phòng uốn ván khi mang thai 20 tuần có sao không?', '
 <p>Nếu bạn c&ograve;n thắc mắc về&nbsp;<strong>ti&ecirc;m ph&ograve;ng uốn v&aacute;n khi mang thai 20 tuần</strong>, bạn c&oacute; thể đến bệnh viện thuộc&nbsp;<a href="https://www.vinmec.com/vie/co-so-y-te/"><strong>Hệ thống Y tế G3</strong></a>&nbsp;để kiểm tra v&agrave; tư vấn th&ecirc;m. Cảm ơn bạn đ&atilde; tin tưởng v&agrave; gửi c&acirc;u hỏi đến G3. Ch&uacute;c bạn c&oacute; thật nhiều sức khỏe.</p>
 
 <p>Tr&acirc;n trọng!</p>
-', '2025-07-14 17:00:25', '2025-07-19 04:04:54', 4);
+', '2025-07-14 17:00:25', '2025-07-19 14:09:13', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 6, 'Gan: Cơ quan quý giá của cơ thể mà bạn cần biết', 'https://picsum.photos/600/400'
+VALUES ( 6, 'Gan: Cơ quan quý giá của cơ thể mà bạn cần biết'
+       , 'https://cdn.youmed.vn/tin-tuc/wp-content/uploads/2020/07/Gi%E1%BA%A3i-ph%E1%BA%ABu-gan.jpg'
        , 'Gan là một cơ quan chỉ được tìm thấy ở động vật có xương sống, giúp giải độc các chất chuyển hóa khác nhau, tổng hợp protein và tạo ra các chất sinh hóa cần thiết cho quá trình tiêu hóa và tăng trưởng của cơ thể. Ở người, nó nằm ở góc phần tư phía trên bên phải của bụng, bên dưới cơ hoành. Các vai trò khác của gan trong quá trình trao đổi chất bao gồm điều hòa dự trữ glycogen, phân hủy tế bào hồng cầu và sản xuất các hormone. Nó nặng khoảng 1,2-1,4 kg, có màu nâu đỏ và cảm giác đàn hồi khi chạm vào. Thông thường bạn không thể cảm nhận thấy gan, bởi vì nó được bảo vệ bởi khung xương sườn.'
        , '<h2>Giải phẫu</h2>
 
@@ -707,9 +713,10 @@ VALUES ( 6, 'Gan: Cơ quan quý giá của cơ thể mà bạn cần biết', 'h
 </ul>
 
 <p><strong>Gan</strong>&nbsp;l&agrave; cơ quan qu&yacute; gi&aacute; của cơ thể, tham gia v&agrave;o nhiều vai tr&ograve;, gi&uacute;p cơ thể hoạt động tốt.&nbsp;<a href="https://youmed.vn/tin-tuc/hoi-chung-gan-phoi-dinh-nghia-dau-hieu-chan-doan-va-phuong-phap-dieu-tri/">Hội chứng gan phổi</a>&nbsp;l&agrave; một vấn đề sức khỏe hiếm gặp. Hội chứng n&agrave;y được g&acirc;y ra do mạch m&aacute;u trong phổi bị d&atilde;n ra. Hội chứng gan phổi đưa đến t&igrave;nh trạng kh&oacute; thở do nồng độ oxy thấp trong m&aacute;u. Hiện nay, phương ph&aacute;p điều trị duy nhất l&agrave; gh&eacute;p gan.</p>
-', '2025-07-14 18:00:25', '2025-07-19 04:03:08', 4);
+', '2025-07-14 18:00:25', '2025-07-19 14:06:24', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 7, 'Tin vui: Mở rộng độ tuổi tiêm phòng HPV đến 45 tuổi', 'https://picsum.photos/600/400'
+VALUES ( 7, 'Tin vui: Mở rộng độ tuổi tiêm phòng HPV đến 45 tuổi'
+       , 'https://cdn.youmed.vn/tin-tuc/wp-content/uploads/2024/05/chi-dinh-vac-xin-hpv-1-768x512.jpg'
        , 'Ngày 09/05/2024 vừa qua, Bộ Y tế Việt Nam đã chính thức chấp thuận mở rộng độ tuổi tiêm chủng vắc xin HPV đến 45 tuổi. Đây được xem là một bước tiến quan trọng cho việc bảo vệ sức khỏe cộng đồng và phòng ngừa hiệu quả bệnh ung thư cổ tử cung, cũng như các bệnh ung thư liên quan HPV ở nam và nữ.'
        , '<h2>Chỉ định mở rộng độ tuổi ti&ecirc;m vắc xin HPV đến 45 tuổi</h2>
 
@@ -732,9 +739,10 @@ VALUES ( 7, 'Tin vui: Mở rộng độ tuổi tiêm phòng HPV đến 45 tuổi
 <p>Cụ thể, Gardasil 9 bảo vệ cơ thể trước HPV tu&yacute;p 6, 11, 16, 18, 31, 33, 45, 52 v&agrave; 58 &ndash; nguy&ecirc;n nh&acirc;n ch&iacute;nh g&acirc;y ra 70% ca ung thư c&ocirc;̉ tử cung v&agrave; c&aacute;c bệnh nguy hiểm kh&aacute;c như&nbsp;<a href="https://youmed.vn/tin-tuc/ung-thu-am-ho-cach-nhan-biet-trieu-chung-va-phong-ngua/">ung thư &acirc;m hộ</a>,&nbsp;<a href="https://youmed.vn/tin-tuc/ung-thu-am-dao/">ung thư &acirc;m đạo</a>,&nbsp;<a href="https://youmed.vn/tin-tuc/ung-thu-hau-mon/">ung thư hậu m&ocirc;n</a>, ung thư h&acirc;̀u họng, mụn cóc sinh dục ở cả nam v&agrave; nữ.<a href="https://youmed.vn/tin-tuc/tin-vui-mo-rong-do-tuoi-tiem-phong-hpv-den-45-tuoi/#cite-5">5</a></p>
 
 <p>Việc mở rộng độ tuổi ti&ecirc;m chủng vắc xin HPV mở ra nhiều cơ hội hơn cho cộng đồng trong việc bảo vệ bản th&acirc;n v&agrave; những người xung quanh. Đừng qu&ecirc;n tham khảo th&ecirc;m th&ocirc;ng tin về HPV tại website ch&iacute;nh thống để tăng cường hiểu biết cho ch&iacute;nh m&igrave;nh v&agrave; người th&acirc;n.</p>
-', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
+', '2025-07-19 01:38:08', '2025-07-19 14:01:51', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 8, 'Thuốc Klamentin gói là thuốc gì? Công dụng, cách dùng và lưu ý sử dụng', 'https://picsum.photos/600/400'
+VALUES ( 8, 'Thuốc Klamentin gói là thuốc gì? Công dụng, cách dùng và lưu ý sử dụng'
+       , 'https://cdn.youmed.vn/tin-tuc/wp-content/uploads/2024/05/thuoc-klamentin-goi-3.jpg'
        , 'Cốm pha hỗn dịch uống Klamentin, hay thường được gọi là thuốc Klamentin gói, là thuốc kháng sinh được dùng trong điều trị nhiễm khuẩn. Vậy thuốc Klamentin được sử dụng cụ thể trong trường hợp nào? Cách dùng thuốc hợp lý ra sao? Cùng Dược sĩ Bùi Hoàng Ngọc Khánh tìm hiểu về loại thuốc này qua bài viết dưới đây.'
        , '<p><em>Hoạt chất:</em>&nbsp;Amoxicillin v&agrave; acid clavulanic.</p>
 
@@ -949,9 +957,10 @@ VALUES ( 8, 'Thuốc Klamentin gói là thuốc gì? Công dụng, cách dùng v
 <p><strong>Thuốc Klamentin g&oacute;i</strong>, hay cốm pha hỗn dịch uống Klamentin, l&agrave; thuốc kh&aacute;ng sinh cần d&ugrave;ng theo hướng dẫn của nh&acirc;n vi&ecirc;n y tế. Sử dụng thuốc Klamentin đ&uacute;ng liều lượng, đủ thời gian v&agrave; đ&uacute;ng c&aacute;ch gi&uacute;p ph&aacute;t huy hiệu quả của thuốc v&agrave; đảm bảo an to&agrave;n trong qu&aacute; tr&igrave;nh sử dụng.</p>
 
 <p><em>Tham khảo th&ecirc;m c&aacute;c thuốc chứa th&agrave;nh phần tương tự:&nbsp;</em>Cốm pha hỗn dịch uống Claminat,&nbsp;<a href="https://youmed.vn/tin-tuc/bot-pha-augmentin/">bột pha hỗn dịch uống Augmentin</a>, thuốc bột Augbidil.</p>
-', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
+', '2025-07-19 01:38:08', '2025-07-19 14:00:43', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 9, 'Dạ dày: Cơ quan quan trọng của cơ thể mà bạn cần biết', 'https://picsum.photos/600/400'
+VALUES ( 9, 'Dạ dày: Cơ quan quan trọng của cơ thể mà bạn cần biết'
+       , 'https://cdn.youmed.vn/tin-tuc/wp-content/uploads/2020/07/Gi%E1%BA%A3i-ph%E1%BA%ABu-d%E1%BA%A1-d%C3%A0y.png'
        , 'Dạ dày là một tạng rỗng trong đường tiêu hóa của con người và nhiều động vật khác, bao gồm một số động vật không xương sống. Trong hệ thống tiêu hóa, dạ dày tham gia vào giai đoạn thứ hai của quá trình tiêu hóa, sau khi thức ăn được nhai ở miệng. Quá trình tiêu hóa được thực hiện nhờ các enzym, acid và quá trình nhào trộn thức ăn. Sau đây bác sĩ Hoàng Thị Việt Trinh sẽ giúp bạn hiểu rõ hơn về cơ quan quan trọng này của cơ thể.'
        , '<h2>Giải phẫu</h2>
 
@@ -1224,9 +1233,10 @@ VALUES ( 9, 'Dạ dày: Cơ quan quan trọng của cơ thể mà bạn cần bi
 <p>Nhiễm&nbsp;<a href="https://youmed.vn/tin-tuc/helicobacter-pylori-ke-thu-tham-lang-cua-suc-khoe/">H. pylori</a>&nbsp;c&oacute; thể được chữa khỏi bằng kh&aacute;ng sinh, được d&ugrave;ng c&ugrave;ng với c&aacute;c loại thuốc kh&aacute;c để chữa l&agrave;nh dạ d&agrave;y.</p>
 
 <p>T&oacute;m lại,&nbsp;<strong>dạ d&agrave;y</strong>&nbsp;l&agrave; cơ quan quan trọng của đường ti&ecirc;u h&oacute;a, l&agrave; nơi diễn ra qu&aacute; tr&igrave;nh ti&ecirc;u h&oacute;a, vận chuyển c&aacute;c chất v&agrave; hấp thụ c&aacute;c chất trong cơ thể.</p>
-', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
+', '2025-07-19 01:38:08', '2025-07-19 14:06:24', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 10, 'Suýt tử vong vì lầm tưởng nhồi máu cơ tim là đau dạ dày', 'https://picsum.photos/600/400'
+VALUES ( 10, 'Suýt tử vong vì lầm tưởng nhồi máu cơ tim là đau dạ dày'
+       , 'https://hongngochospital.vn/_default_upload_bucket/DSC00247.jpg'
        , 'Chia sẻ sau những giây phút căng não giành giật sự sống cho ông Sơn (66 tuổi - Hà Nội), ThS. BS Nguyễn Văn Hải - Trưởng khoa Tim mạch - Tim mạch can thiệp BVĐK G3 cho biết “Nếu điều trị muộn thêm vài giờ nữa, khả năng cứu sống bệnh nhân gần như bằng không do vùng cơ tim bị hoại tử lan rộng, không có khả năng phục hồi”.'
        , '<p>Khoảnh khắc &ocirc;ng Sơn trở về từ &ldquo;cửa tử&rdquo;, người nh&agrave; x&uacute;c động kể lại, tối h&ocirc;m trước sau bữa ăn &ocirc;ng Sơn cảm thấy đau v&ugrave;ng thượng vị (tr&ecirc;n rốn v&agrave; dưới ngực) k&egrave;m theo buồn n&ocirc;n v&agrave; mệt mỏi. Nghĩ đ&acirc;y l&agrave; triệu chứng bệnh dạ d&agrave;y t&aacute;i ph&aacute;t n&ecirc;n &ocirc;ng chỉ nghỉ ngơi m&agrave; kh&ocirc;ng đi kh&aacute;m. Nhưng cơn đau kh&ocirc;ng hề thuy&ecirc;n giảm m&agrave; tiếp tục h&agrave;nh hạ &ocirc;ng trong 24 giờ tiếp theo với tần suất dồn dập hơn, cơn đau k&eacute;o d&agrave;i từ 10 - 15 ph&uacute;t rồi lan dần l&ecirc;n ngực v&agrave; hai vai khiến &ocirc;ng kh&oacute; thở v&agrave; cho&aacute;ng v&aacute;ng.&nbsp;</p>
 
@@ -1261,10 +1271,10 @@ VALUES ( 10, 'Suýt tử vong vì lầm tưởng nhồi máu cơ tim là đau d�
 <p>Chỉ trong v&ograve;ng 60 ph&uacute;t kể từ khi &ecirc; k&iacute;p b&aacute;c sĩ BVĐK Hồng Ngọc tiếp nhận cấp cứu, thực hiện c&aacute;c x&eacute;t nghiệm cận l&acirc;m s&agrave;ng v&agrave; tiến h&agrave;nh can thiệp th&agrave;nh c&ocirc;ng, tr&aacute;i tim &ocirc;ng Sơn đ&atilde; được &ldquo;hồi sinh&rdquo; kỳ diệu. Ngay sau thủ thuật, &ocirc;ng Sơn hết hẳn đau bụng, kh&ocirc;ng c&ograve;n kh&oacute; thở, nhịp tim v&agrave; huyết &aacute;p ổn định. &Ocirc;ng đi lại, vận động nhẹ nh&agrave;ng sau 01 ng&agrave;y.</p>
 
 <p>Qua trường hợp của &ocirc;ng Sơn, b&aacute;c sĩ Hải cũng đặc biệt nhấn mạnh, người bệnh cần cảnh gi&aacute;c c&aacute;c triệu chứng nhồi m&aacute;u cơ tim v&igrave; nhiều trường hợp c&oacute; triệu chứng kh&ocirc;ng điển h&igrave;nh dễ g&acirc;y nhầm lẫn với vấn đề ti&ecirc;u h&oacute;a như: đau v&ugrave;ng thượng vị k&egrave;m buồn n&ocirc;n, ch&oacute;ng mặt, cho&aacute;ng v&aacute;ng,... dẫn đến chủ quan v&agrave; chậm trễ trong việc điều trị, g&acirc;y ra những hậu quả nghi&ecirc;m trọng như tổn thương tim vĩnh viễn hoặc thậm ch&iacute; tử vong.</p>
-', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
+', '2025-07-19 01:38:08', '2025-07-19 14:06:24', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
 VALUES ( 11, 'Hội thảo: “Giải pháp phòng ngừa Zona ở người mắc bệnh mạn tính, từ khuyến cáo đến bằng chứng lâm sàng”'
-       , 'https://picsum.photos/600/400'
+       , 'https://hongngochospital.vn/_default_upload_bucket/1%20(1)_1.png'
        , 'Ngày 3/7/2025, BVĐK G3 phối hợp với Công ty Dược phẩm GSK Việt Nam tổ chức hội thảo khoa học dưới sự điều phối của Ban Giám đốc BVĐK G3, cùng phần trình bày chuyên môn từ PGS.TS.BS Phạm Quang Thái - Viện Vệ sinh Dịch tễ Trung ương và sự tham dự của gần 100 bác sĩ đến từ các chuyên khoa Nội, Tiêm chủng, Tim mạch, Dược,… BVĐK G3'
        , '<p><img src="https://hongngochospital.vn/_default_upload_bucket/1%20(1)_1.png" style="height:1365px; width:100%" /></p>
 
@@ -1283,9 +1293,10 @@ VALUES ( 11, 'Hội thảo: “Giải pháp phòng ngừa Zona ở người mắ
 <p><em>ThS.BSCKII B&ugrave;i Thanh Tiến (PGĐ BVĐK Hồng Ngọc Ph&uacute;c Trường Minh) chia sẻ tại Hội thảo.</em></p>
 
 <p>Kh&eacute;p lại hội thảo, c&aacute;c b&aacute;c sĩ một lần nữa nhấn mạnh rằng Zona thần kinh kh&ocirc;ng chỉ l&agrave; vấn đề c&aacute; nh&acirc;n, m&agrave; c&ograve;n l&agrave; g&aacute;nh nặng y tế cộng đồng, đặc biệt trong bối cảnh d&acirc;n số gi&agrave; h&oacute;a v&agrave; tỷ lệ mắc bệnh mạn t&iacute;nh ng&agrave;y c&agrave;ng gia tăng. BVĐK Hồng Ngọc kỳ vọng trong thời gian tới, nhiều người d&acirc;n thuộc nh&oacute;m nguy cơ cao sẽ tiếp cận sớm v&agrave; đầy đủ c&aacute;c biện ph&aacute;p ph&ograve;ng bệnh Zona, g&oacute;p phần x&acirc;y dựng một cộng đồng khỏe mạnh, chủ động trước bệnh tật.</p>
-', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
+', '2025-07-19 01:38:08', '2025-07-19 14:06:24', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 12, 'Những điều bạn cần biết về vắc-xin phòng ho gà', 'https://picsum.photos/600/400'
+VALUES ( 12, 'Những điều bạn cần biết về vắc-xin phòng ho gà'
+       , 'https://www.vinmec.com/static/uploads/large_nhieu_nguoi_to_ra_lo_lang_va_muon_biet_noi_soi_dai_trang_co_dau_khong_4c81def2f1.png'
        , 'Bệnh ho gà là một bệnh nhiễm khuẩn rất dễ lây lan, thường xảy ra qua đường hô hấp khi người bị nhiễm hắt hơi hoặc ho. Bệnh không chỉ nguy hiểm mà còn có khả năng lây lan mạnh trong gia đình hoặc những người tiếp xúc gần như người trông trẻ. Một trong những cách hiệu quả nhất để bảo vệ trẻ nhỏ là tiêm vắc-xin DTaP, loại vắc-xin này đồng thời bảo vệ chống lại bệnh uốn ván và bạch hầu.'
        , '<h2>Bệnh ho g&agrave; c&oacute; dễ l&acirc;y kh&ocirc;ng?</h2>
 
@@ -1329,7 +1340,7 @@ VALUES ( 12, 'Những điều bạn cần biết về vắc-xin phòng ho gà', 
 <h2>Bảo vệ trẻ trước nguy cơ ho g&agrave;</h2>
 
 <p>Ti&ecirc;m ph&ograve;ng đầy đủ kh&ocirc;ng chỉ gi&uacute;p giảm nguy cơ mắc bệnh m&agrave; c&ograve;n hạn chế l&acirc;y lan trong cộng đồng. Đối với trẻ nhỏ, ho&agrave;n th&agrave;nh lịch ti&ecirc;m vắc-xin đ&uacute;ng thời điểm l&agrave; c&aacute;ch tốt nhất để bảo vệ sức khỏe to&agrave;n diện. Nếu bạn đang băn khoăn về lịch ti&ecirc;m hoặc t&igrave;nh trạng miễn dịch của gia đ&igrave;nh, h&atilde;y tham khảo &yacute; kiến b&aacute;c sĩ để được hướng dẫn cụ thể.</p>
-', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
+', '2025-07-19 01:38:08', '2025-07-19 14:06:24', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
 VALUES ( 13, 'TEST Trung ương thảo luận số lượng đại biểu dự Đại hội Đảng 14', 'https://picsum.photos/600/400'
        , 'Chiều 18/7, Trung ương thảo luận tiêu chuẩn, cơ cấu và phân bổ đại biểu dự Đại hội 14, cùng phương hướng nhân sự và các dự thảo văn kiện trình đại hội.'
@@ -1350,7 +1361,8 @@ VALUES ( 13, 'TEST Trung ương thảo luận số lượng đại biểu dự �
 <p>Hội nghị Trung ương 12 kh&oacute;a 13 khai mạc s&aacute;ng 18/7, dự kiến k&eacute;o d&agrave;i đến hết ng&agrave;y 19/7. Ba nh&oacute;m nội dung lớn được tập trung thảo luận gồm c&ocirc;ng t&aacute;c chuẩn bị Đại hội 14; x&acirc;y dựng cơ sở ch&iacute;nh trị, ph&aacute;p l&yacute; nhằm tiếp tục cải c&aacute;ch, đổi mới đất nước; v&agrave; c&ocirc;ng t&aacute;c c&aacute;n bộ.</p>
 ', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
 INSERT INTO swp_db.news (id, title, image_preview, short_description, description, created_at, updated_at, created_by)
-VALUES ( 14, 'Biển súc – Vị thuốc quý và những công dụng đối với sức khỏe', 'https://picsum.photos/600/400'
+VALUES ( 14, 'Biển súc – Vị thuốc quý và những công dụng đối với sức khỏe'
+       , 'https://cdn.youmed.vn/tin-tuc/wp-content/uploads/2022/08/Bien-suc-Mot-loai-cay-duoc-lieu-quy-de-trong-trong-vuon-nha-scaled.jpg'
        , 'Khi nói đến biển súc, chắc hẳn nhiều người sẽ không quen thuộc lắm khi dùng tên gọi này. Tuy nhiên, biển súc còn có tên gọi khác là rau đắng. Có lẽ khi nghe đến rau đắng, ai nấy đều thấy thân quen. Không chỉ được đưa vào lời của bài hát, rau đắng còn có những lợi ích sức khỏe khác. Cùng Thạc sĩ, Bác sĩ Nguyễn Thị Lệ Quyên tìm hiểu về biển súc hay rau đắng qua bài viết dưới đây.'
        , '<h2>Giới thiệu chung</h2>
 
@@ -1449,4 +1461,4 @@ VALUES ( 14, 'Biển súc – Vị thuốc quý và những công dụng đối 
 <p>Bi&ecirc;̉n súc có vị đắng, tính hàn. Vì v&acirc;̣y, kh&ocirc;ng n&ecirc;n lạm dụng dung đ&ecirc;̉ tránh làm hao t&ocirc;̉n tinh khí.</p>
 
 <p>Với những t&aacute;c dụng hỗ trợ điều trị bệnh m&agrave;&nbsp;<strong>biển s&uacute;c</strong>&nbsp;mang lại, kh&ocirc;ng c&oacute; g&igrave; kh&oacute; hiểu khi biển s&uacute;c lại được xem l&agrave; loại thảo dược rất đ&aacute;ng để trồng trong vườn nh&agrave;. Tuy nhi&ecirc;n, khi sử dụng biển s&uacute;c, cần thận trọng hỏi &yacute; kiến b&aacute;c sĩ để tr&aacute;nh những rủi ro kh&ocirc;ng đ&aacute;ng c&oacute;.</p>
-', '2025-07-19 01:38:08', '2025-07-19 04:04:54', 4);
+', '2025-07-19 01:38:08', '2025-07-19 14:06:24', 4);

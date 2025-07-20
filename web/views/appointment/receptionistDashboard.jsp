@@ -2,14 +2,10 @@
 <%@ page session="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%
-    Integer roleId = null;
-    Object roleIdObj = session.getAttribute("roleId");
-    if (roleIdObj == null || (roleId = (Integer) roleIdObj) == null || roleId != 3) {
-        response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
-        return;
-    }
-%>
+<c:set var="roleId" value="${sessionScope.roleId}" />
+<c:if test="${empty roleId or roleId != 3}">
+    <c:redirect url="/views/home/login.jsp?error=access_denied" />
+</c:if>
 <html lang="vi">
 <head>
     <title>Quản lý lịch hẹn - Lễ tân</title>
@@ -27,9 +23,90 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
+</head>
+<body id="receptionistDashboard">
+    <!-- Header -->
+    <%@ include file="../layouts/header.jsp" %>
+
+    <!-- Main Content -->
+    <div class="d-flex">
+        <%@ include file="../layouts/receptionist-side-bar.jsp" %>
+        
+        <main class="container my-5 fade-in flex-grow-1">
+        <h2 class="section-title text-center mb-4">QUẢN LÝ LỊCH HẸN</h2>
+
+        <!-- Nút đồng bộ -->
+        <div class="text-end mb-3">
+            <button class="btn sync-btn" id="syncCalendarBtn">
+                <i class="bi bi-calendar-plus"></i> Đồng bộ với lịch ngoài
+            </button>
+        </div>
+
+        <!-- Bộ lọc -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <label for="filterDate" class="form-label">Lọc theo ngày</label>
+                <input type="date" id="filterDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label for="filterDoctor" class="form-label">Lọc theo bác sĩ</label>
+                <select id="filterDoctor" class="form-select">
+                    <option value="">Tất cả</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filterStatus" class="form-label">Lọc theo trạng thái</label>
+                <select id="filterStatus" class="form-select">
+                    <option value="">Tất cả</option>
+                    <option value="pending">Chờ xác nhận</option>
+                    <option value="confirmed">Đã xác nhận</option>
+                    <option value="completed">Hoàn thành</option>
+                    <option value="canceled">Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100" id="filterButton"><i class="bi bi-funnel"></i> Lọc lịch hẹn</button>
+            </div>
+        </div>
+
+        <!-- Lịch FullCalendar -->
+        <div id="calendar"></div>
+
+        <!-- Danh sách chi tiết -->
+        <div class="appointment-table">
+            <h3 class="section-title mb-3">Danh sách lịch hẹn</h3>
+            <table class="table table-bordered table-hover" id="appointmentTable">
+                <thead>
+                    <tr>
+                        <th class="text-center">STT</th>
+                        <th>Ngày</th>
+                        <th class="text-center">Ca làm</th>
+                        <th>Bệnh nhân</th>
+                        <th>Dịch vụ</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentList">
+                    <!-- JS render here -->
+                </tbody>
+            </table>
+        </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <%@ include file="../layouts/footer.jsp" %>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
     <script>
-        window.roleId = <%= roleId %>;
-        window.contextPath = '<%= request.getContextPath() %>';
+        window.roleId = '${sessionScope.roleId}';
+        window.contextPath = '${pageContext.request.contextPath}';
         
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize calendar
@@ -160,83 +237,6 @@
             });
         }
     </script>
-</head>
-<body id="receptionistDashboard">
-    <!-- Header -->
-    <%@ include file="../layouts/header.jsp" %>
-
-    <!-- Main Content -->
-    <main class="container my-5 fade-in">
-        <h2 class="section-title text-center mb-4">QUẢN LÝ LỊCH HẸN</h2>
-
-        <!-- Nút đồng bộ -->
-        <div class="text-end mb-3">
-            <button class="btn sync-btn" id="syncCalendarBtn">
-                <i class="bi bi-calendar-plus"></i> Đồng bộ với lịch ngoài
-            </button>
-        </div>
-
-        <!-- Bộ lọc -->
-        <div class="row g-3 mb-3">
-            <div class="col-md-3">
-                <label for="filterDate" class="form-label">Lọc theo ngày</label>
-                <input type="date" id="filterDate" class="form-control">
-            </div>
-            <div class="col-md-3">
-                <label for="filterDoctor" class="form-label">Lọc theo bác sĩ</label>
-                <select id="filterDoctor" class="form-select">
-                    <option value="">Tất cả</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="filterStatus" class="form-label">Lọc theo trạng thái</label>
-                <select id="filterStatus" class="form-select">
-                    <option value="">Tất cả</option>
-                    <option value="pending">Chờ xác nhận</option>
-                    <option value="confirmed">Đã xác nhận</option>
-                    <option value="completed">Hoàn thành</option>
-                    <option value="canceled">Đã hủy</option>
-                </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-primary w-100" id="filterButton"><i class="bi bi-funnel"></i> Lọc lịch hẹn</button>
-            </div>
-        </div>
-
-        <!-- Lịch FullCalendar -->
-        <div id="calendar"></div>
-
-        <!-- Danh sách chi tiết -->
-        <div class="appointment-table">
-            <h3 class="section-title mb-3">Danh sách lịch hẹn</h3>
-            <table class="table table-bordered table-hover" id="appointmentTable">
-                <thead>
-                    <tr>
-                        <th class="text-center">STT</th>
-                        <th>Ngày</th>
-                        <th class="text-center">Ca làm</th>
-                        <th>Bệnh nhân</th>
-                        <th>Dịch vụ</th>
-                        <th class="text-center">Trạng thái</th>
-                        <th class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="appointmentList">
-                    <!-- JS render here -->
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <%@ include file="../layouts/footer.jsp" %>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/scripts.js">
-<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
     
     <!-- Modal xem chi tiết lịch hẹn -->
     <div class="modal fade" id="appointmentDetailModal" tabindex="-1" aria-labelledby="appointmentDetailModalLabel" aria-hidden="true">

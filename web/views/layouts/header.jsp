@@ -66,9 +66,9 @@
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 3}">
                             <!-- Receptionist -->
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/receptionist/dashboard">Dashboard</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/receptionist/appointments">Quản lý lịch hẹn</a></li>
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/receptionistuplate">Danh sách bệnh nhân chờ</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/receptionistuplate">Danh sách bệnh nhân chờ</a></li>
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 4}">
                             <!-- Admin -->
@@ -80,9 +80,8 @@
                         </c:when>
                         <c:when test="${sessionScope.user.role.roleId == 5}">
                             <!-- Technician -->
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/technicianupdate">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/appointment/doctorDashboard.jsp">Lịch hẹn</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/technician/dashboard">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/technicianupdate">Danh sách xét nghiệm</a></li>
                         </c:when>
                     </c:choose>
                 </ul>
@@ -99,8 +98,8 @@
                         <c:otherwise>
                             <!-- Đã đăng nhập -->
                             <div class="dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="${pageContext.request.contextPath}/assets/default-avatar.jpg" alt="Avatar" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="${pageContext.request.contextPath}/assets/default-avatar.jpg" alt="Avatar">
                                     <span>
                                         <c:choose>
                                             <c:when test="${not empty sessionScope.user.fullName}">
@@ -126,8 +125,16 @@
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 3}">
                                             <!-- Menu cho Receptionist -->
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/receptionist/dashboard">Dashboard</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/receptionist/appointments">Quản lý lịch hẹn</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/receptionist/dashboard.jsp">Dashboard</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/receptionistuplate">Danh sách bệnh nhân chờ</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
+                                        </c:when>
+                                        <c:when test="${sessionScope.user.role.roleId == 5}">
+                                            <!-- Menu cho Technician -->
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/technician/dashboard">Dashboard</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/technicianupdate">Danh sách xét nghiệm</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
                                         </c:when>
                                         <c:when test="${sessionScope.user.role.roleId == 1}">
                                             <!-- Menu cho Patient -->

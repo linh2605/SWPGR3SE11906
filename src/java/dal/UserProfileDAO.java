@@ -3,8 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package dal;
-import models.Role;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import models.UserProfile;
 
 /**
@@ -19,6 +22,10 @@ public class UserProfileDAO {
     }
 
     public UserProfile getUserProfile(int userId, int roleId) throws SQLException {
+        System.out.println("=== GET USER PROFILE ===");
+        System.out.println("UserId: " + userId);
+        System.out.println("RoleId: " + roleId);
+        
         UserProfile profile = new UserProfile();
 
         // Lấy dữ liệu từ bảng users
@@ -37,13 +44,23 @@ public class UserProfileDAO {
         }
 
         // Lấy thông tin phụ thuộc vai trò
-        String detailSql = switch (roleId) {
-            case 1 -> "SELECT * FROM patients WHERE user_id = ?";
-            case 2 -> "SELECT * FROM doctors WHERE user_id = ?";
-            case 3 -> "SELECT * FROM receptionists WHERE user_id = ?";
-            case 5 -> "SELECT * FROM technicians WHERE user_id = ?";
-            default -> null;
-        };
+        String detailSql = null;
+        switch (roleId) {
+            case 1:
+                detailSql = "SELECT * FROM patients WHERE user_id = ?";
+                break;
+            case 2:
+                detailSql = "SELECT * FROM doctors WHERE user_id = ?";
+                break;
+            case 3:
+                detailSql = "SELECT * FROM receptionists WHERE user_id = ?";
+                break;
+            case 5:
+                detailSql = "SELECT * FROM technicians WHERE user_id = ?";
+                break;
+            default:
+                detailSql = null;
+        }
 
         if (detailSql == null) return profile;
 
@@ -51,9 +68,17 @@ public class UserProfileDAO {
             pst.setInt(1, userId);
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    profile.setGender(rs.getString("gender"));
+                    String gender = rs.getString("gender");
+                    // Normalize gender to uppercase for consistency
+                    if (gender != null) {
+                        gender = gender.toUpperCase();
+                    }
+                    profile.setGender(gender);
                     profile.setDob(rs.getString(roleId == 1 ? "date_of_birth" : "dob"));
                     profile.setImageUrl(rs.getString("image_url"));
+                    
+                    System.out.println("Database Gender: " + gender);
+                    
                     if (roleId == 1) {
                         profile.setAddress(rs.getString("address"));
                     } else if (roleId == 2) {
@@ -69,6 +94,8 @@ public class UserProfileDAO {
                         profile.setShift(rs.getString("shift"));
                         profile.setStatus(rs.getString("status"));
                     }
+                } else {
+                    System.out.println("No data found for userId: " + userId + ", roleId: " + roleId);
                 }
             }
         }
@@ -77,6 +104,12 @@ public class UserProfileDAO {
     }
 
     public void updateUserProfile(UserProfile profile) throws SQLException {
+        // Debug logging
+        System.out.println("=== UPDATE USER PROFILE ===");
+        System.out.println("RoleId: " + profile.getRoleId());
+        System.out.println("UserId: " + profile.getUserId());
+        System.out.println("Gender: " + profile.getGender());
+        
         // Cập nhật bảng users
         String updateUser = "UPDATE users SET full_name = ?, email = ?, phone = ? WHERE user_id = ?";
         try (PreparedStatement pst = conn.prepareStatement(updateUser)) {
@@ -84,12 +117,13 @@ public class UserProfileDAO {
             pst.setString(2, profile.getEmail());
             pst.setString(3, profile.getPhone());
             pst.setInt(4, profile.getUserId());
-            pst.executeUpdate();
+            int userRows = pst.executeUpdate();
+            System.out.println("Users table updated rows: " + userRows);
         }
 
         // Cập nhật bảng theo role
         switch (profile.getRoleId()) {
-            case 1 -> {
+            case 1: {
                 String updatePatient = "UPDATE patients SET gender = ?, date_of_birth = ?, address = ?, image_url = ? WHERE user_id = ?";
                 try (PreparedStatement pst = conn.prepareStatement(updatePatient)) {
                     pst.setString(1, profile.getGender());
@@ -97,10 +131,12 @@ public class UserProfileDAO {
                     pst.setString(3, profile.getAddress());
                     pst.setString(4, profile.getImageUrl());
                     pst.setInt(5, profile.getUserId());
-                    pst.executeUpdate();
+                    int patientRows = pst.executeUpdate();
+                    System.out.println("Patients table updated rows: " + patientRows);
                 }
+                break;
             }
-            case 2 -> {
+            case 2: {
                 String updateDoctor = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ? WHERE user_id = ?";
                 try (PreparedStatement pst = conn.prepareStatement(updateDoctor)) {
                     pst.setString(1, profile.getGender());
@@ -111,10 +147,12 @@ public class UserProfileDAO {
                     pst.setString(6, profile.getExperience());
                     pst.setString(7, profile.getStatus());
                     pst.setInt(8, profile.getUserId());
-                    pst.executeUpdate();
+                    int doctorRows = pst.executeUpdate();
+                    System.out.println("Doctors table updated rows: " + doctorRows);
                 }
+                break;
             }
-            case 3 -> {
+            case 3: {
                 String updateRecep = "UPDATE receptionists SET gender = ?, dob = ?, image_url = ?, shift = ?, status = ? WHERE user_id = ?";
                 try (PreparedStatement pst = conn.prepareStatement(updateRecep)) {
                     pst.setString(1, profile.getGender());
@@ -123,10 +161,12 @@ public class UserProfileDAO {
                     pst.setString(4, profile.getShift());
                     pst.setString(5, profile.getStatus());
                     pst.setInt(6, profile.getUserId());
-                    pst.executeUpdate();
+                    int recepRows = pst.executeUpdate();
+                    System.out.println("Receptionists table updated rows: " + recepRows);
                 }
+                break;
             }
-            case 5 -> {
+            case 5: {
                 String updateTech = "UPDATE technicians SET gender = ?, dob = ?, image_url = ?, department = ?, shift = ?, status = ? WHERE user_id = ?";
                 try (PreparedStatement pst = conn.prepareStatement(updateTech)) {
                     pst.setString(1, profile.getGender());
@@ -136,8 +176,10 @@ public class UserProfileDAO {
                     pst.setString(5, profile.getShift());
                     pst.setString(6, profile.getStatus());
                     pst.setInt(7, profile.getUserId());
-                    pst.executeUpdate();
+                    int techRows = pst.executeUpdate();
+                    System.out.println("Technicians table updated rows: " + techRows);
                 }
+                break;
             }
         }
     }

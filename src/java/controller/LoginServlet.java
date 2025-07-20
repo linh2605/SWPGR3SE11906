@@ -115,6 +115,10 @@ public class LoginServlet extends HttpServlet {
                 int doctorId = workingScheduleDAO.getDoctorIdByUserId(user.getUserId());
                 session.setAttribute("doctorId", doctorId);
                 response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+            } else if (roleId == 3) { // receptionist
+                response.sendRedirect(request.getContextPath() + "/receptionist/dashboard");
+            } else if (roleId == 5) { // technician
+                response.sendRedirect(request.getContextPath() + "/technician/dashboard");
             } else {
                 response.sendRedirect(request.getContextPath() + "/home");
             }

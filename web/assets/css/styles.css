@@ -397,6 +397,12 @@ footer a:hover {
     padding: 20px;
 }
 
+.d-flex {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+}
+
 .sidebar {
     background-color: #e6f0fa;
     width: 250px;
@@ -438,6 +444,8 @@ footer a:hover {
     background-color: #f8f9fa;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 0;
+    overflow-x: auto;
 }
 
 /* Style cho about_us.jsp */
@@ -628,17 +636,45 @@ section p {
 
 /* Style cho avatar và tên user */
 .nav-link.dropdown-toggle {
+    display: flex !important;
+    align-items: center !important;
     padding: 8px 16px;
     border-radius: 20px;
     transition: all 0.3s ease;
+    gap: 8px;
 }
 
 .nav-link.dropdown-toggle:hover {
     background-color: #f0f8ff;
+    color: #ffd700 !important;
 }
 
 .nav-link.dropdown-toggle img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
     border: 2px solid #004d99;
+    border-radius: 50%;
+}
+
+.nav-link.dropdown-toggle span {
+    font-weight: 500;
+    color: #004d99;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* Ensure proper alignment for user info section */
+.d-flex.align-items-center {
+    align-items: center !important;
+    gap: 15px;
+}
+
+.hotline {
+    font-weight: 600;
+    color: #004d99;
+    white-space: nowrap;
+    margin-right: 0;
 }
 
 /* --- Responsive map for Contact Us page --- */
@@ -1005,6 +1041,8 @@ html, body, .card, .card-body, .table, .modal, .btn, .form-control, .form-select
     font-family: 'Montserrat', sans-serif !important;
 }
 
+
+
 /* Specific font weights for better consistency */
 .card-title, .modal-title, .section-title, h1, h2, h3, h4, h5, h6 {
     font-weight: 600 !important;
@@ -1016,4 +1054,221 @@ html, body, .card, .card-body, .table, .modal, .btn, .form-control, .form-select
 
 .table thead th {
     font-weight: 600 !important;
+}
+
+/* Table responsive styles */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+    padding: 12px 8px;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 12px 8px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Button styles for table */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.btn-sm.w-100 {
+    width: 100%;
+    margin: 2px 0;
+}
+
+/* DataTables customization */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.dataTables_wrapper .dataTables_info {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 15px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 6px 12px;
+    margin: 0 2px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+/* Ensure table doesn't overflow with DataTables */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Fix DataTables responsive issues */
+.dataTables_wrapper .dataTables_scroll {
+    overflow-x: auto;
+}
+
+/* Profile page styles */
+.profile-section {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.profile-section h3 {
+    color: #0d6efd;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.profile-avatar {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #0d6efd;
+    margin-bottom: 15px;
+}
+
+.profile-avatar-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.form-control, .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px 15px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.profile-section h5 {
+    color: #6c757d;
+    font-weight: 600;
+    margin: 25px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-section {
+        padding: 20px;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+    }
+    
+    .profile-actions .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }

@@ -594,4 +594,48 @@ public class AppointmentDao {
         }
         return false;
     }
+    
+    // Thêm methods cho dashboard
+    public static int countAppointmentsByDate(java.time.LocalDate date) {
+        String sql = "SELECT COUNT(*) FROM appointments WHERE DATE(appointment_date) = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, java.sql.Date.valueOf(date));
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public static List<Appointment> getRecentAppointments(int limit) {
+        List<Appointment> appointments = new ArrayList<>();
+        String sql = "SELECT a.appointment_id, a.appointment_date, a.shift_id, a.queue_number, a.note, a.created_at, a.updated_at, "
+                + "a.status, a.service_id, a.payment_status, "
+                + "a.patient_id, p.user_id AS patient_user_id, up.full_name AS patient_name, "
+                + "a.doctor_id, d.user_id AS doctor_user_id, ud.full_name AS doctor_name, "
+                + "s.name AS service_name "
+                + "FROM appointments a "
+                + "JOIN doctors d ON a.doctor_id = d.doctor_id "
+                + "JOIN users ud ON d.user_id = ud.user_id "
+                + "JOIN patients p ON a.patient_id = p.patient_id "
+                + "JOIN users up ON p.user_id = up.user_id "
+                + "JOIN services s ON a.service_id = s.service_id "
+                + "ORDER BY a.appointment_date DESC, a.created_at DESC "
+                + "LIMIT ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    appointments.add(mappingAppointment(rs));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return appointments;
+    }
 }

@@ -205,7 +205,8 @@
     </div>
 </div>
 <%@ include file="../layouts/footer.jsp" %>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
 <script>
     function populateUpdateForm(id, rate, doctor, service, price, offer) {
         document.getElementById('update_id').value = id;

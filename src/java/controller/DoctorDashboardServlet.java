@@ -18,26 +18,19 @@ public class DoctorDashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null || user.getRole().getRoleId() != 2) { // 2 = doctor
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 2)) { // 2 = doctor
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         
-        // Get doctorId from session or database
-        Integer doctorIdObj = (Integer) session.getAttribute("doctorId");
-        int doctorId;
-        if (doctorIdObj == null) {
-            // If doctorId is not in session, get it from database
-            doctorId = new WorkingScheduleDAO().getDoctorIdByUserId(user.getUserId());
-            if (doctorId == -1) {
-                response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=doctor_not_found");
-                return;
-            }
-            session.setAttribute("doctorId", doctorId);
-        } else {
-            doctorId = doctorIdObj;
+        User user = utils.AuthHelper.getCurrentUser(request);
+        
+        // Get doctorId from database
+        int doctorId = new WorkingScheduleDAO().getDoctorIdByUserId(user.getUserId());
+        if (doctorId == -1) {
+            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=doctor_not_found");
+            return;
         }
         
         // Lấy số liệu thống kê cho dashboard bác sĩ

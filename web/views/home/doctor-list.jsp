@@ -30,21 +30,21 @@
                 padding-top: 0;
                 font-family: 'Montserrat', sans-serif !important;
             }
-            
+
             main {
                 margin-top: 20px;
             }
-            
+
             .page-btn.active {
                 background-color: #004D99;
                 color: white;
             }
-            
+
             .doctor-list-container {
                 padding: 60px 0;
                 background-color: #f8f9fa;
             }
-            
+
             .doctor-card {
                 background: white;
                 border-radius: 15px;
@@ -53,19 +53,19 @@
                 margin-bottom: 30px;
                 overflow: hidden;
             }
-            
+
             .doctor-card:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             }
-            
+
             .doctor-image {
                 width: 100%;
                 height: 200px;
                 object-fit: cover;
                 border-radius: 10px;
             }
-            
+
             .doctor-name {
                 font-size: 1.2rem;
                 font-weight: 600;
@@ -73,16 +73,16 @@
                 margin-bottom: 10px;
                 text-decoration: none;
             }
-            
+
             .doctor-name:hover {
                 color: #0066cc;
                 text-decoration: none;
             }
-            
+
             .doctor-info {
                 padding: 20px;
             }
-            
+
             .doctor-detail-btn {
                 background-color: #004d99;
                 color: white;
@@ -93,13 +93,13 @@
                 font-size: 0.9rem;
                 transition: all 0.3s ease;
             }
-            
+
             .doctor-detail-btn:hover {
                 background-color: #003366;
                 color: white;
                 text-decoration: none;
             }
-            
+
             .specialty-filter {
                 background: white;
                 border-radius: 15px;
@@ -107,7 +107,7 @@
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
                 margin-bottom: 30px;
             }
-            
+
             .filter-tab {
                 background: #f8f9fa;
                 border: 2px solid #e9ecef;
@@ -119,7 +119,7 @@
                 transition: all 0.3s ease;
                 display: inline-block;
             }
-            
+
             .filter-tab.active,
             .filter-tab:hover {
                 background: #004d99;
@@ -127,30 +127,30 @@
                 border-color: #004d99;
                 text-decoration: none;
             }
-            
+
             .banner-section {
-                background: linear-gradient(rgba(0,77,153,0.7), rgba(0,77,153,0.7)), 
-                           url('${pageContext.request.contextPath}/assets/pexels-photo-5327590.png');
+                background: linear-gradient(rgba(0,77,153,0.7), rgba(0,77,153,0.7)),
+                    url('${pageContext.request.contextPath}/assets/pexels-photo-5327590.png');
                 background-size: cover;
                 background-position: center;
                 color: white;
                 padding: 100px 0;
                 text-align: center;
             }
-            
+
             .banner-title {
                 font-size: 3rem;
                 font-weight: 700;
                 margin-bottom: 20px;
             }
-            
+
             .search-box {
                 background: white;
                 border-radius: 25px;
                 padding: 5px;
                 margin: 20px 0;
             }
-            
+
             .search-input {
                 border: none;
                 padding: 10px 20px;
@@ -158,27 +158,27 @@
                 width: 100%;
                 outline: none;
             }
-            
+
             .breadcrumb {
                 background: transparent;
                 padding: 0;
                 margin: 20px 0;
             }
-            
+
             .breadcrumb-item a {
                 color: white;
                 text-decoration: none;
             }
-            
+
             .breadcrumb-item.active {
                 color: #ffd700;
             }
-            
+
             /* Map section styling */
             .map-section {
                 margin: 40px 0;
             }
-            
+
             #map {
                 border-radius: 15px;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -197,20 +197,21 @@
             <section class="banner-section">
                 <div class="container">
                     <h1 class="banner-title">Danh sách bác sĩ</h1>
-                    
+
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center">
                             <li class="breadcrumb-item">
                                 <a href="${pageContext.request.contextPath}/">
-                                    <i class="bi bi-house-door"></i> Trang chủ
+                                    <i class="bi bi-house-door"></i> Trang chủ 
                                 </a>
                             </li>
+                            <i class="bi bi-chevron-right" style="font-size: 0.8rem"> </i>
                             <li class="breadcrumb-item active" aria-current="page">
                                 Danh sách bác sĩ
                             </li>
                         </ol>
                     </nav>
-                    
+
                     <!-- Search Box -->
                     <div class="row justify-content-center">
                         <div class="col-md-6">
@@ -235,14 +236,14 @@
                                 <h5 class="mb-3">
                                     <i class="bi bi-filter"></i> Lọc theo chuyên khoa
                                 </h5>
-                                
+
                                 <div class="filter-tabs">
                                     <button class="filter-tab active w-100 mb-2" 
                                             data-specialist-id="all">
                                         Tất cả
                                         <span class="badge bg-primary float-end">${countAllSpecialties}</span>
                                     </button>
-                                    
+
                                     <c:forEach var="s" items="${specialties}">
                                         <button class="filter-tab w-100 mb-2" 
                                                 data-specialist-id="${s.key.specialtyId}">
@@ -257,7 +258,7 @@
                         <!-- Doctor Grid -->
                         <div class="col-md-9">
                             <div class="row" id="doctor-grid">
-                                
+
                                 <c:choose>
                                     <c:when test="${not empty doctors}">
                                         <c:forEach var="d" items="${doctors}">
@@ -271,32 +272,37 @@
                                                                      class="doctor-image">
                                                             </div>
                                                             <div class="col-8 doctor-info">
-                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
+                                                                <a href="${pageContext.request.contextPath}/doctors/view?id=${d.doctor_id}" 
                                                                    class="doctor-name">
                                                                     ${d.user.fullName}
                                                                 </a>
-                                                                
+
                                                                 <p class="text-muted mb-2">
                                                                     <i class="bi bi-hospital"></i> 
                                                                     ${d.specialty.name}
                                                                 </p>
-                                                                
+
                                                                 <div class="mb-2">
                                                                     <small class="text-muted">
                                                                         <i class="bi bi-mortarboard"></i> 
                                                                         ${d.degree}
                                                                     </small>
                                                                 </div>
-                                                                
+
                                                                 <div class="mb-3">
                                                                     <small class="text-muted">
                                                                         <i class="bi bi-briefcase"></i> 
                                                                         ${d.experience}
                                                                     </small>
                                                                 </div>
-                                                                
-                                                                <a href="${pageContext.request.contextPath}/doctors/${d.doctor_id}" 
-                                                                   class="doctor-detail-btn">
+                                                                <a href="${pageContext.request.contextPath}/appointment-doctor?id=${d.doctor_id}" 
+                                                                   class="btn btn-success quick-action-btn"
+                                                                   style="font-size: 0.9rem">
+                                                                    <i class="bi bi-calendar-plus"></i> Đặt lịch
+                                                                </a>
+                                                                <a href="${pageContext.request.contextPath}/doctors/view?id=${d.doctor_id}" 
+                                                                   class="btn btn-primary quick-action-btn"
+                                                                   style="font-size: 0.9rem">
                                                                     <i class="bi bi-eye"></i> Xem chi tiết
                                                                 </a>
                                                             </div>
@@ -346,7 +352,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
-        
+
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const specialistButtons = document.querySelectorAll('[data-specialist-id]');
@@ -385,7 +391,7 @@
 
                     // Hide all doctors
                     allDoctors.forEach(doc => doc.style.display = 'none');
-                    
+
                     // Show filtered doctors for current page
                     filteredDoctors.slice(start, end).forEach(doc => doc.style.display = 'block');
 
@@ -394,13 +400,14 @@
 
                 function renderPagination(totalPages) {
                     paginationContainer.innerHTML = '';
-                    
-                    if (totalPages <= 1) return;
-                    
+
+                    if (totalPages <= 1)
+                        return;
+
                     const pagination = document.createElement('nav');
                     const ul = document.createElement('ul');
                     ul.className = 'pagination justify-content-center';
-                    
+
                     // Previous button
                     const prevLi = document.createElement('li');
                     prevLi.className = 'page-item ' + (currentPage === 1 ? 'disabled' : '');
@@ -417,7 +424,7 @@
                     }
                     prevLi.appendChild(prevLink);
                     ul.appendChild(prevLi);
-                    
+
                     // Page numbers
                     for (let i = 1; i <= totalPages; i++) {
                         const li = document.createElement('li');
@@ -434,7 +441,7 @@
                         li.appendChild(link);
                         ul.appendChild(li);
                     }
-                    
+
                     // Next button
                     const nextLi = document.createElement('li');
                     nextLi.className = 'page-item ' + (currentPage === totalPages ? 'disabled' : '');
@@ -451,7 +458,7 @@
                     }
                     nextLi.appendChild(nextLink);
                     ul.appendChild(nextLi);
-                    
+
                     pagination.appendChild(ul);
                     paginationContainer.appendChild(pagination);
                 }
@@ -483,10 +490,10 @@
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors'
                     }).addTo(map);
-                    
+
                     L.marker([21.0285, 105.8542]).addTo(map)
-                        .bindPopup('Hệ thống Quản lý Phòng khám')
-                        .openPopup();
+                            .bindPopup('Hệ thống Quản lý Phòng khám')
+                            .openPopup();
                 }
 
                 // Initial render

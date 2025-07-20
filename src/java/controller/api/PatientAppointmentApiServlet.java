@@ -20,19 +20,21 @@ public class PatientAppointmentApiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.isAuthenticated(request)) {
             response.setStatus(401);
             response.getWriter().write("[]");
             return;
         }
-        int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 1) {
+        
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
+        if (roleId == null || roleId != 1) {
             response.setStatus(403);
             response.getWriter().write("[]");
             return;
         }
-        int userId = (int) session.getAttribute("userId");
+        
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
         Patient patient = PatientDao.getPatientByUserId(userId);
         if (patient == null) {
             response.setStatus(404);

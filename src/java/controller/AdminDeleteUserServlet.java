@@ -17,6 +17,12 @@ import java.io.IOException;
 public class AdminDeleteUserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+            resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         int user_id = Integer.parseInt(req.getParameter("userId"));
         System.out.println("check user id" + user_id);
         User user = UserDAO.getByUserId(user_id);

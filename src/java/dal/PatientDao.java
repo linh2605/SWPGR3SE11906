@@ -16,7 +16,8 @@ public class PatientDao {
     
     public static void deletePatient(int userId){
         try {
-            String sql = "update patients set status = 'inactive' where user_id = ?";
+            // Since patients table doesn't have status column, we'll delete the record
+            String sql = "DELETE FROM patients WHERE user_id = ?";
             Connection conn = DBContext.makeConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, userId);
@@ -31,8 +32,7 @@ public class PatientDao {
         String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description "
                 + "FROM patients p "
                 + "JOIN users u ON p.user_id = u.user_id "
-                + "JOIN roles r ON u.role_id = r.role_id "
-                + "WHERE status = 'active'";
+                + "JOIN roles r ON u.role_id = r.role_id";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 patients.add(mappingPatient(rs));
@@ -181,6 +181,20 @@ public class PatientDao {
             return false;
         }
     }
+    public static int countAllPatients() {
+        String sql = "SELECT COUNT(*) FROM patients";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
     public static void main(String[] args) {
         System.out.println(getAllPatients().size());
     }

@@ -80,6 +80,7 @@
 <script>
     window.contextPath = '${pageContext.request.contextPath}';
 </script>
-<script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/scripts.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
 </body>
 </html>

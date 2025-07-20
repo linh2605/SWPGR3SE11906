@@ -40,17 +40,17 @@ public class ProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
-        Object userIdObj = session.getAttribute("userId");
-        Object roleIdObj = session.getAttribute("roleId");
-
-        if (userIdObj == null || roleIdObj == null) {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
+        
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.isAuthenticated(request)) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        int userId = Integer.parseInt(userIdObj.toString());
-        int roleId = Integer.parseInt(roleIdObj.toString());
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
 
         try (Connection conn = DBContext.makeConnection()) {
             UserProfileDAO dao = new UserProfileDAO(conn);
@@ -85,17 +85,15 @@ public class ProfileServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession();
-        Object userIdObj = session.getAttribute("userId");
-        Object roleIdObj = session.getAttribute("roleId");
-
-        if (userIdObj == null || roleIdObj == null) {
+        
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.isAuthenticated(request)) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        int userId = Integer.parseInt(userIdObj.toString());
-        int roleId = Integer.parseInt(roleIdObj.toString());
+        Integer userId = utils.AuthHelper.getCurrentUserId(request);
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
 
         // Lấy dữ liệu cơ bản từ form
         String fullName = request.getParameter("fullName");
@@ -104,7 +102,17 @@ public class ProfileServlet extends HttpServlet {
         String gender = request.getParameter("gender");
         String dob = request.getParameter("dob");
         String address = request.getParameter("address");
-        String imageUrl = request.getParameter("imageUrl"); // nếu điền tay
+        String existingImageUrl = request.getParameter("existingImageUrl"); // ảnh hiện tại
+        
+        // Debug logging
+        System.out.println("=== DEBUG PROFILE UPDATE ===");
+        System.out.println("FullName: " + fullName);
+        System.out.println("Email: " + email);
+        System.out.println("Phone: " + phone);
+        System.out.println("Gender: " + gender);
+        System.out.println("DOB: " + dob);
+        System.out.println("Address: " + address);
+        System.out.println("ExistingImageUrl: " + existingImageUrl);
 
         // Lấy thêm tất cả các field khác
         String degree = request.getParameter("degree");
@@ -115,6 +123,7 @@ public class ProfileServlet extends HttpServlet {
         String department = request.getParameter("department");
 
         // Xử lý file upload (nếu có)
+        String imageUrl = existingImageUrl; // Mặc định giữ ảnh hiện tại
         Part filePart = request.getPart("avatarFile");
         if (filePart != null && filePart.getSize() > 0) {
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
@@ -149,12 +158,23 @@ public class ProfileServlet extends HttpServlet {
         profile.setShift(shift);
         profile.setStatus(status);
         profile.setDepartment(department);
+        
+        // Debug logging
+        System.out.println("=== PROFILE OBJECT ===");
+        System.out.println("Profile Gender: " + profile.getGender());
+        System.out.println("Profile RoleId: " + profile.getRoleId());
+        System.out.println("Profile UserId: " + profile.getUserId());
 
         try (Connection conn = DBContext.makeConnection()) {
             UserProfileDAO dao = new UserProfileDAO(conn);
             dao.updateUserProfile(profile);
 
-            response.sendRedirect(request.getContextPath() + "/ProfileServlet?success=true");
+            // Clear session cache để force reload data
+            HttpSession session = request.getSession();
+            session.removeAttribute("user");
+            
+            // Redirect với cache busting
+            response.sendRedirect(request.getContextPath() + "/ProfileServlet?success=true&t=" + System.currentTimeMillis());
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(500, "Lỗi khi cập nhật hồ sơ: " + e.getMessage());

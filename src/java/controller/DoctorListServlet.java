@@ -6,6 +6,7 @@ package controller;
 
 import dal.DoctorDao;
 import dal.SpecialtyDao;
+import utils.AuthHelper;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -64,8 +65,7 @@ public class DoctorListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO: get by specialties
-        // TODO: paging
+        // Doctor list is accessible to all users (staff can view for reference, patients/guests can browse)
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
         HashMap<Specialty, Integer> specialtiesCount = SpecialtyDao.getSpecialtiesWithDoctorCount();

@@ -10,14 +10,14 @@ import models.Doctor;
 
 import java.io.IOException;
 
-@WebServlet("/doctors/*")
+@WebServlet("/doctors/view")
 public class DoctorDetailServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo();
-        if (pathInfo != null && pathInfo.length() > 1) {
-            int doctor_id = Integer.parseInt(pathInfo.substring(1));
+        if (req.getParameter("id") != null
+                && req.getParameter("id").length() > 0) {
+            int doctor_id = Integer.parseInt(req.getParameter("id"));
             Doctor doctor = DoctorDao.getDoctorById(doctor_id);
             if (doctor.getDoctor_id() != 0) {
 //                System.out.println("Doctor ID: " + doctor.getDoctor_id());

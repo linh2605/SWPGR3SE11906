@@ -35,11 +35,9 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        
-        // Kiểm tra quyền truy cập
-        if (user == null || user.getRole().getRoleId() != 4) { // 4 = admin
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         
@@ -49,25 +47,26 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
             action = "list";
         }
         
-        switch (action) {
-            case "list":
-                listSchedules(request, response);
-                break;
-            case "add":
-                showAddForm(request, response);
-                break;
-            case "edit":
-                showEditForm(request, response);
-                break;
-            case "delete":
-                deleteSchedule(request, response);
-                break;
-            case "detail":
-                showDetail(request, response);
-                break;
-            default:
-                listSchedules(request, response);
-                break;
+        if (action == null || action.equals("list")) {
+            listSchedules(request, response);
+        } else {
+            switch (action) {
+                case "add":
+                    showAddForm(request, response);
+                    break;
+                case "edit":
+                    showEditForm(request, response);
+                    break;
+                case "delete":
+                    deleteSchedule(request, response);
+                    break;
+                case "detail":
+                    showDetail(request, response);
+                    break;
+                default:
+                    listSchedules(request, response);
+                    break;
+            }
         }
     }
     
@@ -78,9 +77,9 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // Kiểm tra quyền truy cập
-        if (user == null || user.getRole().getRoleId() != 4) {
-            response.sendRedirect(request.getContextPath() + "/views/home/login.jsp?error=access_denied");
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
         
@@ -102,7 +101,23 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
     private void listSchedules(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        List<WorkingSchedule> schedules = scheduleDAO.getAllSchedules();
+        // Lấy các tham số filter
+        String doctorFilter = request.getParameter("doctorFilter");
+        String dayFilter = request.getParameter("dayFilter");
+        String shiftFilter = request.getParameter("shiftFilter");
+        
+        List<WorkingSchedule> schedules;
+        
+        // Áp dụng filter nếu có
+        if ((doctorFilter != null && !doctorFilter.trim().isEmpty()) ||
+            (dayFilter != null && !dayFilter.trim().isEmpty()) ||
+            (shiftFilter != null && !shiftFilter.trim().isEmpty())) {
+            
+            schedules = scheduleDAO.getSchedulesWithFilters(doctorFilter, dayFilter, shiftFilter);
+        } else {
+            schedules = scheduleDAO.getAllSchedules();
+        }
+        
         List<Doctor> doctors = doctorDAO.getAllDoctors();
         List<Shift> shifts = shiftDAO.getAllShifts();
         

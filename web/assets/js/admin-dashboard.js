@@ -88,14 +88,16 @@ function displayRecentActivities(activities) {
     
     activities.forEach(activity => {
         const activityElement = document.createElement('div');
-        activityElement.className = 'activity-item';
+        activityElement.className = 'd-flex align-items-center mb-3 p-2 border-bottom';
         activityElement.innerHTML = `
-            <div class="activity-icon ${getActivityIconClass(activity.type)}">
-                <i class="bi ${getActivityIcon(activity.type)}"></i>
+            <div class="flex-shrink-0 me-3">
+                <div class="rounded-circle p-2 ${getActivityIconClass(activity.type)}" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi ${getActivityIcon(activity.type)} text-white"></i>
+                </div>
             </div>
-            <div class="activity-content">
-                <div class="activity-title">${activity.title}</div>
-                <div class="activity-time">${activity.time}</div>
+            <div class="flex-grow-1">
+                <div class="fw-bold">${activity.title}</div>
+                <small class="text-muted">${activity.time}</small>
             </div>
         `;
         container.appendChild(activityElement);
@@ -205,6 +207,10 @@ function getActivityIcon(type) {
             return 'bi-calendar-plus';
         case 'exception':
             return 'bi-exclamation-triangle';
+        case 'appointment':
+            return 'bi-calendar-event';
+        case 'contact':
+            return 'bi-chat-dots';
         case 'doctor':
             return 'bi-person-plus';
         case 'system':

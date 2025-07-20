@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import models.PatientStatus;
 
 /**
@@ -20,20 +21,18 @@ public class PatientStatusDao {
 
     public static List<PatientStatus> getByHandledRole(int roleId) {
     List<PatientStatus> list = new ArrayList<>();
-    String sql = """
-    SELECT p.patient_id, u.full_name, s.code, s.description, ps.changed_at
-    FROM patients p
-    JOIN users u ON p.user_id = u.user_id
-    JOIN status_definitions s ON p.status_code = s.code
-    JOIN patient_status_logs ps ON p.patient_id = ps.patient_id
-    WHERE s.next_handled_by = ?  -- Điều kiện này để lọc theo vai trò
-    AND ps.changed_at = (
-        SELECT MAX(changed_at)
-        FROM patient_status_logs
-        WHERE patient_id = p.patient_id
-    )  -- Lọc chỉ lấy log mới nhất của mỗi bệnh nhân
-    ORDER BY ps.changed_at ASC
-    """;
+    String sql = "SELECT p.patient_id, u.full_name, s.code, s.description, ps.changed_at " +
+                "FROM patients p " +
+                "JOIN users u ON p.user_id = u.user_id " +
+                "JOIN status_definitions s ON p.status_code = s.code " +
+                "JOIN patient_status_logs ps ON p.patient_id = ps.patient_id " +
+                "WHERE s.next_handled_by = ? " +
+                "AND ps.changed_at = ( " +
+                "    SELECT MAX(changed_at) " +
+                "    FROM patient_status_logs " +
+                "    WHERE patient_id = p.patient_id " +
+                ") " +
+                "ORDER BY ps.changed_at ASC";
 
     try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
         ps.setInt(1, roleId);  // Lọc theo vai trò của user (lễ tân, bác sĩ...)
@@ -86,6 +85,58 @@ public class PatientStatusDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    // Thêm methods cho dashboard
+    public static int countPatientsByStatus(int statusCode) {
+        String sql = "SELECT COUNT(*) FROM patients WHERE status_code = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, statusCode);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public static List<PatientStatus> getPatientsByStatus(int statusCode) {
+        List<PatientStatus> list = new ArrayList<>();
+        String sql = "SELECT p.patient_id, u.full_name, s.code, s.description, ps.changed_at " +
+                    "FROM patients p " +
+                    "JOIN users u ON p.user_id = u.user_id " +
+                    "JOIN status_definitions s ON p.status_code = s.code " +
+                    "JOIN patient_status_logs ps ON p.patient_id = ps.patient_id " +
+                    "WHERE p.status_code = ? " +
+                    "AND ps.changed_at = ( " +
+                    "    SELECT MAX(changed_at) " +
+                    "    FROM patient_status_logs " +
+                    "    WHERE patient_id = p.patient_id " +
+                    ") " +
+                    "ORDER BY ps.changed_at ASC";
+        
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, statusCode);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                PatientStatus psObj = new PatientStatus(
+                    rs.getInt("patient_id"),
+                    rs.getString("full_name"),
+                    rs.getInt("code"),
+                    rs.getString("description"),
+                    rs.getTimestamp("changed_at")
+                );
+                list.add(psObj);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
 }

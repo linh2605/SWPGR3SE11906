@@ -53,7 +53,10 @@
                             <select class="form-select" id="service" name="service" required>
                                 <option value="" disabled selected>Chọn dịch vụ khám</option>
                                 <c:forEach var="s" items="${services}">
-                                    <option value="${s.serviceId}" data-price="${s.price}">${s.name} - ${s.detail}</option>
+                                    <option value="${s.serviceId}" 
+                                            data-price="${s.price}"
+                                            ${s.serviceId eq service_id ? 'selected' : ''}
+                                            >${s.name} - ${s.detail}</option>
                                 </c:forEach>
                             </select>
                         </div>
@@ -107,7 +110,8 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/scripts.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
         <script>
             const service_id = '<%=request.getParameter("service_id")%>';
             if (service_id !== 'null'){

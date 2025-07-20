@@ -76,6 +76,36 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("roleId", user.getRole().getRoleId());
             session.setAttribute("role", user.getRole().getName());
+            
+            // NEW: Generate JWT token
+            try {
+                String jwtToken = utils.JWTUtil.generateToken(user);
+                
+                // Set JWT in response header (for API clients)
+                response.setHeader("Authorization", "Bearer " + jwtToken);
+                
+                // Set JWT in cookie (for web clients) with role-based expiration
+                jakarta.servlet.http.Cookie jwtCookie = new jakarta.servlet.http.Cookie("jwt_token", jwtToken);
+                jwtCookie.setHttpOnly(true);
+                
+                // Set cookie expiration based on role
+                int roleId = user.getRole().getRoleId();
+                if (roleId == 1) { // Patient
+                    jwtCookie.setMaxAge(4 * 60 * 60); // 4 hours for patients
+                    System.out.println("JWT token generated for PATIENT: " + user.getUsername() + " (4 hours expiration)");
+                } else { // Admin, Doctor, Receptionist, Technician
+                    jwtCookie.setMaxAge(24 * 60 * 60); // 24 hours for others
+                    System.out.println("JWT token generated for " + user.getRole().getName().toUpperCase() + ": " + user.getUsername() + " (24 hours expiration)");
+                }
+                
+                jwtCookie.setPath("/");
+                response.addCookie(jwtCookie);
+                
+            } catch (Exception e) {
+                System.err.println("Error generating JWT token: " + e.getMessage());
+                // Continue with normal flow even if JWT generation fails
+            }
+            
             int roleId = user.getRole().getRoleId();
             if (roleId == 4) { // admin
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
@@ -85,6 +115,10 @@ public class LoginServlet extends HttpServlet {
                 int doctorId = workingScheduleDAO.getDoctorIdByUserId(user.getUserId());
                 session.setAttribute("doctorId", doctorId);
                 response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+            } else if (roleId == 3) { // receptionist
+                response.sendRedirect(request.getContextPath() + "/receptionist/dashboard");
+            } else if (roleId == 5) { // technician
+                response.sendRedirect(request.getContextPath() + "/technician/dashboard");
             } else {
                 response.sendRedirect(request.getContextPath() + "/home");
             }

@@ -14,6 +14,9 @@ public class WorkingSchedule {
     
     // Thêm đối tượng Shift để chứa thông tin chi tiết về ca làm
     private Shift shift;
+    
+    // Thêm tên bác sĩ để hiển thị
+    private String doctorName;
 
     // Constructor
     public WorkingSchedule() {
@@ -101,5 +104,13 @@ public class WorkingSchedule {
 
     public void setShift(Shift shift) {
         this.shift = shift;
+    }
+    
+    public String getDoctorName() {
+        return doctorName;
+    }
+    
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
     }
 } 

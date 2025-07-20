@@ -156,14 +156,34 @@
 <%@ include file="../layouts/footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js">
+    <script>
+        // Tắt thông báo lỗi DataTables
+        $.fn.dataTable.ext.errMode = 'none';
+    </script></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
 $(document).ready(function() {
     // Initialize DataTables
     $('#appointmentTable').DataTable({
         language: {
-            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+            "language": {
+            "sProcessing": "Đang xử lý...",
+            "sLengthMenu": "Xem _MENU_ mục",
+            "sZeroRecords": "Không tìm thấy dữ liệu",
+            "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
+            "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+            "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+            "sInfoPostFix": "",
+            "sSearch": "Tìm:",
+            "sUrl": "",
+            "oPaginate": {
+                "sFirst": "Đầu",
+                "sPrevious": "Trước",
+                "sNext": "Tiếp",
+                "sLast": "Cuối"
+            }
+        }
         },
         pageLength: 10,
         responsive: true,
@@ -234,7 +254,8 @@ function showAppointmentDetail(id, queueNumber, date, shiftId, patient, service,
 </script>
 
 <!-- Google API scripts: Đặt cuối cùng trước </body> -->
-<script src="https://apis.google.com/js/api.js?onload=onGapiLoad"></script>
+<script src="https://apis.google.com/js/api.js?onload=onGapiLoad">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
 <script>
 console.log('[GAPI] Script loaded, window.gapi:', window.gapi);
 // Hàm callback phải nằm ngoài mọi block

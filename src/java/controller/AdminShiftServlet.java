@@ -29,6 +29,12 @@ public class AdminShiftServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
+        
         String action = request.getParameter("action");
         
         if (action == null) {
@@ -55,6 +61,12 @@ public class AdminShiftServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.hasRole(request, 4)) { // 4 = admin
+            response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
+            return;
+        }
         
         String action = request.getParameter("action");
         

@@ -100,7 +100,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/scripts.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
 <%@include file="../layouts/toastr.jsp"%>
 </body>
 </html>

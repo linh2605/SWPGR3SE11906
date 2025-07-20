@@ -18,14 +18,15 @@ public class ReceptionistAppointmentApiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
+        // Use AuthHelper for unified authentication
+        if (!utils.AuthHelper.isAuthenticated(request)) {
             response.setStatus(401);
             response.getWriter().write("[]");
             return;
         }
-        int roleId = (int) session.getAttribute("roleId");
-        if (roleId != 3) {
+        
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
+        if (roleId == null || roleId != 3) {
             response.setStatus(403);
             response.getWriter().write("[]");
             return;
@@ -64,14 +65,15 @@ public class ReceptionistAppointmentApiServlet extends HttpServlet {
         String path = request.getServletPath();
         if ("/api/receptionist/appointments/status".equals(path)) {
             response.setContentType("application/json;charset=UTF-8");
-            HttpSession session = request.getSession(false);
-            if (session == null || session.getAttribute("userId") == null || session.getAttribute("roleId") == null) {
+            // Use AuthHelper for unified authentication
+            if (!utils.AuthHelper.isAuthenticated(request)) {
                 response.setStatus(401);
                 response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized\"}");
                 return;
             }
-            int roleId = (int) session.getAttribute("roleId");
-            if (roleId != 3) {
+            
+            Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
+            if (roleId == null || roleId != 3) {
                 response.setStatus(403);
                 response.getWriter().write("{\"success\":false,\"message\":\"Forbidden\"}");
                 return;

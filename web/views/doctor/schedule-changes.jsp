@@ -131,13 +131,34 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js">
+    <script>
+        // Tắt thông báo lỗi DataTables
+        $.fn.dataTable.ext.errMode = 'none';
+    </script></script>
+    <script src="${pageContext.request.contextPath}/assets/js/scripts.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
     <script>
         $(document).ready(function() {
             $('#table').DataTable({
                 language: {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                    "language": {
+            "sProcessing": "Đang xử lý...",
+            "sLengthMenu": "Xem _MENU_ mục",
+            "sZeroRecords": "Không tìm thấy dữ liệu",
+            "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
+            "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+            "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+            "sInfoPostFix": "",
+            "sSearch": "Tìm:",
+            "sUrl": "",
+            "oPaginate": {
+                "sFirst": "Đầu",
+                "sPrevious": "Trước",
+                "sNext": "Tiếp",
+                "sLast": "Cuối"
+            }
+        }
                 },
                 pageLength: 10,
                 responsive: true,

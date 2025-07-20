@@ -44,15 +44,15 @@
                 <!-- Bộ lọc -->
                 <div class="card mb-4">
                     <div class="card-body">
+                        <!-- Debug: doctorFilter=${param.doctorFilter}, dayFilter=${param.dayFilter}, shiftFilter=${param.shiftFilter} -->
                         <form method="GET" action="${pageContext.request.contextPath}/admin/working-schedules">
-                            <input type="hidden" name="action" value="list">
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <label for="doctorFilter" class="form-label">Bác sĩ</label>
                                     <select class="form-select" id="doctorFilter" name="doctorFilter">
                                         <option value="">Tất cả bác sĩ</option>
                                         <c:forEach var="doctor" items="${doctors}">
-                                            <option value="${doctor.doctor_id}" ${param.doctorFilter == doctor.doctor_id ? 'selected' : ''}>
+                                            <option value="${doctor.doctor_id}" ${param.doctorFilter eq doctor.doctor_id ? 'selected' : ''}>
                                                 ${doctor.user.fullName}
                                             </option>
                                         </c:forEach>
@@ -76,7 +76,7 @@
                                     <select class="form-select" id="shiftFilter" name="shiftFilter">
                                         <option value="">Tất cả ca</option>
                                         <c:forEach var="shift" items="${shifts}">
-                                            <option value="${shift.shiftId}" ${param.shiftFilter == shift.shiftId ? 'selected' : ''}>
+                                            <option value="${shift.shiftId}" ${param.shiftFilter eq shift.shiftId ? 'selected' : ''}>
                                                 ${shift.name}
                                             </option>
                                         </c:forEach>
@@ -122,13 +122,7 @@
                                 <tbody>
                                     <c:forEach var="schedule" items="${schedules}">
                                         <tr>
-                                            <td>
-                                                <c:forEach var="doctor" items="${doctors}">
-                                                    <c:if test="${doctor.doctor_id == schedule.doctorId}">
-                                                        ${doctor.user.fullName}
-                                                    </c:if>
-                                                </c:forEach>
-                                            </td>
+                                            <td>${schedule.doctorName}</td>
                                             <td>${schedule.weekDay}</td>
                                             <td>${schedule.shift.name}</td>
                                             <td>${schedule.shift.startTime}</td>
@@ -181,6 +175,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
+    <script>
+        // Tắt thông báo lỗi DataTables
+        $.fn.dataTable.ext.errMode = 'none';
+    </script>
     <script>
         function deleteSchedule(scheduleId) {
             if (confirm('Bạn có chắc chắn muốn xóa lịch làm việc này?')) {
@@ -191,7 +190,21 @@
         $(document).ready(function() {
             $('#table').DataTable({
                 language: {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                    "sProcessing": "Đang xử lý...",
+                    "sLengthMenu": "Xem _MENU_ mục",
+                    "sZeroRecords": "Không tìm thấy dữ liệu",
+                    "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
+                    "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+                    "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Tìm:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Đầu",
+                        "sPrevious": "Trước",
+                        "sNext": "Tiếp",
+                        "sLast": "Cuối"
+                    }
                 },
                 pageLength: 10,
                 responsive: true,

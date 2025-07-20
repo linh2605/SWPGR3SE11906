@@ -246,14 +246,33 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
+<script>
+    // Tắt thông báo lỗi DataTables
+    $.fn.dataTable.ext.errMode = 'none';
+</script>
 
 <%@include file="../layouts/toastr.jsp"%>
 
 <script>
     new DataTable("#table", {
         "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+            "sProcessing": "Đang xử lý...",
+            "sLengthMenu": "Xem _MENU_ mục",
+            "sZeroRecords": "Không tìm thấy dữ liệu",
+            "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
+            "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+            "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+            "sInfoPostFix": "",
+            "sSearch": "Tìm:",
+            "sUrl": "",
+            "oPaginate": {
+                "sFirst": "Đầu",
+                "sPrevious": "Trước",
+                "sNext": "Tiếp",
+                "sLast": "Cuối"
+            }
         }
     });
 

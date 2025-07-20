@@ -275,7 +275,8 @@
         </script>
 
         <!-- Google API scripts: Đặt cuối cùng trước </body> -->
-        <script src="https://apis.google.com/js/api.js?onload=onGapiLoad"></script>
+        <script src="https://apis.google.com/js/api.js?onload=onGapiLoad">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
         <script>
                                                     console.log('[GAPI] Script loaded, window.gapi:', window.gapi);
                                                     // Hàm callback phải nằm ngoài mọi block

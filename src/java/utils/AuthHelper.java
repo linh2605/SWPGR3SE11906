@@ -26,8 +26,10 @@ public class AuthHelper {
                 DecodedJWT jwt = JWTUtil.validateToken(token);
                 return jwt.getClaim("roleId").asInt();
             } catch (Exception e) {
-                // JWT invalid, fallback to session
+                // JWT invalid, clear session and return null
                 System.out.println("JWT validation failed: " + e.getMessage());
+                clearSession(request);
+                return null;
             }
         }
         
@@ -53,8 +55,10 @@ public class AuthHelper {
                 DecodedJWT jwt = JWTUtil.validateToken(token);
                 return jwt.getClaim("userId").asInt();
             } catch (Exception e) {
-                // JWT invalid, fallback to session
+                // JWT invalid, clear session and return null
                 System.out.println("JWT validation failed: " + e.getMessage());
+                clearSession(request);
+                return null;
             }
         }
         
@@ -92,8 +96,10 @@ public class AuthHelper {
                 
                 return user;
             } catch (Exception e) {
-                // JWT invalid, fallback to session
+                // JWT invalid, clear session and return null
                 System.out.println("JWT validation failed: " + e.getMessage());
+                clearSession(request);
+                return null;
             }
         }
         
@@ -163,7 +169,8 @@ public class AuthHelper {
                 JWTUtil.validateToken(token);
                 return "JWT";
             } catch (Exception e) {
-                // JWT invalid, check session
+                // JWT invalid, clear session
+                clearSession(request);
             }
         }
         
@@ -173,5 +180,19 @@ public class AuthHelper {
         }
         
         return "NONE";
+    }
+    
+    /**
+     * Clear session and JWT cookie when authentication fails
+     * @param request HTTP request
+     */
+    private static void clearSession(HttpServletRequest request) {
+        // Clear session
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        
+        // Note: JWT cookie will be cleared by logout servlet when user tries to access protected pages
     }
 } 

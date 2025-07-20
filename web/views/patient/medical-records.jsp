@@ -15,5 +15,7 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-    </body>
+    
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
+</body>
 </html>

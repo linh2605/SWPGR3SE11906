@@ -77,6 +77,7 @@
     </div>
     <%@ include file="../layouts/footer.jsp" %>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
 </body>
 </html> 

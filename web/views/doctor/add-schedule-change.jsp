@@ -108,7 +108,8 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/scripts.js">
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
     <script>
     function updateNewShiftOptions() {
         // Nếu muốn tự động filter ca mới không trùng ca hiện tại, có thể dùng JS ở đây

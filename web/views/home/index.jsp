@@ -157,7 +157,7 @@
                     <c:forEach var="service" items="${popularServices}">
                         <div class="col-md-4 mb-4">
                             <div class="card service-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
-                                <img src="<%=request.getContextPath()%>/assets/${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
+                                <img src="${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
                                 <div class="card-body text-center">
                                     <h5 class="card-title">${service.name}</h5>
                                     <p class="card-text">${service.detail}</p>
@@ -218,25 +218,23 @@
             <!-- Giới thiệu về G3 Hospital -->
             <section class="introduction mb-5">
                 <h2 class="text-center mb-4" style="color: #004d99;">Giới thiệu về G3 Hospital</h2>
-                <div class="row align-items-stretch">
+                <div class="row g-0">
                     <div class="col-md-6">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <img src="https://picsum.photos/600/400" class="card-img-top" alt="Giới thiệu G3 Hospital" style="height: 400px; object-fit: cover;">
+                        <div class="card">
+                            <img src="https://picsum.photos/600/400" class="card-img-top" alt="Giới thiệu G3 Hospital">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div class="card-body d-flex flex-column justify-content-center p-4">
-                                <p class="card-text mb-4">Năm 2003, Bệnh viện Đa khoa G3 Hospital được thành lập, là bệnh viện tư nhân hàng đầu tại Việt Nam. Với sứ mệnh mang lại dịch vụ y tế chất lượng cao, G3 Hospital không ngừng đầu tư vào cơ sở vật chất hiện đại và đội ngũ bác sĩ chuyên môn xuất sắc.</p>
-                                <ul class="list-unstyled mb-4">
-                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Hơn 250 bác sĩ chuyên gia, giàu kinh nghiệm</li>
-                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Hệ thống trang thiết bị hiện đại, tiên tiến</li>
-                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Dịch vụ chăm sóc sức khỏe toàn diện</li>
-                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Hiệu quả điều trị cao, sự hài lòng của bệnh nhân</li>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">Năm 2003, Bệnh viện Đa khoa G3 Hospital được thành lập, là bệnh viện tư nhân hàng đầu tại Việt Nam. Với sứ mệnh mang lại dịch vụ y tế chất lượng cao, G3 Hospital không ngừng đầu tư vào cơ sở vật chất hiện đại và đội ngũ bác sĩ chuyên môn xuất sắc.</p>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-check-circle"></i> Hơn 250 bác sĩ chuyên gia, giàu kinh nghiệm</li>
+                                    <li><i class="bi bi-check-circle"></i> Hệ thống trang thiết bị hiện đại, tiên tiến</li>
+                                    <li><i class="bi bi-check-circle"></i> Dịch vụ chăm sóc sức khỏe toàn diện</li>
+                                    <li><i class="bi bi-check-circle"></i> Hiệu quả điều trị cao, sự hài lòng của bệnh nhân</li>
                                 </ul>
-                                <div class="mt-auto">
-                                    <a href="${pageContext.request.contextPath}/views/info/about_us.jsp" class="btn btn-primary">Xem nhiều hơn</a>
-                                </div>
+                                <a href="${pageContext.request.contextPath}/views/info/about_us.jsp" class="btn btn-primary">Xem nhiều hơn</a>
                             </div>
                         </div>
                     </div>

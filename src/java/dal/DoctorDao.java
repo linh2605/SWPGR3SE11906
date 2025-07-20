@@ -273,7 +273,7 @@ public class DoctorDao {
     /**
      * Lấy danh sách doctors có thể cung cấp service cụ thể
      */
-    public static List<Doctor> getDoctorsByServiceId(int serviceId) {
+    public static List<Doctor> getDoctorsByServiceId(int packageId) {
         List<Doctor> doctors = new ArrayList<>();
         String sql = "SELECT DISTINCT d.doctor_id\n"
                 + "              , d.user_id\n"
@@ -289,11 +289,11 @@ public class DoctorDao {
                 + "	       ON d.doctor_id = ds.doctor_id\n"
                 + "	       JOIN specialties s\n"
                 + "	       ON d.specialty_id = s.specialty_id\n"
-                + " WHERE ds.service_id = ?\n"
+                + " WHERE ds.package_id = ?\n"
                 + "   AND d.status = 'active'\n"
                 + " ORDER BY u.full_name";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, serviceId);
+            ps.setInt(1, packageId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Doctor d = new Doctor();

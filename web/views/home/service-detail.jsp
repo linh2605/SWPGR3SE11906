@@ -69,7 +69,7 @@
                             <input disabled type="number" name="price" step="0.01" min="0" value="<%= service.getPrice() %>" class="form-control" required>
                         </div>
                         
-                        <a href="<%=request.getContextPath()%>/appointment?service_id=<%=request.getParameter("id")%>">
+                        <a href="<%=request.getContextPath()%>/appointment?package_id=<%=request.getParameter("id")%>">
                             <button type="button" class="btn btn-success">Đặt lịch khám ngay</button>
                         </a>
 

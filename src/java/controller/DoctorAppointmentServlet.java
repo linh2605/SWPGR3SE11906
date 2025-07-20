@@ -41,8 +41,8 @@ public class DoctorAppointmentServlet extends HttpServlet {
         
         // Get appointments for the doctor (first 50 appointments)
         List<Appointment> appointments = dal.AppointmentDao.getAppointmentsByDoctorId(doctorId, 1, 50);
-        request.setAttribute("appointments", appointments);
         
+        request.setAttribute("appointments", appointments);
         request.getRequestDispatcher("/views/appointment/doctorDashboard.jsp").forward(request, response);
     }
 }

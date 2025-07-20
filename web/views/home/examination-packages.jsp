@@ -81,7 +81,10 @@
                              data-price="<%= pkg.getPrice() %>"
                              data-duration="<%= pkg.getDuration() %>">
                             <div class="package-card">
-                                <img src="https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>" class="package-image" alt="<%= pkg.getName() %>">
+                                <img src="${pageContext.request.contextPath}/assets/uploads/package-<%= pkg.getPackageId() %>.jpg" 
+                                     class="package-image" 
+                                     alt="<%= pkg.getName() %>"
+                                     onerror="this.src='https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>'">
                                 <div class="package-info">
                                     <h5 class="package-name"><%= pkg.getName() %></h5>
                                     <p class="text-muted mb-2"><%= pkg.getDescription() %></p>

@@ -62,7 +62,7 @@
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-warning edit-btn" title="Chỉnh sửa"
-                                            data-id="<%= p.getService_id() %>"
+                                            data-id="<%= p.getServiceId() %>"
                                             data-name="<%= p.getName() %>"
                                             data-description="<%= p.getDetail() %>"
                                             data-price="<%= p.getPrice() %>"
@@ -72,10 +72,10 @@
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button type="button" class="btn btn-sm btn-danger" title="Xóa"
-                                            onclick="confirmDelete('<%= p.getService_id() %>')">
+                                            onclick="confirmDelete('<%= p.getServiceId() %>')">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                    <form id="deleteForm_<%= p.getService_id() %>" action="<%= request.getContextPath() %>/admin/examination-manage" method="post" style="display:none;">
+                                    <form id="deleteForm_<%= p.getServiceId() %>" action="<%= request.getContextPath() %>/admin/examination-manage" method="post" style="display:none;">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<%= p.getServiceId() %>">
                                     </form>

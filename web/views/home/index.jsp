@@ -160,7 +160,11 @@
                 %>
                 <div class="col-md-4 mb-4">
                     <div class="card doctor-card" style="cursor: pointer;">
-                        <img src="https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>" class="card-img-top" alt="<%= pkg.getName() %>" style="height: 200px; object-fit: cover;">
+                        <img src="${pageContext.request.contextPath}/assets/uploads/package-<%= pkg.getPackageId() %>.jpg" 
+                             class="card-img-top" 
+                             alt="<%= pkg.getName() %>" 
+                             style="height: 200px; object-fit: cover;"
+                             onerror="this.src='https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>'">
                         <div class="card-body">
                             <h5 class="card-title"><%= pkg.getName() %></h5>
                             <p class="card-text"><%= pkg.getDescription() %></p>

@@ -58,11 +58,22 @@ public class AdminServiceServlet extends HttpServlet {
         long price = Long.parseLong(req.getParameter("price"));
         String[] doctorIds = req.getParameterValues("doctorIds");
         List<Doctor> doctors = parseDoctorList(doctorIds);
-        String image = UploadImage.saveImage(req, "image");
-        ServiceType type = ServiceType.valueOf(req.getParameter("type"));
+        
+        // Kiểm tra có ảnh upload không
+        boolean hasImage = req.getPart("image") != null && req.getPart("image").getSize() > 0;
 
-        Service service = new Service(name, detail, price,type, image, doctors);
-        ServiceDAO.create(service);
+        Service service = new Service(name, detail, price, ServiceType.SPECIALIST, "", doctors);
+        int packageId = ServiceDAO.create(service);
+        
+        // Nếu có ảnh, lưu với tên file theo package_id
+        if (hasImage && packageId > 0) {
+            try {
+                UploadImage.savePackageImage(req, "image", packageId);
+            } catch (Exception e) {
+                System.out.println("Lỗi lưu ảnh: " + e.getMessage());
+            }
+        }
+        
         req.getSession().setAttribute("flash_success", "Thêm mới thành công.");
         resp.sendRedirect(req.getContextPath() + "/admin/examination-manage");
     }
@@ -83,9 +94,14 @@ public class AdminServiceServlet extends HttpServlet {
             service.setDetail(detail);
             service.setPrice(price);
             service.setDoctors(doctors);
+            
+            // Upload ảnh mới nếu có
             if (req.getPart("image") != null && req.getPart("image").getSize() > 0) {
-                String image_url = UploadImage.saveImage(req, "image");
-                service.setImage(image_url);
+                try {
+                    UploadImage.savePackageImage(req, "image", service.getServiceId());
+                } catch (Exception e) {
+                    System.out.println("Lỗi lưu ảnh: " + e.getMessage());
+                }
             }
 
             ServiceDAO.update(service);

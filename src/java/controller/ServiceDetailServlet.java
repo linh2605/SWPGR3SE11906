@@ -14,8 +14,8 @@ import java.io.IOException;
 public class ServiceDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int service_id = Integer.parseInt(req.getParameter("id"));
-        Service service = ServiceDAO.getServiceById(service_id);
+        int package_id = Integer.parseInt(req.getParameter("id"));
+        Service service = ServiceDAO.getServiceById(package_id); // ServiceDAO đã map package_id thành service_id
         req.setAttribute("service", service);
         req.getRequestDispatcher("/views/home/service-detail.jsp").forward(req, resp);
     }

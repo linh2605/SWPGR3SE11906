@@ -127,6 +127,18 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
                 }
             });
 
+            // Xử lý package_id từ URL parameter (khi click "Đặt lịch ngay" từ trang chủ)
+            String packageIdParam = request.getParameter("package_id");
+            if (packageIdParam != null && !packageIdParam.trim().isEmpty()) {
+                try {
+                    int selectedPackageId = Integer.parseInt(packageIdParam);
+                    request.setAttribute("selectedServiceId", selectedPackageId);
+                    System.out.println("[DEBUG] Selected package_id from URL: " + selectedPackageId);
+                } catch (NumberFormatException e) {
+                    System.out.println("[DEBUG] Invalid package_id parameter: " + packageIdParam);
+                }
+            }
+
             request.setAttribute("patient", patient);
             request.setAttribute("doctors", doctors);
             request.setAttribute("services", services);
@@ -160,14 +172,14 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
 
             int patientId = Integer.parseInt(request.getParameter("patientId"));
             int doctorId = Integer.parseInt(request.getParameter("doctor"));
-            int serviceId = Integer.parseInt(request.getParameter("service"));
+            int packageId = Integer.parseInt(request.getParameter("service")); // service parameter vẫn giữ nguyên tên để không ảnh hưởng frontend
             int shiftId = Integer.parseInt(request.getParameter("shift"));
             String dateStr = request.getParameter("appointmentDate"); // yyyy-MM-dd
 
             System.out.println("[DEBUG] Parameters received:");
             System.out.println("[DEBUG] - patientId: " + patientId);
             System.out.println("[DEBUG] - doctorId: " + doctorId);
-            System.out.println("[DEBUG] - serviceId: " + serviceId);
+            System.out.println("[DEBUG] - packageId: " + packageId);
             System.out.println("[DEBUG] - shiftId: " + shiftId);
             System.out.println("[DEBUG] - dateStr: " + dateStr);
 
@@ -175,7 +187,7 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
             if (dateStr == null || dateStr.trim().isEmpty()) {
                 System.out.println("[DEBUG] Date string is null or empty");
                 request.setAttribute("errorMsg", "Vui lòng chọn ngày hẹn.");
-                loadFormData(request, patientId, doctorId, serviceId, null, "");
+                loadFormData(request, patientId, doctorId, packageId, null, "");
                 request.getRequestDispatcher("/views/appointment/make-appointment.jsp").forward(request, response);
                 return;
             }
@@ -188,7 +200,7 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
             } catch (Exception e) {
                 System.out.println("[DEBUG] Date parsing failed: " + e.getMessage());
                 request.setAttribute("errorMsg", "Định dạng ngày không hợp lệ. Vui lòng chọn lại ngày.");
-                loadFormData(request, patientId, doctorId, serviceId, null, "");
+                loadFormData(request, patientId, doctorId, packageId, null, "");
                 request.getRequestDispatcher("/views/appointment/make-appointment.jsp").forward(request, response);
                 return;
             }
@@ -204,12 +216,12 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
 
             // Validation
             System.out.println("[DEBUG] Starting validation...");
-            String errorMsg = validateAppointment(patientId, doctorId, serviceId, appointmentDate, shiftId);
+            String errorMsg = validateAppointment(patientId, doctorId, packageId, appointmentDate, shiftId);
             if (errorMsg != null) {
                 System.out.println("[DEBUG] Validation failed: " + errorMsg);
                 request.setAttribute("errorMsg", errorMsg);
                 // Reload data for form
-                loadFormData(request, patientId, doctorId, serviceId, appointmentDate, note);
+                loadFormData(request, patientId, doctorId, packageId, appointmentDate, note);
                 request.getRequestDispatcher("/views/appointment/make-appointment.jsp").forward(request, response);
                 return;
             }
@@ -222,7 +234,7 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
             Doctor d = new Doctor();
             d.setDoctor_id(doctorId);
             Service s = new Service();
-            s.setServiceId(serviceId);
+            s.setServiceId(packageId);
 
             appointment.setPatient(p);
             appointment.setDoctor(d);
@@ -242,7 +254,7 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
             } else {
                 System.out.println("[DEBUG] Appointment creation failed!");
                 request.setAttribute("errorMsg", "Đặt lịch khám thất bại, vui lòng thử lại.");
-                loadFormData(request, patientId, doctorId, serviceId, appointmentDate, note);
+                loadFormData(request, patientId, doctorId, packageId, appointmentDate, note);
                 request.getRequestDispatcher("/views/appointment/make-appointment.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
@@ -260,12 +272,12 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
     /**
      * Validate appointment data
      */
-    private String validateAppointment(int patientId, int doctorId, int serviceId, LocalDateTime appointmentDate, int shiftId) {
+    private String validateAppointment(int patientId, int doctorId, int packageId, LocalDateTime appointmentDate, int shiftId) {
         System.out.println("[DEBUG] validateAppointment - Starting validation");
 
         // Check if doctor can provide this service
         System.out.println("[DEBUG] Checking if doctor can provide service...");
-        if (!AppointmentDao.canDoctorProvideService(doctorId, serviceId)) {
+        if (!AppointmentDao.canDoctorProvideService(doctorId, packageId)) {
             System.out.println("[DEBUG] Doctor cannot provide this service");
             return "Bác sĩ này không cung cấp dịch vụ đã chọn.";
         }
@@ -328,7 +340,7 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
     /**
      * Load form data for error cases
      */
-    private void loadFormData(HttpServletRequest request, int patientId, int doctorId, int serviceId, LocalDateTime appointmentDate, String note) {
+    private void loadFormData(HttpServletRequest request, int patientId, int doctorId, int packageId, LocalDateTime appointmentDate, String note) {
         try {
             Patient patient = PatientDao.getPatientById(patientId);
             List<Doctor> doctors = DoctorDao.getAllDoctors();
@@ -361,7 +373,7 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
             request.setAttribute("doctors", doctors);
             request.setAttribute("services", services);
             request.setAttribute("selectedDoctorId", doctorId);
-            request.setAttribute("selectedServiceId", serviceId);
+            request.setAttribute("selectedServiceId", packageId);
 
             // Format appointmentDate thành string cho input datetime-local
             if (appointmentDate != null) {

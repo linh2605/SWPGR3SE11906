@@ -2,6 +2,7 @@
 <%@ page import="models.Specialty" %>
 <%@ page import="dal.FeedbackDAO" %>
 <%@ page import="models.*" %>
+<%@ page import="dal.ExaminationPackageDAO" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -148,26 +149,38 @@
             </div>
         </div>
 
+        <!-- Gói khám sức khỏe -->
+        <section class="doctors mb-5">
+            <h2 class="text-center mb-4" style="color: #004d99;">Gói Khám Sức Khỏe</h2>
+            <div class="row">
+                <%
+                    ExaminationPackageDAO packageDAO = new ExaminationPackageDAO();
+                    List<ExaminationPackage> topPackages = packageDAO.getTop3();
+                    for (ExaminationPackage pkg : topPackages) {
+                %>
+                <div class="col-md-4 mb-4">
+                    <div class="card doctor-card" style="cursor: pointer;">
+                        <img src="https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>" class="card-img-top" alt="<%= pkg.getName() %>" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= pkg.getName() %></h5>
+                            <p class="card-text"><%= pkg.getDescription() %></p>
+                            <p class="card-text">
+                                <i class="bi bi-clock"></i> <%= pkg.getFormattedDuration() %><br>
+                                <strong>Giá: <%= pkg.getFormattedPrice() %></strong>
+                            </p>
+                            <a href="${pageContext.request.contextPath}/appointment?package_id=<%= pkg.getPackageId() %>" class="btn btn-primary">Đặt lịch ngay</a>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            <div class="text-center mt-4">
+                <a href="${pageContext.request.contextPath}/examination-packages" class="btn btn-primary">Xem tất cả gói khám</a>
+            </div>
+        </section>
+
         <!-- Main Content -->
         <main class="container my-5">
-            <section class="promotions mb-5">
-                <h2 class="text-center mb-4" style="color: #004d99;">Dịch Vụ Khám Nổi Bật</h2>
-                <div class="row">
-                    <c:forEach var="service" items="${popularServices}">
-                        <div class="col-md-4 mb-4">
-                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
-                                <img src="<%=request.getContextPath()%>/assets/${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">${service.name}</h5>
-                                    <p class="card-text">${service.detail}</p>
-                                    <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
-                                    <a href="<%=request.getContextPath()%>/appointment?service_id=${service.service_id}"><button class="btn btn-primary">Đặt lịch khám ngay</button></a>
-                                </div>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </div>
-            </section>
             <!-- Tại sao chọn G3 Hospital -->
             <section class="why-choose-us mb-5">
                 <h2 class="text-center mb-4" style="color: #004d99;">Tại sao chọn G3 Hospital?</h2>

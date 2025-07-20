@@ -2087,3 +2087,61 @@ window.debugPopulateFilters = function() {
     console.log('🔧 Manual filter population triggered');
     populateFilters('receptionistDashboard');
 };
+
+// Examination Packages Filter
+function initPackageFilter() {
+    const searchInput = document.getElementById('searchInput');
+    const priceFilter = document.getElementById('priceFilter');
+    const durationFilter = document.getElementById('durationFilter');
+    const packageItems = document.querySelectorAll('.package-item');
+
+    if (!searchInput || !priceFilter || !durationFilter || packageItems.length === 0) {
+        return; // Exit if elements don't exist
+    }
+
+    function filterPackages() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const priceRange = priceFilter.value;
+        const durationRange = durationFilter.value;
+
+        packageItems.forEach(item => {
+            const name = item.dataset.name;
+            const price = parseInt(item.dataset.price);
+            const duration = parseInt(item.dataset.duration);
+
+            let showItem = true;
+
+            // Search filter
+            if (searchTerm && !name.includes(searchTerm)) {
+                showItem = false;
+            }
+
+            // Price filter
+            if (priceRange) {
+                const [min, max] = priceRange.split('-').map(p => p === '+' ? Infinity : parseInt(p));
+                if (price < min || (max !== Infinity && price > max)) {
+                    showItem = false;
+                }
+            }
+
+            // Duration filter
+            if (durationRange) {
+                const [min, max] = durationRange.split('-').map(d => d === '+' ? Infinity : parseInt(d));
+                if (duration < min || (max !== Infinity && duration > max)) {
+                    showItem = false;
+                }
+            }
+
+            item.style.display = showItem ? 'block' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', filterPackages);
+    priceFilter.addEventListener('change', filterPackages);
+    durationFilter.addEventListener('change', filterPackages);
+}
+
+// Initialize package filter when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initPackageFilter();
+});

@@ -5,6 +5,7 @@ import dal.NewsDAO;
 import dal.ServiceDAO;
 import models.Doctor;
 import models.Service;
+import utils.AuthHelper;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,6 +21,28 @@ public class HomeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Check if user is authenticated and redirect staff to their dashboard
+        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
+        if (roleId != null) {
+            // Redirect staff users to their dashboard (Patient can stay on homepage)
+            switch (roleId) {
+                case 2: // Doctor
+                    response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
+                    return;
+                case 3: // Receptionist
+                    response.sendRedirect(request.getContextPath() + "/receptionist/dashboard");
+                    return;
+                case 4: // Admin
+                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+                    return;
+                case 5: // Technician
+                    response.sendRedirect(request.getContextPath() + "/technician/dashboard");
+                    return;
+                // Case 1 (Patient) - let them stay on homepage
+            }
+        }
+        
+        // Show homepage for patients and guests
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         if (doctors.size() > 6) {
             doctors = doctors.subList(0, 6);

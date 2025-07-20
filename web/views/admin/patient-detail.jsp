@@ -1,133 +1,70 @@
-<%@ page import="models.Patient" %>
-<%@ page import="models.User" %>
-<%@ page import="java.text.SimpleDateFormat" %>
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" import="java.util.*, models.*" %>
 <%@ include file="admin-auth.jsp" %>
-<%
-    Patient patient = (Patient) request.getAttribute("patient");
-    User user = patient.getUser();
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Dashboard - G3 Hospital</title>
+    <title>Chi tiết bệnh nhân - G3 Hospital Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .card-profile {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 2px solid #eaeaea;
-        }
-
-        .card-profile img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 20px;
-        }
-
-        .info-box {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            border-bottom: 2px solid #ccc;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-        }
-
-        .info-item {
-            margin-bottom: 10px;
-        }
-
-        .icon-circle {
-            width: 24px;
-            height: 24px;
-            display: inline-block;
-            text-align: center;
-            border-radius: 50%;
-            background-color: #00c4cc;
-            color: #fff;
-            margin-right: 5px;
-        }
-
-        .icon-orange {
-            background-color: orange;
-        }
-
-        .contact-icon {
-            width: 18px;
-            height: 18px;
-            vertical-align: middle;
-        }
-    </style>
 </head>
 <body>
 <div class="wrapper">
     <%@ include file="../layouts/header.jsp" %>
-    <!-- BODY -->
     <div class="main">
+        <%@ include file="../layouts/admin-side-bar.jsp" %>
         <div class="content">
-            <!-- Nội dung chính tại đây -->
-            <h2>Thông tin chi tiết về bệnh nhân <%=user.getFullName()%></h2>
-            <div class="container mt-5">
-                <div class="row mt-4">
-                    <!-- Medical Info -->
-                    <div class="col-md-6">
-                        <div class="info-box">
-                            <div class="section-title"><span class="icon-circle">🩺</span>Thông tin y tế cơ bản:</div>
-                            <div class="info-item">Nhóm máu: O</div>
-                            <div class="info-item">Tiền sử bệnh lý: Bệnh đau dạ dày</div>
-                            <div class="info-item">Dị ứng thuốc, thức ăn: Không dị ứng</div>
-                            <div class="info-item">Tiền sử phẫu thuật: Mổ ruột thừa</div>
-                            <div class="info-item">Bệnh mãn tính: Không có</div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Chi tiết bệnh nhân</h2>
+                <a href="<%= request.getContextPath() %>/admin/patient" class="btn btn-secondary">Quay lại</a>
+            </div>
 
-                            <div class="mt-3">
-                                <div class="section-title">Thông tin khám bệnh gần đây:</div>
-                                <div class="info-item">Ngày khám: 20/05/2025</div>
-                                <div class="info-item">Bác sĩ điều trị: Trần Tuấn T</div>
-                                <div class="info-item">Khoa khám: Nam khoa</div>
-                                <div class="info-item">Lý do khám: Cảm thấy đau chim</div>
-                                <div class="info-item">Chẩn đoán: Yếu sinh lý</div>
-                                <div class="info-item">Ghi chú: Khuyên nghỉ bệnh nhân thay đổi thói quen sinh hoạt, giảm căng thẳng.</div>
-                            </div>
+            <%
+                Patient patient = (Patient) request.getAttribute("patient");
+                User user = patient != null ? patient.getUser() : null;
+            %>
+
+            <% if (patient != null && user != null) { %>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5 class="card-title">Thông tin cá nhân</h5>
+                            <p><strong>Họ tên:</strong> <%= user.getFullName() %></p>
+                            <p><strong>Giới tính:</strong> <%= patient.getGender() %></p>
+                            <p><strong>Ngày sinh:</strong> <%= patient.getDate_of_birth() %></p>
+                            <p><strong>Email:</strong> <%= user.getEmail() %></p>
+                            <p><strong>Số điện thoại:</strong> <%= user.getPhone() %></p>
+                            <p><strong>Trạng thái tài khoản:</strong> <%= patient.getStatus_code() == 1 ? "Active" : "Inactive" %></p>
+                            <p><strong>Ngày tạo hồ sơ:</strong> <%= patient.getCreated_at() %></p>
                         </div>
-                    </div>
-
-                    <!-- Personal Info -->
-                    <div class="col-md-6">
-                        <div class="info-box">
-                            <div class="section-title"><span class="icon-circle icon-orange">🧾</span>Thông tin định danh cá nhân:</div>
-                            <div class="info-item">Họ và tên: <%= user.getFullName() %></div>
-                            <div class="info-item">Ngày sinh: <%= sdf.format(patient.getDate_of_birth()) %></div>
-                            <div class="info-item">Giới tính: <%= patient.getGender().name() %></div>
-                            <div class="info-item">Patient ID: <%= patient.getPatient_id() %></div>
-                            <div class="info-item">SĐT liên lạc: <%= user.getPhone() %></div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">Thông tin tài khoản</h5>
+                            <p><strong>Username:</strong> <%= user.getUsername() %></p>
+                            <p><strong>Vai trò:</strong> <%= user.getRole() != null ? user.getRole().getName() : "N/A" %></p>
+                            <p><strong>Avatar:</strong><br>
+                                <%
+                                    String img = patient.getImage_url();
+                                    String imgSrc = (img != null && img.startsWith("http")) ? img
+                                            : (img != null && !img.isEmpty()) ? request.getContextPath() + "/assets/" + img
+                                            : request.getContextPath() + "/assets/default-avatar.jpg";
+                                %>
+                                <img src="<%= imgSrc %>" alt="Avatar" width="120" class="rounded">
+                            </p>
+                            <p><strong>Địa chỉ:</strong> <%= patient.getAddress() != null ? patient.getAddress() : "Chưa cung cấp" %></p>
                         </div>
                     </div>
                 </div>
             </div>
+            <% } else { %>
+            <div class="alert alert-danger">Không tìm thấy thông tin bệnh nhân.</div>
+            <% } %>
         </div>
     </div>
     <%@ include file="../layouts/footer.jsp" %>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 </body>
 </html>

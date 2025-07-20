@@ -224,20 +224,29 @@
                                                             </p>
                                                         </div>
                                                         <div class="col-1 doctor-info">
+                                                            <!-- Back button -->
                                                             <a href="javascript:history.back()" 
-                                                               class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex">
+                                                               class="btn btn-primary quick-action-btn justify-content-center gap-2 mt-2 d-flex"
+                                                               title="Quay lại">
                                                                 <i class="bi bi-arrow-return-left me-1"></i>
                                                             </a>
+                                                            
+                                                            <!-- Staff management buttons -->
                                                             <c:if test="${fn:contains('doctor receptionist admin technician', userRole)}">
+                                                                <!-- Edit button -->
                                                                 <a href="${pageContext.request.contextPath}/news/edit?id=${n.newsID}" 
-                                                                   class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex">
+                                                                   class="btn btn-warning quick-action-btn justify-content-center gap-2 mt-2 d-flex"
+                                                                   title="Chỉnh sửa">
                                                                     <i class="bi bi-pen"></i>
                                                                 </a>
+                                                                
+                                                                <!-- Delete button -->
                                                                 <button type="button"
                                                                         class="btn btn-danger quick-action-btn justify-content-center gap-2 mt-2 d-flex w-100"
                                                                         data-bs-toggle="modal"
                                                                         data-bs-target="#confirmDeleteModal"
-                                                                        onclick="prepareDelete(${n.newsID})">
+                                                                        onclick="prepareDelete(${n.newsID})"
+                                                                        title="Xóa">
                                                                     <i class="bi bi-trash"></i>
                                                                 </button>
                                                             </c:if>

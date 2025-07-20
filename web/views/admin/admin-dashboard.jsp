@@ -85,6 +85,58 @@
                             </div>
                         </div>
 
+                        <!-- Total Patients -->
+                        <div class="col-md-3">
+                            <div class="card text-white stat-card" style="background-color: #20c997;">
+                                <div class="card-header fw-bold">
+                                    <i class="bi bi-person-heart"></i> Bệnh nhân
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title" id="totalPatients">${totalPatients}</h4>
+                                    <p class="card-text fw-bold">Tổng số bệnh nhân</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Appointments -->
+                        <div class="col-md-3">
+                            <div class="card text-white stat-card" style="background-color: #fd7e14;">
+                                <div class="card-header fw-bold">
+                                    <i class="bi bi-calendar-event"></i> Lịch hẹn
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title" id="totalAppointments">${totalAppointments}</h4>
+                                    <p class="card-text fw-bold">Tổng số lịch hẹn</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Appointments -->
+                        <div class="col-md-3">
+                            <div class="card text-dark stat-card" style="background-color: #e83e8c;">
+                                <div class="card-header fw-bold">
+                                    <i class="bi bi-hourglass-split"></i> Chờ xử lý
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title" id="pendingAppointments">${pendingAppointments}</h4>
+                                    <p class="card-text fw-bold">Lịch hẹn chờ xử lý</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Contacts -->
+                        <div class="col-md-3">
+                            <div class="card text-white stat-card" style="background-color: #6c757d;">
+                                <div class="card-header fw-bold">
+                                    <i class="bi bi-chat-dots"></i> Liên hệ
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="card-title" id="totalContacts">${totalContacts}</h4>
+                                    <p class="card-text fw-bold">Tổng tin nhắn liên hệ</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Quick Stats -->
                         <div class="col-12">
                             <div class="card">
@@ -93,8 +145,53 @@
                                         <i class="bi bi-graph-up"></i> Thống kê nhanh
                                     </h5>
                                 </div>
-                                <div class="card-body" id="quickStats">
-                                    <!-- Quick stats will be loaded by JavaScript -->
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="bi bi-person-check text-success fs-3"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-0">Bác sĩ có sẵn</h6>
+                                                    <h4 class="mb-0 text-success">${availableDoctors}</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="bi bi-exclamation-triangle text-warning fs-3"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-0">Yêu cầu khẩn cấp</h6>
+                                                    <h4 class="mb-0 text-warning">${urgentExceptions}</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="bi bi-envelope text-info fs-3"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-0">Tin nhắn chưa đọc</h6>
+                                                    <h4 class="mb-0 text-info">${unreadContacts}</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <i class="bi bi-clock-history text-primary fs-3"></i>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-0">Thời gian phản hồi TB</h6>
+                                                    <h4 class="mb-0 text-primary">${avgResponseTime}h</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -113,6 +210,11 @@
                                 <div class="card-body">
                                     <div id="recentActivities">
                                         <!-- Activities will be loaded by JavaScript -->
+                                        <div class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Đang tải...</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

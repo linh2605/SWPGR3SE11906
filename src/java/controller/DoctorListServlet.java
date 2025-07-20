@@ -65,28 +65,7 @@ public class DoctorListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Check if user is authenticated and redirect staff to their dashboard
-        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
-        if (roleId != null) {
-            // Redirect staff users to their dashboard (Patient can stay on doctor list)
-            switch (roleId) {
-                case 2: // Doctor
-                    response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
-                    return;
-                case 3: // Receptionist
-                    response.sendRedirect(request.getContextPath() + "/receptionist/dashboard");
-                    return;
-                case 4: // Admin
-                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-                    return;
-                case 5: // Technician
-                    response.sendRedirect(request.getContextPath() + "/technician/dashboard");
-                    return;
-                // Case 1 (Patient) - let them stay on doctor list
-            }
-        }
-        
-        // Show doctor list for patients and guests
+        // Doctor list is accessible to all users (staff can view for reference, patients/guests can browse)
         List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
         HashMap<Specialty, Integer> specialtiesCount = SpecialtyDao.getSpecialtiesWithDoctorCount();

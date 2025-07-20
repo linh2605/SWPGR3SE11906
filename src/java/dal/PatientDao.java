@@ -181,6 +181,20 @@ public class PatientDao {
             return false;
         }
     }
+    public static int countAllPatients() {
+        String sql = "SELECT COUNT(*) FROM patients";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement ps = conn.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
     public static void main(String[] args) {
         System.out.println(getAllPatients().size());
     }

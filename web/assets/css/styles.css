@@ -438,6 +438,28 @@ footer a:hover {
     transform: scale(1.02);
 }
 
+/* News link styling in sidebar */
+.sidebar .news-link {
+    background-color: #ffd700;
+    color: #004d99;
+    font-weight: 600;
+    border-left: 4px solid #004d99;
+}
+
+.sidebar .news-link:hover {
+    background-color: #004d99;
+    color: #ffd700;
+    border-left-color: #ffd700;
+}
+
+.sidebar .news-link i {
+    color: #004d99;
+}
+
+.sidebar .news-link:hover i {
+    color: #ffd700;
+}
+
 .content {
     flex-grow: 1;
     padding: 20px;

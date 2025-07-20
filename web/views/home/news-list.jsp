@@ -191,7 +191,11 @@
         <!-- Nhúng header và navbar -->
         <%@ include file="../layouts/header.jsp" %>
         <c:set var="userRole" value="${empty sessionScope.user ? 'Guest' : sessionScope.user.role.name}" />
+        <c:set var="userId" value="${empty sessionScope.user ? 0 : sessionScope.user.userId}" />
+        <c:set var="userRoleId" value="${empty sessionScope.user ? 0 : sessionScope.user.role.roleId}" />
         <c:set var="defaultImage" value="${pageContext.request.contextPath}/assets/default-image.svg" />
+        
+
 
         <main>
             <!-- Banner Section -->
@@ -246,15 +250,45 @@
                                      >Xoá viết thất bại: Lỗi hệ thống!</div>
                             </c:if>
 
-                            <div class="row mb-3 p-3">
-                                <c:if test="${fn:contains('doctor receptionist admin technician', userRole)}">
-                                    <div class="col-11">
-                                    </div>
-                                    <div class="col-1 d-flex flex-column align-items-center justify-content-center">
-                                        <a href="${pageContext.request.contextPath}/news/create" 
-                                           class="btn btn-success quick-action-btn justify-content-center gap-2 mt-2 d-flex">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </a>
+                            <!-- Navigation buttons for staff -->
+                            <div style="background-color: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                                <c:if test="${userRoleId >= 2 and userRoleId <= 5}">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <!-- Back to Dashboard button -->
+                                            <c:choose>
+                                                <c:when test="${userRoleId eq 4}">
+                                                    <button onclick="window.location.href='${pageContext.request.contextPath}/admin/dashboard'" 
+                                                            style="background-color: #004d99; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                                                        ← Quay lại Dashboard
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${userRoleId eq 2}">
+                                                    <button onclick="window.location.href='${pageContext.request.contextPath}/doctor/dashboard'" 
+                                                            style="background-color: #004d99; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                                                        ← Quay lại Dashboard
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${userRoleId eq 3}">
+                                                    <button onclick="window.location.href='${pageContext.request.contextPath}/receptionist/dashboard'" 
+                                                            style="background-color: #004d99; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                                                        ← Quay lại Dashboard
+                                                    </button>
+                                                </c:when>
+                                                <c:when test="${userRoleId eq 5}">
+                                                    <button onclick="window.location.href='${pageContext.request.contextPath}/technician/dashboard'" 
+                                                            style="background-color: #004d99; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                                                        ← Quay lại Dashboard
+                                                    </button>
+                                                </c:when>
+                                            </c:choose>
+                                        </div>
+                                        <div>
+                                            <a href="${pageContext.request.contextPath}/news/create" 
+                                               class="btn btn-success btn-lg">
+                                                <i class="bi bi-plus-lg"></i> Thêm bài viết
+                                            </a>
+                                        </div>
                                     </div>
                                 </c:if>
                             </div>
@@ -296,7 +330,7 @@
                                                                    class="btn btn-primary quick-action-btn gap-2 mt-2 d-flex">
                                                                     <i class="bi bi-eye"></i>
                                                                 </a>
-                                                                <c:if test="${fn:contains('doctor receptionist admin technician', userRole)}">
+                                                                <c:if test="${userRoleId >= 2 and userRoleId <= 5}">
                                                                     <a href="${pageContext.request.contextPath}/news/edit?id=${n.newsID}" 
                                                                        class="btn btn-warning quick-action-btn gap-2 mt-2 d-flex">
                                                                         <i class="bi bi-pen"></i>

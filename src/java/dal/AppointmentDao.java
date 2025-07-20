@@ -638,4 +638,32 @@ public class AppointmentDao {
         }
         return appointments;
     }
+    
+    public static int countAllAppointments() {
+        String sql = "SELECT COUNT(*) FROM appointments";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql); 
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public static int countPendingAppointments() {
+        String sql = "SELECT COUNT(*) FROM appointments WHERE status = 'pending'";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql); 
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

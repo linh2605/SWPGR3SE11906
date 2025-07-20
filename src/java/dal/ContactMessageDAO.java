@@ -186,4 +186,77 @@ public class ContactMessageDAO {
         }
         return null;
     }
+    
+    public int countAllMessages() {
+        String sql = "SELECT COUNT(*) FROM contact_messages";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql); 
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public int countUnreadMessages() {
+        String sql = "SELECT COUNT(*) FROM contact_messages WHERE status = 'pending'";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql); 
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public double getAverageResponseTime() {
+        String sql = "SELECT AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) FROM contact_messages " +
+                    "WHERE status = 'completed' AND updated_at IS NOT NULL";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql); 
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                double avgTime = rs.getDouble(1);
+                return rs.wasNull() ? 0.0 : avgTime;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+    
+    public List<ContactMessage> getRecentMessages(int limit) {
+        List<ContactMessage> messages = new ArrayList<>();
+        String sql = "SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT ?";
+        try (Connection conn = DBContext.makeConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                ContactMessage message = new ContactMessage();
+                message.setMessage_id(rs.getInt("message_id"));
+                message.setName(rs.getString("name"));
+                message.setEmail(rs.getString("email"));
+                message.setPhone(rs.getString("phone"));
+                message.setSubject(rs.getString("subject"));
+                message.setMessage(rs.getString("message"));
+                message.setStatus(rs.getString("status"));
+                message.setPriority(rs.getString("priority"));
+                message.setAssigned_to(rs.getInt("assigned_to"));
+                message.setCreated_at(rs.getTimestamp("created_at"));
+                message.setUpdated_at(rs.getTimestamp("updated_at"));
+                messages.add(message);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
 }

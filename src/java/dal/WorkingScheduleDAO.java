@@ -449,4 +449,49 @@ public class WorkingScheduleDAO extends DBContext {
         
         return schedules;
     }
+    
+    public List<WorkingSchedule> getRecentSchedules(int limit) {
+        List<WorkingSchedule> schedules = new ArrayList<>();
+        String sql = "SELECT ws.*, s.name AS shift_name, s.start_time, s.end_time, " +
+                     "d.user_id, u.full_name AS doctor_name " +
+                     "FROM working_schedules ws " +
+                     "JOIN shifts s ON ws.shift_id = s.shift_id " +
+                     "JOIN doctors d ON ws.doctor_id = d.doctor_id " +
+                     "JOIN users u ON d.user_id = u.user_id " +
+                     "ORDER BY ws.created_at DESC " +
+                     "LIMIT ?";
+        
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, limit);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                WorkingSchedule schedule = new WorkingSchedule();
+                schedule.setScheduleId(rs.getInt("schedule_id"));
+                schedule.setDoctorId(rs.getInt("doctor_id"));
+                schedule.setWeekDay(rs.getString("week_day"));
+                schedule.setShiftId(rs.getInt("shift_id"));
+                schedule.setMaxPatients(rs.getInt("max_patients"));
+                schedule.setActive(rs.getBoolean("is_active"));
+                schedule.setCreatedAt(rs.getTimestamp("created_at"));
+                schedule.setUpdatedAt(rs.getTimestamp("updated_at"));
+                
+                Shift shift = new Shift();
+                shift.setShiftId(rs.getInt("shift_id"));
+                shift.setName(rs.getString("shift_name"));
+                shift.setStartTime(rs.getTime("start_time"));
+                shift.setEndTime(rs.getTime("end_time"));
+                
+                schedule.setShift(shift);
+                schedule.setDoctorName(rs.getString("doctor_name"));
+                schedules.add(schedule);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return schedules;
+    }
 } 

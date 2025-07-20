@@ -25,28 +25,7 @@ public class NewsListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Check if user is authenticated and redirect staff to their dashboard
-        Integer roleId = utils.AuthHelper.getCurrentUserRoleId(request);
-        if (roleId != null) {
-            // Redirect staff users to their dashboard (Patient can stay on news list)
-            switch (roleId) {
-                case 2: // Doctor
-                    response.sendRedirect(request.getContextPath() + "/doctor/dashboard");
-                    return;
-                case 3: // Receptionist
-                    response.sendRedirect(request.getContextPath() + "/receptionist/dashboard");
-                    return;
-                case 4: // Admin
-                    response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-                    return;
-                case 5: // Technician
-                    response.sendRedirect(request.getContextPath() + "/technician/dashboard");
-                    return;
-                // Case 1 (Patient) - let them stay on news list
-            }
-        }
-        
-        // Show news list for patients and guests
+        // News list is accessible to all users (staff can manage, patients/guests can view)
         List<News> newsList = NewsDAO.getAllNews();
 
         request.setAttribute("newsList", newsList);

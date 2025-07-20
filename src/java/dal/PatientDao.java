@@ -17,7 +17,7 @@ public class PatientDao {
     public static void deletePatient(int userId){
         try {
             // Since patients table doesn't have status column, we'll delete the record
-            String sql = "DELETE FROM patients WHERE user_id = ?";
+            String sql = "update patients set status = 'inactive' where patient_id = ?";
             Connection conn = DBContext.makeConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, userId);
@@ -32,7 +32,7 @@ public class PatientDao {
         String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description "
                 + "FROM patients p "
                 + "JOIN users u ON p.user_id = u.user_id "
-                + "JOIN roles r ON u.role_id = r.role_id";
+                + "JOIN roles r ON u.role_id = r.role_id where status = 'active'";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 patients.add(mappingPatient(rs));

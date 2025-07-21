@@ -47,6 +47,7 @@
                                     <th>Ngày sinh</th>
                                     <th>Địa chỉ</th>
                                     <th>Avatar</th>
+                                    <th>Trạng thái</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -73,6 +74,14 @@
                                         <i class="bi bi-person-circle" style="font-size: 40px; color: #6c757d;"></i>
                                     <% } %>
                                 </td>
+                                <td class="text-center">
+                                    <select class="form-select form-select-sm status-select" 
+                                            data-patient-id="<%= patients.get(i).getPatient_id() %>"
+                                            style="width: auto; min-width: 100px;">
+                                        <option value="active" <%= "active".equalsIgnoreCase(patients.get(i).getStatus()+"") ? "selected" : "" %>>Active</option>
+                                        <option value="inactive" <%= "inactive".equalsIgnoreCase(patients.get(i).getStatus()+"") ? "selected" : "" %>>Inactive</option>
+                                    </select>
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-warning" title="Chỉnh sửa"
                                            onclick="populateUpdateForm(
@@ -87,9 +96,13 @@
                                                    )">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-danger" title="Xóa"
+                                    <button type="button" class="btn btn-sm btn-danger" title="Xóa cứng"
                                            onclick="showDeleteModal('<%=patients.get(i).getUser().getUserId()%>')">
                                         <i class="bi bi-trash"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-secondary" title="Xóa mềm"
+                                           onclick="softDeletePatient('<%=patients.get(i).getPatient_id()%>', '<%=patients.get(i).getUser().getFullName()%>')">
+                                        <i class="bi bi-archive"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -294,6 +307,93 @@
 
         var updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
         updateModal.show();
+    }
+
+    function softDeletePatient(patientId, patientName) {
+        if (confirm('Bạn có chắc muốn xóa mềm bệnh nhân "' + patientName + '"?\n\nBệnh nhân sẽ bị ẩn khỏi danh sách nhưng dữ liệu vẫn được lưu trữ.')) {
+            fetch('${pageContext.request.contextPath}/admin/soft-delete-patient', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'patient_id=' + patientId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success('Xóa mềm bệnh nhân thành công!');
+                    // Reload trang để cập nhật danh sách
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error('Xóa mềm bệnh nhân thất bại: ' + (data.message || 'Lỗi không xác định'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastr.error('Có lỗi xảy ra khi xóa mềm bệnh nhân');
+            });
+        }
+    }
+
+    // Xử lý thay đổi status
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelects = document.querySelectorAll('.status-select');
+        
+        statusSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const patientId = this.getAttribute('data-patient-id');
+                const newStatus = this.value;
+                const originalValue = this.getAttribute('data-original-value');
+                
+                // Lưu giá trị ban đầu nếu chưa có
+                if (!originalValue) {
+                    this.setAttribute('data-original-value', this.value);
+                }
+                
+                // Hiển thị confirm dialog
+                if (confirm('Bạn có chắc muốn thay đổi trạng thái bệnh nhân này?')) {
+                    updatePatientStatus(patientId, newStatus);
+                } else {
+                    // Khôi phục giá trị ban đầu
+                    this.value = originalValue || this.value;
+                }
+            });
+        });
+    });
+
+    function updatePatientStatus(patientId, status) {
+        fetch('${pageContext.request.contextPath}/admin/patient/status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'patientId=' + patientId + '&status=' + status
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cập nhật giá trị ban đầu
+                const select = document.querySelector(`[data-patient-id="${patientId}"]`);
+                select.setAttribute('data-original-value', status);
+                
+                // Hiển thị thông báo thành công
+                toastr.success('Cập nhật trạng thái thành công!');
+            } else {
+                // Khôi phục giá trị ban đầu nếu lỗi
+                const select = document.querySelector(`[data-patient-id="${patientId}"]`);
+                select.value = select.getAttribute('data-original-value');
+                toastr.error('Cập nhật trạng thái thất bại: ' + (data.message || 'Lỗi không xác định'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Khôi phục giá trị ban đầu nếu lỗi
+            const select = document.querySelector(`[data-patient-id="${patientId}"]`);
+            select.value = select.getAttribute('data-original-value');
+            toastr.error('Có lỗi xảy ra khi cập nhật trạng thái');
+        });
     }
 
     // Thiết lập ngày tối đa là hôm nay cho date input

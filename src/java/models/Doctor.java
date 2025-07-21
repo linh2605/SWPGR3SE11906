@@ -16,6 +16,7 @@ public class Doctor {
     private String experience;
     private Status status;
     private Timestamp created_at;
+    private Timestamp deletedAt;
     private List<Service> services;
 
     public Doctor() {}
@@ -70,4 +71,23 @@ public class Doctor {
 
     public List<Service> getServices() { return services; }
     public void setServices(List<Service> services) { this.services = services; }
+    
+    public Timestamp getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(Timestamp deletedAt) { this.deletedAt = deletedAt; }
+    
+    @Override
+    public String toString() {
+        return "Doctor{" +
+                "doctor_id=" + doctor_id +
+                ", user=" + (user != null ? user.getUserId() : "null") +
+                ", fullName='" + (fullName != null ? fullName : "") + '\'' +
+                ", gender=" + (gender != null ? gender.name() : "null") +
+                ", dob=" + dob +
+                ", image_url='" + (image_url != null ? image_url : "") + '\'' +
+                ", specialty=" + (specialty != null ? specialty.getName() : "null") +
+                ", degree='" + (degree != null ? degree : "") + '\'' +
+                ", experience='" + (experience != null ? experience : "") + '\'' +
+                ", status=" + (status != null ? status.name() : "null") +
+                '}';
+    }
 }

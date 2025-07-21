@@ -29,9 +29,17 @@ public class AdminDoctorServlet extends HttpServlet {
             return;
         }
         
-        List<Doctor> doctors = DoctorDao.getAllDoctors();
+        List<Doctor> doctors = DoctorDao.getAllNonDeletedDoctors();
         List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
-        System.out.println("check doctor size:" + doctors.size());
+        System.out.println("AdminDoctorServlet - Total doctors retrieved: " + doctors.size());
+        
+        // Debug: In ra thông tin từng bác sĩ
+        for (Doctor doctor : doctors) {
+            System.out.println("Doctor ID: " + doctor.getDoctor_id() + 
+                             ", Name: " + doctor.getUser().getFullName() + 
+                             ", Status: " + doctor.getStatus() + 
+                             ", DeletedAt: " + doctor.getDeletedAt());
+        }
         req.setAttribute("doctors", doctors);
         req.setAttribute("specialties", specialties);
         req.getRequestDispatcher("/views/admin/doctor-manager.jsp").forward(req, resp);

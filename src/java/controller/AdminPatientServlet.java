@@ -31,7 +31,7 @@ public class AdminPatientServlet extends HttpServlet {
             return;
         }
         
-        List<Patient> patients = PatientDao.getAllPatients();
+        List<Patient> patients = PatientDao.getAllNonDeletedPatients();
         req.setAttribute("patients", patients);
         req.getRequestDispatcher("/views/admin/patient_manager.jsp").forward(req, resp);
     }

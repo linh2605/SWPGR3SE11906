@@ -123,7 +123,7 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
             schedules = scheduleDAO.getAllSchedules();
         }
         
-        List<Doctor> doctors = doctorDAO.getAllDoctors();
+        List<Doctor> doctors = doctorDAO.getAllDeletedDoctors();
         List<Shift> shifts = shiftDAO.getAllShifts();
         
         request.setAttribute("schedules", schedules);
@@ -136,7 +136,7 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
     private void showAddForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        List<Doctor> doctors = doctorDAO.getAllDoctors();
+        List<Doctor> doctors = doctorDAO.getAllDeletedDoctors();
         List<Shift> shifts = shiftDAO.getAllShifts();
         
         request.setAttribute("doctors", doctors);
@@ -153,7 +153,7 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
             WorkingSchedule schedule = scheduleDAO.getScheduleById(scheduleId);
             
             if (schedule != null) {
-                List<Doctor> doctors = doctorDAO.getAllDoctors();
+                List<Doctor> doctors = doctorDAO.getAllDeletedDoctors();
                 List<Shift> shifts = shiftDAO.getAllShifts();
                 
                 request.setAttribute("schedule", schedule);

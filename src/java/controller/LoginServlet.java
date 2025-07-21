@@ -71,6 +71,19 @@ public class LoginServlet extends HttpServlet {
         User user = UserDAO.login(username, password);
 
         if (user != null && user.getUserId() != 0) {
+            // Kiểm tra trạng thái tài khoản
+            models.AccountStatus accountStatus = dal.UserDAO.checkAccountStatus(user.getUserId());
+            
+            if (!accountStatus.isActive()) {
+                // Tài khoản bị vô hiệu hóa
+                request.setAttribute("error", accountStatus.getMessage());
+                request.setAttribute("accountDisabled", true);
+                request.setAttribute("contactPhone", "0976054728");
+                request.setAttribute("contactEmail", "admin@g3hospital.com");
+                request.getRequestDispatcher("/views/home/login.jsp").forward(request, response);
+                return;
+            }
+            
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getUserId());

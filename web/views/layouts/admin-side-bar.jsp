@@ -7,8 +7,14 @@
     <a href="${pageContext.request.contextPath}/admin/doctor">
         <i class="bi bi-person-badge"></i> Quản lý bác sĩ
     </a>
+    <a href="${pageContext.request.contextPath}/admin/deleted-doctors">
+        <i class="bi bi-person-x"></i> Bác sĩ đã xóa
+    </a>
     <a href="${pageContext.request.contextPath}/admin/patient">
         <i class="bi bi-people"></i> Quản lý bệnh nhân
+    </a>
+    <a href="${pageContext.request.contextPath}/admin/deleted-patients">
+        <i class="bi bi-person-x"></i> Bệnh nhân đã xóa
     </a>
     <a href="${pageContext.request.contextPath}/contactManager">
         <i class="bi bi-chat-dots"></i> Quản lý liên hệ

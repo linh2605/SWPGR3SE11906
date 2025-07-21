@@ -43,7 +43,7 @@
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/info/about_us.jsp">Giới thiệu</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctors">Bác sĩ</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/consultation-chat">Tư vấn sức khỏe</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/news">Bài viết</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Thư viện media</a></li>
                         </c:when>
@@ -52,7 +52,7 @@
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/views/info/about_us.jsp">Giới thiệu</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/doctors">Bác sĩ</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Chuyên khoa</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Tư vấn sức khỏe</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/consultation-chat">Tư vấn sức khỏe</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/news">Bài viết</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Thư viện media</a></li>
                         </c:when>

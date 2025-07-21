@@ -50,8 +50,8 @@ public class AdminScheduleExceptionServlet extends HttpServlet {
             try { date = java.sql.Date.valueOf(dateStr); } catch (Exception ignored) {}
         }
 
-        // Lấy danh sách bác sĩ cho dropdown
-        List<Doctor> doctors = DoctorDao.getAllDoctors();
+        // Lấy danh sách bác sĩ cho dropdown (cả active và inactive)
+        List<Doctor> doctors = DoctorDao.getAllDeletedDoctors();
         // Lấy danh sách ngoại lệ đã filter
         List<ScheduleException> exceptions = scheduleExceptionDAO.getExceptionsWithFilter(doctorId, status, date, keyword);
 

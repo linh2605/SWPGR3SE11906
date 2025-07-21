@@ -59,6 +59,75 @@ INSERT INTO `appointments` VALUES (1,1,1,2,'2025-06-01 10:00:00',1,1,'canceled',
 UNLOCK TABLES;
 
 --
+-- Table structure for table `consultation_messages`
+--
+
+DROP TABLE IF EXISTS `consultation_messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `consultation_messages` (
+  `message_id` int NOT NULL AUTO_INCREMENT,
+  `session_id` int NOT NULL,
+  `sender_type` enum('patient','doctor') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sender_id` int NOT NULL,
+  `message_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message_type` enum('text','image','file') COLLATE utf8mb4_unicode_ci DEFAULT 'text',
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`message_id`),
+  KEY `fk_message_session` (`session_id`),
+  KEY `idx_sender` (`sender_type`,`sender_id`),
+  KEY `idx_created_at` (`created_at`),
+  CONSTRAINT `fk_message_session` FOREIGN KEY (`session_id`) REFERENCES `consultation_sessions` (`session_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `consultation_messages`
+--
+
+LOCK TABLES `consultation_messages` WRITE;
+/*!40000 ALTER TABLE `consultation_messages` DISABLE KEYS */;
+INSERT INTO `consultation_messages` VALUES (1,1,'patient',1,'Chào bác sĩ, tôi bị đau đầu và chóng mặt trong 2 ngày qua. Có thể bác sĩ tư vấn giúp tôi không?','text',1,'2025-07-20 23:13:02'),(2,1,'doctor',1,'Chào bạn! Tôi hiểu bạn đang gặp vấn đề về đau đầu và chóng mặt. Bạn có thể cho tôi biết thêm về triệu chứng không?','text',1,'2025-07-20 23:13:02'),(3,1,'patient',1,'Tôi cảm thấy đau ở vùng thái dương, đôi khi buồn nôn và mệt mỏi. Có phải do stress không bác sĩ?','text',1,'2025-07-20 23:13:02'),(4,1,'doctor',1,'Có thể do stress hoặc thiếu ngủ. Bạn hãy thử nghỉ ngơi, uống nhiều nước và theo dõi huyết áp. Nếu vẫn không đỡ, hãy đến khám trực tiếp nhé!','text',0,'2025-07-20 23:13:02'),(5,2,'patient',2,'Chào bác sĩ, tôi muốn tư vấn về chế độ ăn cho người tiểu đường. Tôi bị type 2 và thừa cân.','text',1,'2025-07-20 23:13:02'),(6,2,'doctor',2,'Chào bạn! Tôi sẽ tư vấn chế độ ăn phù hợp cho bạn. Bạn có thể cho tôi biết cân nặng và chiều cao hiện tại không?','text',0,'2025-07-20 23:13:02'),(7,3,'patient',3,'Bác sĩ ơi, tôi bị đau lưng do ngồi làm việc nhiều. Có cách nào khắc phục không?','text',1,'2025-07-20 23:13:02'),(8,3,'doctor',4,'Chào bạn! Đau lưng do ngồi nhiều rất phổ biến. Bạn hãy thử tập yoga, massage và điều chỉnh tư thế ngồi.','text',1,'2025-07-20 23:13:02'),(9,3,'patient',3,'Cảm ơn bác sĩ! Tôi sẽ thử áp dụng.','text',1,'2025-07-20 23:13:02'),(10,3,'doctor',4,'Rất tốt! Nếu vẫn đau, hãy đến khám để được điều trị chuyên sâu hơn.','text',1,'2025-07-20 23:13:02'),(11,7,'patient',15,'mỏi','text',1,'2025-07-21 00:00:26'),(12,7,'patient',15,'alo ạ','text',1,'2025-07-21 00:02:08'),(13,7,'doctor',1,'chào bạn','text',1,'2025-07-21 00:06:51'),(14,7,'patient',15,'em chào bác sĩ ạ','text',1,'2025-07-21 00:07:05'),(15,7,'doctor',1,'bạn có thể nói rxo chi tiết hơn không?','text',1,'2025-07-21 00:12:50');
+/*!40000 ALTER TABLE `consultation_messages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `consultation_sessions`
+--
+
+DROP TABLE IF EXISTS `consultation_sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `consultation_sessions` (
+  `session_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int NOT NULL,
+  `doctor_id` int NOT NULL,
+  `status` enum('pending','active','completed','cancelled') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `patient_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `patient_symptoms` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`session_id`),
+  KEY `fk_session_patient` (`patient_id`),
+  KEY `fk_session_doctor` (`doctor_id`),
+  KEY `idx_status` (`status`),
+  CONSTRAINT `fk_session_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_session_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `consultation_sessions`
+--
+
+LOCK TABLES `consultation_sessions` WRITE;
+/*!40000 ALTER TABLE `consultation_sessions` DISABLE KEYS */;
+INSERT INTO `consultation_sessions` VALUES (1,1,1,'active','2025-07-20 23:13:02','2025-07-20 23:13:02','Tôi bị đau đầu và chóng mặt trong 2 ngày qua','Đau đầu, chóng mặt, mệt mỏi'),(2,2,2,'pending','2025-07-20 23:13:02','2025-07-20 23:13:02','Tôi muốn tư vấn về chế độ ăn cho người tiểu đường','Tiểu đường type 2, thừa cân'),(3,3,4,'completed','2025-07-20 23:13:02','2025-07-20 23:13:02','Tôi bị đau lưng do ngồi làm việc nhiều','Đau lưng, tê chân'),(4,15,5,'active','2025-07-20 23:13:02','2025-07-20 23:13:02','Tôi có vấn đề về giấc ngủ','Mất ngủ, stress'),(5,16,6,'pending','2025-07-20 23:13:02','2025-07-20 23:13:02','Tôi muốn tư vấn về chăm sóc da','Mụn, da khô'),(6,15,1,'pending','2025-07-20 23:59:19','2025-07-20 23:59:19','mỏi','đau'),(7,15,1,'active','2025-07-21 00:00:26','2025-07-21 00:02:08','mỏi','đau');
+/*!40000 ALTER TABLE `consultation_sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `contact_messages`
 --
 
@@ -148,9 +217,11 @@ CREATE TABLE `doctors` (
   `experience` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `status` enum('active','inactive') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'active',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`doctor_id`),
   KEY `fk_doctor_user` (`user_id`),
   KEY `fk_doctor_specialty` (`specialty_id`),
+  KEY `idx_doctors_deleted_at` (`deleted_at`),
   CONSTRAINT `fk_doctor_specialty` FOREIGN KEY (`specialty_id`) REFERENCES `specialties` (`specialty_id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_doctor_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -162,7 +233,7 @@ CREATE TABLE `doctors` (
 
 LOCK TABLES `doctors` WRITE;
 /*!40000 ALTER TABLE `doctors` DISABLE KEYS */;
-INSERT INTO `doctors` VALUES (1,3,'Male','1980-03-15',NULL,1,'ThS.BSCKI','10 năm kinh nghiệm tại BV Chợ Rẫy','inactive','2025-05-31 12:00:00'),(2,4,'Male','1985-07-20','https://example.com/doctor2.jpg',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-05-31 12:00:00'),(4,54,'Male','1985-07-20','https://picsum.photos/600/400',3,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33'),(5,55,'Male','1985-07-20','https://picsum.photos/600/400',1,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33'),(6,56,'Male','1985-07-20','https://picsum.photos/600/400',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33'),(7,57,'Male','1985-07-20','https://picsum.photos/600/400',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33');
+INSERT INTO `doctors` VALUES (1,3,'Male','1980-03-15',NULL,1,'ThS.BSCKI','10 năm kinh nghiệm tại BV Chợ Rẫy','active','2025-05-31 12:00:00',NULL),(2,4,'Male','1985-07-20','https://example.com/doctor2.jpg',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-05-31 12:00:00',NULL),(4,54,'Male','1985-07-20','https://picsum.photos/600/400',3,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33',NULL),(5,55,'Male','1985-07-20','https://picsum.photos/600/400',1,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33',NULL),(6,56,'Male','1985-07-20','https://picsum.photos/600/400',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33',NULL),(7,57,'Male','1985-07-20','https://picsum.photos/600/400',2,'BS','7 năm kinh nghiệm tại BV 115','active','2025-06-26 16:31:33',NULL);
 /*!40000 ALTER TABLE `doctors` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -215,7 +286,7 @@ CREATE TABLE `examination_packages` (
 
 LOCK TABLES `examination_packages` WRITE;
 /*!40000 ALTER TABLE `examination_packages` DISABLE KEYS */;
-INSERT INTO `examination_packages` VALUES (1,'Gói Khám Tổng Quát Cơ Bản','Gói khám sức khỏe toàn diện bao gồm xét nghiệm máu, nước tiểu, điện tim, X-quang ngực và tư vấn dinh dưỡng.',2500000.00,120),(2,'Gói Khám Tim Mạch Chuyên Sâu','Đánh giá toàn diện sức khỏe tim mạch với siêu âm tim, điện tâm đồ, xét nghiệm men tim và tư vấn chuyên gia.',3500000.00,90),(3,'Gói Tầm Soát Ung Thư','Gói khám tầm soát các loại ung thư phổ biến bao gồm xét nghiệm máu, chụp CT, siêu âm và tư vấn phòng ngừa.',5000000.00,180),(4,'Gói Khám Sức Khỏe Tiền Hôn Nhân','Gói khám toàn diện dành cho các cặp đôi chuẩn bị kết hôn, bao gồm xét nghiệm di truyền và tư vấn kế hoạch gia đình.',4000000.00,150),(5,'Gói Khám Sức Khỏe Người Cao Tuổi','Chương trình khám chuyên biệt cho người cao tuổi, tập trung vào các vấn đề xương khớp, tim mạch và thần kinh.',4500000.00,160),(6,'Gói Khám Thai Sản Trọn Gói','Gói theo dõi thai kỳ toàn diện từ tuần thứ 6 đến khi sinh, bao gồm siêu âm 4D và các xét nghiệm cần thiết.',15000000.00,240),(13,'Khám chuyên khoa','Khám chuyên khoa chi tiết',500000.00,60),(14,'Khám Tổng Thể','Khám hết mọi thứ',200000.00,60);
+INSERT INTO `examination_packages` VALUES (1,'Gói Khám Tổng Quát Cơ Bản','Gói khám sức khỏe toàn diện bao gồm xét nghiệm máu, nước tiểu, điện tim, X-quang ngực và tư vấn dinh dưỡng.',2500000.00,60),(2,'Gói Khám Tim Mạch Chuyên Sâu','Đánh giá toàn diện sức khỏe tim mạch với siêu âm tim, điện tâm đồ, xét nghiệm men tim và tư vấn chuyên gia.',3500000.00,90),(3,'Gói Tầm Soát Ung Thư','Gói khám tầm soát các loại ung thư phổ biến bao gồm xét nghiệm máu, chụp CT, siêu âm và tư vấn phòng ngừa.',5000000.00,180),(4,'Gói Khám Sức Khỏe Tiền Hôn Nhân','Gói khám toàn diện dành cho các cặp đôi chuẩn bị kết hôn, bao gồm xét nghiệm di truyền và tư vấn kế hoạch gia đình.',4000000.00,150),(5,'Gói Khám Sức Khỏe Người Cao Tuổi','Chương trình khám chuyên biệt cho người cao tuổi, tập trung vào các vấn đề xương khớp, tim mạch và thần kinh.',4500000.00,160),(6,'Gói Khám Thai Sản Trọn Gói','Gói theo dõi thai kỳ toàn diện từ tuần thứ 6 đến khi sinh, bao gồm siêu âm 4D và các xét nghiệm cần thiết.',15000000.00,240),(13,'Khám chuyên khoa','Khám chuyên khoa chi tiết',500000.00,60),(14,'Khám Tổng Thể','Khám hết mọi thứ',200000.00,60);
 /*!40000 ALTER TABLE `examination_packages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -248,6 +319,37 @@ CREATE TABLE `feedback` (
 LOCK TABLES `feedback` WRITE;
 /*!40000 ALTER TABLE `feedback` DISABLE KEYS */;
 /*!40000 ALTER TABLE `feedback` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `health_consultation`
+--
+
+DROP TABLE IF EXISTS `health_consultation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `health_consultation` (
+  `consultation_id` int NOT NULL AUTO_INCREMENT,
+  `doctor_id` int NOT NULL,
+  `patient_id` int NOT NULL,
+  `detail` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`consultation_id`),
+  KEY `fk_consultation_doctor` (`doctor_id`),
+  KEY `fk_consultation_patient` (`patient_id`),
+  CONSTRAINT `fk_consultation_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_consultation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `health_consultation`
+--
+
+LOCK TABLES `health_consultation` WRITE;
+/*!40000 ALTER TABLE `health_consultation` DISABLE KEYS */;
+INSERT INTO `health_consultation` VALUES (6,1,1,'Bệnh nhân có triệu chứng đau đầu, chóng mặt. Khuyến nghị nghỉ ngơi, uống nhiều nước và theo dõi huyết áp.','2024-01-15 02:30:00'),(7,1,2,'Tư vấn về chế độ ăn uống cho bệnh nhân tiểu đường. Hướng dẫn cách kiểm soát đường huyết và tập thể dục.','2024-01-16 07:20:00'),(8,2,3,'Bệnh nhân bị đau lưng do ngồi làm việc nhiều. Khuyến nghị tập yoga, massage và điều chỉnh tư thế ngồi.','2024-01-17 04:15:00'),(9,2,4,'Tư vấn về cách phòng ngừa bệnh tim mạch. Hướng dẫn chế độ ăn ít muối, tập thể dục đều đặn.','2024-01-18 09:45:00'),(10,4,15,'Bệnh nhân có vấn đề về giấc ngủ. Khuyến nghị thay đổi thói quen sinh hoạt, tránh caffeine vào buổi tối.','2024-01-19 03:30:00'),(11,5,16,'Tư vấn về cách chăm sóc da cho bệnh nhân bị mụn. Hướng dẫn sử dụng sản phẩm chăm sóc da phù hợp.','2024-01-20 06:20:00'),(12,6,17,'Bệnh nhân bị stress do công việc. Khuyến nghị thư giãn, tập thiền và cân bằng cuộc sống.','2024-01-21 08:10:00'),(13,7,18,'Tư vấn về dinh dưỡng cho phụ nữ mang thai. Hướng dẫn chế độ ăn giàu vitamin và khoáng chất.','2024-01-22 02:45:00'),(14,1,19,'Bệnh nhân bị đau khớp gối. Khuyến nghị giảm cân, tập thể dục nhẹ nhàng và vật lý trị liệu.','2024-01-23 07:30:00'),(15,2,20,'Tư vấn về cách bỏ thuốc lá. Hướng dẫn các phương pháp cai thuốc hiệu quả và hỗ trợ tâm lý.','2024-01-24 04:00:00');
+/*!40000 ALTER TABLE `health_consultation` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -358,9 +460,12 @@ CREATE TABLE `patients` (
   `image_url` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `status_code` int DEFAULT '1',
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci DEFAULT 'active',
   PRIMARY KEY (`patient_id`),
   KEY `fk_patient_user` (`user_id`),
   KEY `status_code` (`status_code`),
+  KEY `idx_patients_deleted_at` (`deleted_at`),
   CONSTRAINT `fk_patient_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `patients_ibfk_1` FOREIGN KEY (`status_code`) REFERENCES `status_definitions` (`code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -372,7 +477,7 @@ CREATE TABLE `patients` (
 
 LOCK TABLES `patients` WRITE;
 /*!40000 ALTER TABLE `patients` DISABLE KEYS */;
-INSERT INTO `patients` VALUES (1,1,'Female','1990-05-10','123 Đường Láng, Đống Đa, Hà Nội','https://example.com/patient1.jpg','2025-05-31 12:00:00',4),(2,2,'Female','1995-08-25','456 Nguyễn Huệ, TP Huế','https://example.com/patient2.jpg','2025-05-31 12:00:00',4),(3,34,'Male','2003-05-26','123 Đường ABC, Quận XYZ, Hà Nội','/ClinicManagementSystem/assets/uploads/avatars/6c1f02a170bbc7e59eaa.jpg','2025-06-24 05:40:41',8),(4,39,'Male','2025-06-04','123 Đường Láng, Đống Đa, Hà Nội',NULL,'2025-06-24 23:10:11',8),(15,43,'Female','1995-06-10','456 Nguyễn Thị Minh Khai, Hà Nội','/ClinicManagementSystem/assets/uploads/avatars/Screenshot 2025-06-06 101210.png','2025-06-26 12:00:00',8),(16,44,'Male','1989-07-15','789 Nguyễn Trãi, Hà Nội','https://example.com/patient41.jpg','2025-06-26 12:00:00',9),(17,45,'Female','2000-08-20','234 Hòa Bình, Hà Nội','https://example.com/patient42.jpg','2025-06-26 12:00:00',9),(18,46,'Male','1998-05-22','567 Thái Hà, Hà Nội','https://example.com/patient43.jpg','2025-06-26 12:00:00',3),(19,47,'Female','1997-10-10','345 Kim Mã, Hà Nội','https://example.com/patient44.jpg','2025-06-26 12:00:00',4),(20,48,'Male','2001-11-30','678 Phan Đình Phùng, Hà Nội','https://example.com/patient45.jpg','2025-06-26 12:00:00',8),(21,49,'Female','1994-04-18','123 Lê Duẩn, Hà Nội','https://example.com/patient46.jpg','2025-06-26 12:00:00',8),(22,50,'Male','1999-02-25','456 Bạch Mai, Hà Nội','https://example.com/patient47.jpg','2025-06-26 12:00:00',7),(23,51,'Female','2002-03-12','789 Đội Cấn, Hà Nội','https://example.com/patient48.jpg','2025-06-26 12:00:00',4),(24,52,'Male','1996-09-01','234 Nguyễn Lương Bằng, Hà Nội','https://example.com/patient49.jpg','2025-06-26 12:00:00',5),(25,53,NULL,NULL,NULL,NULL,'2025-06-25 11:16:44',1),(26,43,'Female','1995-06-10','456 Nguyễn Thị Minh Khai, Hà Nội','https://example.com/patient40.jpg','2025-06-26 12:00:00',5),(27,44,'Male','1989-07-15','789 Nguyễn Trãi, Hà Nội','https://example.com/patient41.jpg','2025-06-26 12:00:00',5),(28,45,'Female','2000-08-20','234 Hòa Bình, Hà Nội','https://example.com/patient42.jpg','2025-06-26 12:00:00',3),(29,46,'Male','1998-05-22','567 Thái Hà, Hà Nội','https://example.com/patient43.jpg','2025-06-26 12:00:00',3),(30,47,'Female','1997-10-10','345 Kim Mã, Hà Nội','https://example.com/patient44.jpg','2025-06-26 12:00:00',3),(31,48,'Male','2001-11-30','678 Phan Đình Phùng, Hà Nội','https://example.com/patient45.jpg','2025-06-26 12:00:00',3),(32,49,'Female','1994-04-18','123 Lê Duẩn, Hà Nội','https://example.com/patient46.jpg','2025-06-26 12:00:00',3),(33,50,'Male','1999-02-25','456 Bạch Mai, Hà Nội','https://example.com/patient47.jpg','2025-06-26 12:00:00',3),(34,51,'Female','2002-03-12','789 Đội Cấn, Hà Nội','https://example.com/patient48.jpg','2025-06-26 12:00:00',3),(35,52,'Male','1996-09-01','234 Nguyễn Lương Bằng, Hà Nội','https://example.com/patient49.jpg','2025-06-26 12:00:00',3);
+INSERT INTO `patients` VALUES (1,1,'Female','1990-05-10','123 Đường Láng, Đống Đa, Hà Nội','https://example.com/patient1.jpg','2025-05-31 12:00:00',4,NULL,'active'),(2,2,'Female','1995-08-25','456 Nguyễn Huệ, TP Huế','https://example.com/patient2.jpg','2025-05-31 12:00:00',4,NULL,'active'),(3,34,'Male','2003-05-26','123 Đường ABC, Quận XYZ, Hà Nội','/ClinicManagementSystem/assets/uploads/avatars/6c1f02a170bbc7e59eaa.jpg','2025-06-24 05:40:41',8,NULL,'active'),(4,39,'Male','2025-06-04','123 Đường Láng, Đống Đa, Hà Nội',NULL,'2025-06-24 23:10:11',8,NULL,'active'),(15,43,'Female','1995-06-10','456 Nguyễn Thị Minh Khai, Hà Nội','/ClinicManagementSystem/assets/uploads/avatars/Screenshot 2025-06-06 101210.png','2025-06-26 12:00:00',8,NULL,'active'),(16,44,'Male','1989-07-15','789 Nguyễn Trãi, Hà Nội','https://example.com/patient41.jpg','2025-06-26 12:00:00',9,NULL,'active'),(17,45,'Female','2000-08-20','234 Hòa Bình, Hà Nội','https://example.com/patient42.jpg','2025-06-26 12:00:00',9,NULL,'active'),(18,46,'Male','1998-05-22','567 Thái Hà, Hà Nội','https://example.com/patient43.jpg','2025-06-26 12:00:00',3,NULL,'active'),(19,47,'Female','1997-10-10','345 Kim Mã, Hà Nội','https://example.com/patient44.jpg','2025-06-26 12:00:00',4,NULL,'active'),(20,48,'Male','2001-11-30','678 Phan Đình Phùng, Hà Nội','https://example.com/patient45.jpg','2025-06-26 12:00:00',8,NULL,'active'),(21,49,'Female','1994-04-18','123 Lê Duẩn, Hà Nội','https://example.com/patient46.jpg','2025-06-26 12:00:00',8,NULL,'active'),(22,50,'Male','1999-02-25','456 Bạch Mai, Hà Nội','https://example.com/patient47.jpg','2025-06-26 12:00:00',7,NULL,'active'),(23,51,'Female','2002-03-12','789 Đội Cấn, Hà Nội','https://example.com/patient48.jpg','2025-06-26 12:00:00',4,NULL,'active'),(24,52,'Male','1996-09-01','234 Nguyễn Lương Bằng, Hà Nội','https://example.com/patient49.jpg','2025-06-26 12:00:00',5,NULL,'active'),(25,53,NULL,NULL,NULL,NULL,'2025-06-25 11:16:44',1,NULL,'active'),(26,43,'Female','1995-06-10','456 Nguyễn Thị Minh Khai, Hà Nội','https://example.com/patient40.jpg','2025-06-26 12:00:00',5,NULL,'active'),(27,44,'Male','1989-07-15','789 Nguyễn Trãi, Hà Nội','https://example.com/patient41.jpg','2025-06-26 12:00:00',5,NULL,'active'),(28,45,'Female','2000-08-20','234 Hòa Bình, Hà Nội','https://example.com/patient42.jpg','2025-06-26 12:00:00',3,NULL,'active'),(29,46,'Male','1998-05-22','567 Thái Hà, Hà Nội','https://example.com/patient43.jpg','2025-06-26 12:00:00',3,NULL,'active'),(30,47,'Female','1997-10-10','345 Kim Mã, Hà Nội','https://example.com/patient44.jpg','2025-06-26 12:00:00',3,NULL,'active'),(31,48,'Male','2001-11-30','678 Phan Đình Phùng, Hà Nội','https://example.com/patient45.jpg','2025-06-26 12:00:00',3,NULL,'active'),(32,49,'Female','1994-04-18','123 Lê Duẩn, Hà Nội','https://example.com/patient46.jpg','2025-06-26 12:00:00',3,NULL,'active'),(33,50,'Male','1999-02-25','456 Bạch Mai, Hà Nội','https://example.com/patient47.jpg','2025-06-26 12:00:00',3,NULL,'active'),(34,51,'Female','2002-03-12','789 Đội Cấn, Hà Nội','https://example.com/patient48.jpg','2025-06-26 12:00:00',3,NULL,'active'),(35,52,'Male','1996-09-01','234 Nguyễn Lương Bằng, Hà Nội','https://example.com/patient49.jpg','2025-06-26 12:00:00',3,NULL,'active');
 /*!40000 ALTER TABLE `patients` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -758,4 +863,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-21  3:58:55
+-- Dump completed on 2025-07-21  7:14:40

@@ -71,11 +71,12 @@
                                     <td class="text-center"><%=doctors.get(i).getDegree()%></td>
                                     <td class="text-start"><%=doctors.get(i).getExperience()%></td>
                                     <td class="text-center">
-                                        <% if ("active".equalsIgnoreCase(doctors.get(i).getStatus()+"")) { %>
-                                            <span class="badge bg-success">active</span>
-                                        <% } else { %>
-                                            <span class="badge bg-secondary">inactive</span>
-                                        <% } %>
+                                        <select class="form-select form-select-sm status-select" 
+                                                data-doctor-id="<%= doctors.get(i).getDoctor_id() %>"
+                                                style="width: auto; min-width: 100px;">
+                                            <option value="active" <%= "active".equalsIgnoreCase(doctors.get(i).getStatus()+"") ? "selected" : "" %>>Active</option>
+                                            <option value="inactive" <%= "inactive".equalsIgnoreCase(doctors.get(i).getStatus()+"") ? "selected" : "" %>>Inactive</option>
+                                        </select>
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-warning" title="Chỉnh sửa"
@@ -94,9 +95,13 @@
                                             )">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-danger" title="Xóa"
+                                        <button type="button" class="btn btn-sm btn-danger" title="Xóa cứng"
                                             onclick="showDoctorDeleteModal('<%= doctors.get(i).getUser().getUserId() %>')">
                                             <i class="bi bi-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-secondary" title="Xóa mềm"
+                                            onclick="softDeleteDoctor('<%= doctors.get(i).getDoctor_id() %>', '<%= doctors.get(i).getUser().getFullName() %>')">
+                                            <i class="bi bi-archive"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -258,13 +263,7 @@
                             <label>Experience</label>
                             <input maxlength="100" name="experience" id="update_experience" class="form-control" required>
                         </div>
-                        <div class="col-md-6">
-                            <label>Status</label>
-                            <select name="status" id="update_status" class="form-control">
-                                <option value="active">ACTIVE</option>
-                                <option value="inactive">INACTIVE</option>
-                            </select>
-                        </div>
+
                         <div class="col-md-12">
                             <label>Image (Leave empty if not updating)</label>
                             <input type="file" name="image" class="form-control">
@@ -309,10 +308,96 @@
         document.getElementById("update_specialty_id").value = specialty_id;
         document.getElementById("update_degree").value = degree;
         document.getElementById("update_experience").value = experience;
-        document.getElementById("update_status").value = status;
 
         var updateModal = new bootstrap.Modal(document.getElementById('updateDoctorModal'));
         updateModal.show();
+    }
+
+    // Xử lý thay đổi status
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelects = document.querySelectorAll('.status-select');
+        
+        statusSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const doctorId = this.getAttribute('data-doctor-id');
+                const newStatus = this.value;
+                const originalValue = this.getAttribute('data-original-value');
+                
+                // Lưu giá trị ban đầu nếu chưa có
+                if (!originalValue) {
+                    this.setAttribute('data-original-value', this.value);
+                }
+                
+                // Hiển thị confirm dialog
+                if (confirm('Bạn có chắc muốn thay đổi trạng thái bác sĩ này?')) {
+                    updateDoctorStatus(doctorId, newStatus);
+                } else {
+                    // Khôi phục giá trị ban đầu
+                    this.value = originalValue || this.value;
+                }
+            });
+        });
+    });
+
+    function updateDoctorStatus(doctorId, status) {
+        fetch('${pageContext.request.contextPath}/admin/doctor/status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'doctorId=' + doctorId + '&status=' + status
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cập nhật giá trị ban đầu
+                const select = document.querySelector(`[data-doctor-id="${doctorId}"]`);
+                select.setAttribute('data-original-value', status);
+                
+                // Hiển thị thông báo thành công
+                toastr.success('Cập nhật trạng thái thành công!');
+            } else {
+                // Khôi phục giá trị ban đầu nếu lỗi
+                const select = document.querySelector(`[data-doctor-id="${doctorId}"]`);
+                select.value = select.getAttribute('data-original-value');
+                toastr.error('Cập nhật trạng thái thất bại: ' + (data.message || 'Lỗi không xác định'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Khôi phục giá trị ban đầu nếu lỗi
+            const select = document.querySelector(`[data-doctor-id="${doctorId}"]`);
+            select.value = select.getAttribute('data-original-value');
+            toastr.error('Có lỗi xảy ra khi cập nhật trạng thái');
+        });
+    }
+
+    function softDeleteDoctor(doctorId, doctorName) {
+        if (confirm('Bạn có chắc muốn xóa mềm bác sĩ "' + doctorName + '"?\n\nBác sĩ sẽ bị ẩn khỏi danh sách nhưng dữ liệu vẫn được lưu trữ.')) {
+            fetch('${pageContext.request.contextPath}/admin/soft-delete-doctor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'doctor_id=' + doctorId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success('Xóa mềm bác sĩ thành công!');
+                    // Reload trang để cập nhật danh sách
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error('Xóa mềm bác sĩ thất bại: ' + (data.message || 'Lỗi không xác định'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastr.error('Có lỗi xảy ra khi xóa mềm bác sĩ');
+            });
+        }
     }
 
 </script>

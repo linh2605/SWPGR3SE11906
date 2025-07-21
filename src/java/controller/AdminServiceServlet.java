@@ -28,7 +28,7 @@ public class AdminServiceServlet extends HttpServlet {
             return;
         }
         
-        List<Doctor> doctors = DoctorDao.getAllDoctors();
+        List<Doctor> doctors = DoctorDao.getAllDeletedDoctors();
         List<Service> services = ServiceDAO.getAll();
         req.setAttribute("doctors", doctors);
         req.setAttribute("services", services);

@@ -99,7 +99,7 @@
                             <!-- Đã đăng nhập -->
                             <div class="dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="${pageContext.request.contextPath}/assets/default-avatar.jpg" alt="Avatar">
+                                    <img src="${pageContext.request.contextPath}/assets/default-avatar.jpg" alt="Avatar" style="width: 40px; height: 40px;object-fit: cover;">
                                     <span>
                                         <c:choose>
                                             <c:when test="${not empty sessionScope.user.fullName}">

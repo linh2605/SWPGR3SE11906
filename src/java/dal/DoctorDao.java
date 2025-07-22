@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.ContractStatus;
 import models.Doctor;
 import models.Gender;
 import models.Role;
@@ -215,6 +217,19 @@ public class DoctorDao {
         doctor.setImage_url(resultSet.getString("image_url"));
         doctor.setDegree(resultSet.getString("degree"));
         doctor.setExperience(resultSet.getString("experience"));
+        doctor.setContract_status(ContractStatus.valueOf(resultSet.getString("contract_status")));
+        String contractStartDateStr = resultSet.getString("contract_start_date");
+        if (contractStartDateStr != null && !contractStartDateStr.isEmpty()) {
+            doctor.setContract_start_date(LocalDate.parse(contractStartDateStr));
+        } else {
+            doctor.setContract_start_date(null);
+        }
+        String contractEndDateStr = resultSet.getString("contract_end_date");
+        if (contractEndDateStr != null && !contractEndDateStr.isEmpty()) {
+            doctor.setContract_end_date(LocalDate.parse(contractEndDateStr));
+        } else {
+            doctor.setContract_end_date(null);
+        }
 
         String statusStr = resultSet.getString("status");
         if (statusStr != null && !statusStr.trim().isEmpty()) {

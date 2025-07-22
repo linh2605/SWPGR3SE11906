@@ -34,6 +34,17 @@ public class AdminPatientServlet extends HttpServlet {
         List<Patient> patients = PatientDao.getAllNonDeletedPatients();
         req.setAttribute("patients", patients);
         req.getRequestDispatcher("/views/admin/patient_manager.jsp").forward(req, resp);
+        if (req.getParameter("id") == null) {
+            patients = PatientDao.getAllPatients(); // chỉ gán lại, không khai báo lại kiểu
+            req.setAttribute("patients", patients);
+            req.getRequestDispatcher("/views/admin/patient_manager.jsp").forward(req, resp);
+        } else {
+            int id = Integer.parseInt(req.getParameter("id"));
+            Patient patient = PatientDao.getPatientById(id);
+            req.setAttribute("patient", patient);
+            req.getRequestDispatcher("/views/admin/patient-detail.jsp").forward(req, resp);
+        }
+
     }
 
     @Override

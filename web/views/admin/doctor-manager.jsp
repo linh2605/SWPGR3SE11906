@@ -4,6 +4,7 @@
 <%@ page import="models.Doctor" %>
 <%@ page import="java.util.List" %>
 <%@ page import="models.Specialty" %>
+<%@ page import="models.ContractStatus" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -13,6 +14,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/styles.css">
+    <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
 </head>
 <body>
@@ -32,10 +35,11 @@
                 <div class="card-header">
                     <h5 class="mb-0">Danh sách bác sĩ</h5>
                 </div>
-                <div class="card-body">
-                    <% ArrayList<Doctor> doctors = (ArrayList<Doctor>) request.getAttribute("doctors"); %>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle text-center" id="table">
+                <div class="card-body" style="overflow-x: auto; max-width: 100%;">
+<%--                    <% ArrayList<Doctor> doctors = (ArrayList<Doctor>) request.getAttribute("doctors"); %>--%>
+<%--                    <div class="table-responsive">--%>
+                        <div id="doctor-table"></div>
+                        <%--<table class="table table-striped table-hover align-middle text-center" id="table">
                             <thead>
                                 <tr>
                                     <th class="text-center">ID</th>
@@ -91,7 +95,10 @@
                                                 '<%= doctors.get(i).getSpecialty().getSpecialtyId()%>',
                                                 '<%= doctors.get(i).getDegree() %>',
                                                 '<%= doctors.get(i).getExperience() %>',
-                                                '<%= doctors.get(i).getStatus() %>'
+                                                '<%= doctors.get(i).getStatus() %>',
+                                                '<%= doctors.get(i).getContract_status() %>',
+                                                '<%= doctors.get(i).getContract_start_date() %>',
+                                                '<%= doctors.get(i).getContract_end_date() %>'
                                             )">
                                             <i class="bi bi-pencil"></i>
                                         </button>
@@ -107,8 +114,8 @@
                                 </tr>
                                 <% } %>
                             </tbody>
-                        </table>
-                    </div>
+                        </table>--%>
+<%--                    </div>--%>
                 </div>
             </div>
         </div>
@@ -125,15 +132,15 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="username" class="form-label">Tên đăng nhập</label>
-                                    <input maxlength="100" type="text" name="username" id="username" class="form-control" required>
+                                    <input pattern=".*[^ ].*" maxlength="100" type="text" name="username" id="username" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="password" class="form-label">Mật khẩu</label>
-                                    <input type="password" name="password" id="password" class="form-control" required>
+                                    <input pattern=".*[^ ].*" type="password" name="password" id="password" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                        <label for="fullName" class="form-label">Họ tên</label>
-                                        <input maxlength="100" type="text" name="fullname" id="fullname" class="form-control" required>
+                                        <label for="fullname" class="form-label">Họ tên</label>
+                                        <input pattern=".*[^ ].*" maxlength="100" type="text" name="fullname" id="fullname" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="email" class="form-label">Email</label>
@@ -141,7 +148,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label">Số điện thoại</label>
-                                    <input type="tel" name="phone" class="form-control"
+                                    <input type="tel" name="phone" id="phone" class="form-control"
                                         pattern="0[0-9]{9}" maxlength="10"
                                         title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" required>
                                 </div>
@@ -174,16 +181,32 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="degree" class="form-label">Bằng cấp</label>
-                                    <input maxlength="100" type="text" name="degree" id="degree" class="form-control" required>
+                                    <input pattern=".*[^ ].*" maxlength="100" type="text" name="degree" id="degree" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="experience" class="form-label">Kinh nghiệm</label>
-                                    <input maxlength="100" type="text" name="experience" id="experience" class="form-control" required min="0">
+                                    <input pattern=".*[^ ].*" maxlength="100" type="text" name="experience" id="experience" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="contract_status" class="form-label">Trạng thái hợp đồng</label>
+                                    <select name="contract_status" id="contract_status" class="form-control">
+                                        <option selected value="<%=ContractStatus.ACTIVE%>"><%=ContractStatus.ACTIVE.getDescription()%></option>
+                                        <option value="<%=ContractStatus.EXPIRED%>"><%=ContractStatus.EXPIRED.getDescription()%></option>
+                                        <option value="<%=ContractStatus.SUSPENDED%>"><%=ContractStatus.SUSPENDED.getDescription()%></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="contract_start_date" class="form-label">Ngày bắt đầu hợp đồng</label>
+                                    <input type="date" name="contract_start_date" id="contract_start_date" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="contract_end_date" class="form-label">Ngày kết thúc hợp đồng</label>
+                                    <input type="date" name="contract_end_date" id="contract_end_date" class="form-control" required>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-success" type="submit">Tạo</button>
+                            <button class="btn btn-success" id="create" type="submit">Tạo</button>
                         </div>
                     </form>
                 </div>
@@ -220,11 +243,11 @@
                         <input type="hidden" id="update_doctor_id" name="doctor_id">
                         <div class="col-md-6">
                             <label>Username</label>
-                            <input maxlength="100" name="username" id="update_username" class="form-control" required disabled>
+                            <input pattern=".*[^ ].*" maxlength="100" name="username" id="update_username" class="form-control" required disabled>
                         </div>
                         <div class="col-md-6">
                             <label>Full Name</label>
-                            <input maxlength="100" name="fullname" id="update_fullname" class="form-control" required>
+                            <input pattern=".*[^ ].*" maxlength="100" name="fullname" id="update_fullname" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Email</label>
@@ -257,16 +280,32 @@
                         </div>
                         <div class="col-md-6">
                             <label>Degree</label>
-                            <input maxlength="100" name="degree" id="update_degree" class="form-control" required>
+                            <input pattern=".*[^ ].*" maxlength="100" name="degree" id="update_degree" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label>Experience</label>
-                            <input maxlength="100" name="experience" id="update_experience" class="form-control" required>
+                            <input pattern=".*[^ ].*" maxlength="100" name="experience" id="update_experience" class="form-control" required>
                         </div>
 
                         <div class="col-md-12">
                             <label>Image (Leave empty if not updating)</label>
                             <input type="file" name="image" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_contract_status" class="form-label">Trạng thái hợp đồng</label>
+                            <select name="update_contract_status" id="update_contract_status" class="form-control">
+                                <option selected value="<%=ContractStatus.ACTIVE%>"><%=ContractStatus.ACTIVE.getDescription()%></option>
+                                <option value="<%=ContractStatus.EXPIRED%>"><%=ContractStatus.EXPIRED.getDescription()%></option>
+                                <option value="<%=ContractStatus.SUSPENDED%>"><%=ContractStatus.SUSPENDED.getDescription()%></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_contract_start_date" class="form-label">Ngày bắt đầu hợp đồng</label>
+                            <input pattern=".*[^ ].*" type="date" name="update_contract_start_date" id="update_contract_start_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="update_contract_end_date" class="form-label">Ngày kết thúc hợp đồng</label>
+                            <input pattern=".*[^ ].*" type="date" name="update_contract_end_date" id="update_contract_end_date" class="form-control" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -284,9 +323,8 @@
 <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
 <script>
-    new DataTable("#table");
+    // new DataTable("#table");
 </script>
 </body>
 <%@include file="../layouts/toastr.jsp"%>
@@ -297,7 +335,7 @@
         deleteModal.show();
     }
 
-    function populateDoctorUpdateForm(doctorId, username, fullName, email, phone, gender, dob, specialty_id, degree, experience, status) {
+    function populateDoctorUpdateForm(doctorId, username, fullName, email, phone, gender, dob, specialty_id, degree, experience, status, contract_status, contract_start_date, contract_end_date) {
         document.getElementById("update_doctor_id").value = doctorId;
         document.getElementById("update_username").value = username;
         document.getElementById("update_fullname").value = fullName;
@@ -308,6 +346,10 @@
         document.getElementById("update_specialty_id").value = specialty_id;
         document.getElementById("update_degree").value = degree;
         document.getElementById("update_experience").value = experience;
+        document.getElementById("update_status").value = status;
+        document.getElementById("update_contract_status").value = contract_status;
+        document.getElementById("update_contract_start_date").value = contract_start_date;
+        document.getElementById("update_contract_end_date").value = contract_end_date;
 
         var updateModal = new bootstrap.Modal(document.getElementById('updateDoctorModal'));
         updateModal.show();
@@ -413,4 +455,162 @@
     document.getElementById("dob").setAttribute("max", formatted);
     document.getElementById("update_dob").setAttribute("max", formatted);
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const minMaxFilterEditor = function(cell, onRendered, success, cancel, editorParams){
+            var end;
+            var container = document.createElement("span");
+            var start = document.createElement("input");
+            start.setAttribute("type", "number");
+            start.setAttribute("placeholder", "Min");
+            start.style.width = "50%";
+            start.value = cell.getValue();
+
+            end = start.cloneNode();
+            end.setAttribute("placeholder", "Max");
+
+            function buildValues(){
+                success({ start: start.value, end: end.value });
+            }
+
+            [start, end].forEach(input => {
+                input.addEventListener("change", buildValues);
+                input.addEventListener("blur", buildValues);
+                input.addEventListener("keydown", e => {
+                    if (e.keyCode === 13) buildValues();
+                    if (e.keyCode === 27) cancel();
+                });
+            });
+
+            container.appendChild(start);
+            container.appendChild(end);
+            return container;
+        };
+
+        const minMaxFilterFunction = function(headerValue, rowValue) {
+            if (rowValue != null) {
+                const start = parseFloat(headerValue.start);
+                const end = parseFloat(headerValue.end);
+                if (!isNaN(start) && !isNaN(end)) return rowValue >= start && rowValue <= end;
+                if (!isNaN(start)) return rowValue >= start;
+                if (!isNaN(end)) return rowValue <= end;
+            }
+            return true;
+        };
+
+        const table = new Tabulator("#doctor-table", {
+            height: "auto",
+            layout: "fitDataStretch",
+            ajaxURL: "<%=request.getContextPath()%>/api/doctors",
+            ajaxConfig: "GET",
+            pagination: "local",               // <- bật phân trang local
+            paginationSize: 10,               // <- số dòng mỗi trang
+            paginationSizeSelector: [5, 10, 20, 50, 100], // <- tùy chọn hiển thị
+            columns: [
+//                {title: "ID", field: "doctorId", hozAlign: "center", headerFilter: "input", width: 60},
+                {title: "Họ tên", field: "fullname", headerFilter: "input"},
+                {title: "Giới tính", field: "gender", headerFilter: "select", headerFilterParams: {values: {"MALE":"Nam", "FEMALE":"Nữ", "OTHER":"Khác"}}},
+                {title: "Ngày sinh", field: "dob", sorter: "date", hozAlign: "center", headerFilter: "input"},
+                {title: "Số điện thoại", field: "phone", hozAlign: "center", headerFilter: "input"},
+//                {title: "Ảnh", field: "image_url", hozAlign: "center", formatter: function(cell){
+//                        let url = cell.getValue();
+//                        return `<img src="`+ (url.startsWith('http') ? url : '<%=request.getContextPath()%>/' + url ) + `" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid #ccc;">`;
+//                    }},
+                {title: "Chuyên khoa", field: "speciality_name", headerFilter: "input"},
+                {title: "Bằng cấp", field: "degree", hozAlign: "center", headerFilter: "input"},
+                {
+                    title: "Kinh nghiệm",
+                    field: "experience",
+                    widthGrow: 2,
+                    headerFilter: "input",
+                    formatter: function(cell) {
+                        const text = cell.getValue();
+                        const maxLength = 30;
+                        if (text.length > maxLength) {
+                            return text.substring(0, maxLength) + "...";
+                        }
+                        return text;
+                    },
+                    tooltip: true, // để xem full text khi hover
+                },
+                {title: "Trạng thái", field: "status", hozAlign: "center", formatter: function(cell){
+                        const status = cell.getValue();
+                        return status === "active"
+                            ? `<span class="badge bg-success">active</span>`
+                            : `<span class="badge bg-secondary">inactive</span>`;
+                    }, headerFilter: "select", headerFilterParams: {values: {"active": "Active", "inactive": "Inactive"}}},
+                {
+                    title: "Thao tác", hozAlign: "center", headerSort: false, width: 300, formatter: function(cell, formatterParams, onRendered){
+                        const data = cell.getData();
+                        return `
+                        <button onclick="location.href='<%=request.getContextPath()%>/admin/doctor?id=`+data.doctorId+`'" class="btn btn-sm btn-primary"">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="editDoctor('`+encodeURIComponent(JSON.stringify(data))+`')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="showDoctorDeleteModal('`+data.userId+`')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    `;
+                    }
+                }
+            ],
+        });
+    });
+</script>
+<script>
+    function editDoctor(data) {
+        data = decodeURIComponent(data)
+        const d = typeof data === 'string' ? JSON.parse(data) : data;
+
+        document.getElementById("update_doctor_id").value = d.doctorId;
+        document.getElementById("update_username").value = d.username;
+        document.getElementById("update_fullname").value = d.fullname;
+        document.getElementById("update_email").value = d.email;
+        document.getElementById("update_phone").value = d.phone;
+        document.getElementById("update_gender").value = d.gender;
+        document.getElementById("update_dob").value = d.dob;
+        document.getElementById("update_specialty_id").value = d.speciality_id;
+        document.getElementById("update_degree").value = d.degree;
+        document.getElementById("update_experience").value = d.experience;
+        document.getElementById("update_status").value = d.status;
+        document.getElementById("update_contract_status").value = d.contract_status;
+        document.getElementById("update_contract_start_date").value = d.contract_start_date;
+        document.getElementById("update_contract_end_date").value = d.contract_end_date;
+
+        const modal = new bootstrap.Modal(document.getElementById('updateDoctorModal'));
+        modal.show();
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startDateInput = document.getElementById("contract_start_date");
+        const endDateInput = document.getElementById("contract_end_date");
+        const createBtn = document.getElementById("create");
+
+        function validateDates() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            if (startDateInput.value && endDateInput.value) {
+                if (endDate < startDate) {
+                    toastr.error("Ngày bắt đầu phải trước ngày kết thúc hợp đồng.")
+                    createBtn.disabled = true;
+                    endDateInput.classList.add("is-invalid");
+                } else {
+                    createBtn.disabled = false;
+                    endDateInput.classList.remove("is-invalid");
+                }
+            } else {
+                toastr.error("Ngày bắt đầu phải trước ngày kết thúc hợp đồng.")
+                createBtn.disabled = true;
+                endDateInput.classList.remove("is-invalid");
+            }
+        }
+
+        startDateInput.addEventListener("input", validateDates);
+        endDateInput.addEventListener("input", validateDates);
+    });
+</script>
+
 </html>

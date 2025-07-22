@@ -2,6 +2,7 @@
 <%@ page import="models.Service" %>
 <%@ page import="java.util.List" %>
 <%@ page import="models.Doctor" %>
+<%@ page import="models.ExaminationPackage" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ include file="admin-auth.jsp" %>
 <!DOCTYPE html>
@@ -27,7 +28,7 @@
                 </button>
             </div>
 
-            <% List<Service> services = (List<Service>) request.getAttribute("services");%>
+            <% List<ExaminationPackage> packages = (List<ExaminationPackage>) request.getAttribute("packages"); %>
             <% List<Doctor> doctors = (List<Doctor>) request.getAttribute("doctors"); %>
 
             <!-- Bảng gói khám -->
@@ -43,41 +44,55 @@
                                 <th class="text-center">ID</th>
                                 <th>Tên gói</th>
                                 <th>Mô tả</th>
-                                <th>Bác sĩ phụ  trách</th>
                                 <th class="text-center">Giá (VND)</th>
+                                <th class="text-center">Thời lượng</th>
                                 <th class="text-center">Ảnh</th>
-                                <th>Thao tác</th>
+                                <th class="text-center">Thao tác</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <% for (Service p : services) { %>
+                            <% for (ExaminationPackage p : packages) { %>
                             <tr>
-                                <td class="text-center"><%= p.getServiceId() %></td>
+                                <td class="text-center"><%= p.getPackageId() %></td>
                                 <td><%= p.getName() %></td>
-                                <td><%= p.getDetail() %></td>
-                                <td><%= p.getDoctors().stream().map(s -> s.getUser().getFullName()).collect(java.util.stream.Collectors.joining(", ")) %></td>
-                                <td class="text-center"><%= String.format("%,d", p.getPrice()) %></td>
+                                <td><%= p.getDescription() %></td>
+                                <td class="text-center"><%= String.format("%,.0f", p.getPrice()) %></td>
+                                <td class="text-center"><%= p.getFormattedDuration() %></td>
                                 <td class="text-center">
-                                    <img src="<%= request.getContextPath() + "/assets/" + p.getImage() %>" alt="" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <% String img = p.getImageUrl(); %>
+                                    <% if (img == null || img.isEmpty()) { %>
+                                        <i class="bi bi-image" style="font-size:2rem;color:#bbb;"></i>
+                                    <% } else { %>
+                                        <img src="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : request.getContextPath() + "/assets/default-image.svg") %>" alt="avatar" style="width:50px;height:50px;object-fit:cover;border-radius:8px;border:1px solid #ccc;">
+                                    <% } %>
                                 </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning edit-btn" title="Chỉnh sửa"
-                                            data-id="<%= p.getServiceId() %>"
-                                            data-name="<%= p.getName() %>"
-                                            data-description="<%= p.getDetail() %>"
-                                            data-price="<%= p.getPrice() %>"
-                                            data-type="<%= p.getType() %>"
-                                            data-doctors="<%= p.getDoctors().stream().map(s -> s.getDoctor_id() + "").collect(java.util.stream.Collectors.joining(",")) %>"
-                                            data-bs-toggle="modal" data-bs-target="#updatePackageModal">
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-primary btn-sm view-btn" title="Xem"
+                                        data-id="<%= p.getPackageId() %>"
+                                        data-name="<%= p.getName() %>"
+                                        data-description="<%= p.getDescription() %>"
+                                        data-price="<%= String.format("%,.0f", p.getPrice()) %>"
+                                        data-duration="<%= p.getFormattedDuration() %>"
+                                        data-img="<%= p.getImageUrl() %>"
+                                        data-bs-toggle="modal" data-bs-target="#viewPackageModal">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm edit-btn" title="Sửa"
+                                        data-id="<%= p.getPackageId() %>"
+                                        data-name="<%= p.getName() %>"
+                                        data-description="<%= p.getDescription() %>"
+                                        data-price="<%= p.getPrice() %>"
+                                        data-duration="<%= p.getDuration() %>"
+                                        data-bs-toggle="modal" data-bs-target="#updatePackageModal">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-danger" title="Xóa"
-                                            onclick="confirmDelete('<%= p.getServiceId() %>')">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" title="Xóa"
+                                        onclick="confirmDelete('<%= p.getPackageId() %>')">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                    <form id="deleteForm_<%= p.getServiceId() %>" action="<%= request.getContextPath() %>/admin/examination-manage" method="post" style="display:none;">
+                                    <form id="deleteForm_<%= p.getPackageId() %>" action="<%= request.getContextPath() %>/admin/examination-manage" method="post" style="display:none;">
                                         <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="id" value="<%= p.getServiceId() %>">
+                                        <input type="hidden" name="id" value="<%= p.getPackageId() %>">
                                     </form>
                                 </td>
                             </tr>
@@ -107,7 +122,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Giá (VND)</label>
-                                    <input type="number" name="price" class="form-control" required step="1000" min="0">
+                                    <input type="number" name="price" class="form-control" id="price" min="0" step="1" required>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label">Mô tả</label>
@@ -168,7 +183,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Giá (VND)</label>
-                                    <input type="number" name="price" id="update_price" class="form-control" required step="1000" min="0">
+                                    <input type="number" name="price" id="update_price" class="form-control" min="0" step="1" required>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label" for="update_detail">Mô tả</label>
@@ -210,6 +225,27 @@
             </div>
         </div>
 
+        <!-- Modal chi tiết gói khám -->
+        <div class="modal fade" id="viewPackageModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chi tiết gói khám</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Tên gói:</strong> <span id="view_name"></span></p>
+                        <p><strong>Mô tả:</strong> <span id="view_description"></span></p>
+                        <p><strong>Giá:</strong> <span id="view_price"></span></p>
+                        <p><strong>Thời lượng:</strong> <span id="view_duration"></span></p>
+                        <p><strong>Ảnh:</strong><br>
+                            <img id="view_img" src="" alt="Ảnh gói khám" style="width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid #ccc;">
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <%@ include file="../layouts/footer.jsp" %>
 </div>
@@ -217,8 +253,8 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js">
-<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
 
 <%@include file="../layouts/toastr.jsp"%>
 
@@ -268,6 +304,19 @@
                 const checkbox = document.getElementById("doctor_update_" + specialtyId);
                 if (checkbox) checkbox.checked = true;
             });
+        }
+    });
+
+    // Handle view button click
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.view-btn')) {
+            const btn = e.target.closest('.view-btn');
+            document.getElementById('view_name').textContent = btn.dataset.name;
+            document.getElementById('view_description').textContent = btn.dataset.description;
+            document.getElementById('view_price').textContent = btn.dataset.price;
+            document.getElementById('view_duration').textContent = btn.dataset.duration;
+            const img = btn.dataset.img;
+            document.getElementById('view_img').src = img && img !== 'null' ? (img.startsWith('http') ? img : (img ? ('${pageContext.request.contextPath}/assets/' + img) : ('${pageContext.request.contextPath}/assets/default-image.svg'))) : ('${pageContext.request.contextPath}/assets/default-image.svg');
         }
     });
 

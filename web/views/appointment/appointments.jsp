@@ -169,18 +169,18 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-info" title="Xem chi tiết" data-bs-toggle="modal" data-bs-target="#appointmentDetailModal"
+                                        <button type="button" class="btn btn-outline-primary btn-sm" title="Xem chi tiết" data-bs-toggle="modal" data-bs-target="#appointmentDetailModal"
                                                 onclick="showAppointmentDetail('${fn:escapeXml(appointment.id)}', '${fn:escapeXml(appointment.queueNumber)}', '${appointment.appointmentDateTime != null ? appointment.appointmentDateTime.toLocalDate() : ''}', '${fn:escapeXml(appointment.shiftId)}', '${fn:escapeXml(appointment.patient.user.fullName)}', '${appointment.service != null ? fn:escapeXml(appointment.service.name) : ''}', '${fn:escapeXml(appointment.status.displayName)}', '${appointment.note != null ? fn:escapeXml(appointment.note) : ''}')">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                         <c:if test="${appointment.paymentStatus == 'PENDING' && appointment.status.code != 'canceled'}">
-                                            <a href="${pageContext.request.contextPath}/checkout?id=${appointment.id}" class="btn btn-sm btn-outline-warning" title="Hủy lịch hẹn">
-                                                <i class="bi bi-wallet"> Đặt cọc</i>
+                                            <a href="${pageContext.request.contextPath}/checkout?id=${appointment.id}" class="btn btn-outline-primary btn-sm" title="Đặt cọc">
+                                                <i class="bi bi-wallet"></i>
                                             </a>
                                         </c:if>
                                         <c:if test="${appointment.paymentStatus == 'RESERVED' && appointment.status.code != 'canceled'}">
-                                            <a href="${pageContext.request.contextPath}/checkout?id=${appointment.id}" class="btn btn-sm btn-outline-warning" title="Hủy lịch hẹn">
-                                                <i class="bi bi-wallet"> Thanh toán</i>
+                                            <a href="${pageContext.request.contextPath}/checkout?id=${appointment.id}" class="btn btn-outline-primary btn-sm" title="Thanh toán">
+                                                <i class="bi bi-wallet"></i>
                                             </a>
                                         </c:if>
                                         <c:if test="${appointment.status.code == 'pending'}">

@@ -76,22 +76,22 @@
                                                     <c:choose>
                                                         <c:when test="${p.statusCode == 4}">
                                                             <div class="btn-group w-100" role="group">
-                                                                <button type="submit" name="statusCode" value="5" class="btn btn-warning">
-                                                                    <i class="bi bi-clipboard2-pulse"></i> Chờ xét nghiệm
+                                                                <button type="submit" name="statusCode" value="5" class="btn btn-outline-primary btn-sm" title="Chờ xét nghiệm">
+                                                                    <i class="bi bi-clipboard2-pulse"></i>
                                                                 </button>
-                                                                <button type="submit" name="statusCode" value="9" class="btn btn-success">
-                                                                    <i class="bi bi-check-circle"></i> Hoàn thành khám
+                                                                <button type="submit" name="statusCode" value="9" class="btn btn-outline-primary btn-sm" title="Hoàn thành khám">
+                                                                    <i class="bi bi-check-circle"></i>
                                                                 </button>
                                                             </div>
                                                         </c:when>
                                                         <c:when test="${p.statusCode == 8}">
-                                                            <button type="submit" name="statusCode" value="4" class="btn btn-warning w-100">
-                                                                <i class="bi bi-person-video2"></i> Bắt đầu khám
+                                                            <button type="submit" name="statusCode" value="4" class="btn btn-outline-primary btn-sm w-100" title="Bắt đầu khám">
+                                                                <i class="bi bi-person-video2"></i>
                                                             </button>
                                                         </c:when>
                                                         <c:when test="${p.statusCode == 3}">
-                                                            <button type="submit" name="statusCode" value="4" class="btn btn-warning w-100">
-                                                                <i class="bi bi-person-video2"></i> Bắt đầu khám
+                                                            <button type="submit" name="statusCode" value="4" class="btn btn-outline-primary btn-sm w-100" title="Bắt đầu khám">
+                                                                <i class="bi bi-person-video2"></i>
                                                             </button>
                                                         </c:when>
                                                     </c:choose>

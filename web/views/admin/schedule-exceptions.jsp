@@ -135,22 +135,22 @@
                                                             <form method="post" action="${pageContext.request.contextPath}/admin/schedule-exceptions" style="display: inline;">
                                                                 <input type="hidden" name="action" value="approve">
                                                                 <input type="hidden" name="exceptionId" value="${exception.exceptionId}">
-                                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')" title="Duyệt">
+                                                                <button type="submit" class="btn btn-outline-primary btn-sm" onclick="return confirm('Bạn có chắc chắn muốn duyệt yêu cầu này?')" title="Duyệt">
                                                                     <i class="bi bi-check"></i>
                                                                 </button>
                                                             </form>
                                                             <form method="post" action="${pageContext.request.contextPath}/admin/schedule-exceptions" style="display: inline;">
                                                                 <input type="hidden" name="action" value="reject">
                                                                 <input type="hidden" name="exceptionId" value="${exception.exceptionId}">
-                                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này?')" title="Từ chối">
+                                                                <button type="submit" class="btn btn-outline-primary btn-sm" onclick="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này?')" title="Từ chối">
                                                                     <i class="bi bi-x"></i>
                                                                 </button>
                                                             </form>
                                                         </c:if>
                                                         <!-- Nút xem chi tiết luôn hiển thị -->
-                                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#exceptionDetailModal${exception.exceptionId}" title="Xem chi tiết">
+                                                        <a href="${pageContext.request.contextPath}/admin/schedule-exceptions?action=detail&id=${exception.exceptionId}" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
                                                             <i class="bi bi-eye"></i>
-                                                        </button>
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             </c:forEach>

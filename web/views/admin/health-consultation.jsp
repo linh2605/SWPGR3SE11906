@@ -56,14 +56,14 @@
                                 <td><%= hc.getDetail() %></td>
                                 <td class="text-center"><%= hc.getCreated_at() %></td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-warning edit-btn" title="Chỉnh sửa"
+                                    <button type="button" class="btn btn-outline-primary btn-sm edit-btn" title="Chỉnh sửa"
                                             data-id="<%= hc.getConsultation_id() %>"
                                             data-detail="<%= hc.getDetail() %>"
                                             data-doctor="<%= hc.getDoctor().getUser().getFullName() %>"
                                             data-patient="<%= hc.getPatient().getUser().getFullName() %>">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-danger" title="Xóa"
+                                    <button type="button" class="btn btn-outline-primary btn-sm" title="Xóa"
                                             onclick="if(confirm('Bạn có chắc chắn muốn xóa tư vấn này?')) { document.getElementById('deleteForm_<%= hc.getConsultation_id() %>').submit(); }">
                                         <i class="bi bi-trash"></i>
                                     </button>

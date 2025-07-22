@@ -140,16 +140,13 @@
                                             </td>
                                             <td>${schedule.createdAt}</td>
                                             <td>
-                                                <a href="${pageContext.request.contextPath}/admin/working-schedules?action=detail&id=${schedule.scheduleId}" 
-                                                   class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                <a href="${pageContext.request.contextPath}/admin/working-schedules?action=detail&id=${schedule.scheduleId}" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <a href="${pageContext.request.contextPath}/admin/working-schedules?action=edit&id=${schedule.scheduleId}" 
-                                                   class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                                <a href="${pageContext.request.contextPath}/admin/working-schedules?action=edit&id=${schedule.scheduleId}" class="btn btn-outline-primary btn-sm" title="Chỉnh sửa">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
-                                                <button class="btn btn-sm btn-danger" title="Xóa"
-                                                        onclick="deleteSchedule(${schedule.scheduleId})">
+                                                <button class="btn btn-outline-primary btn-sm" title="Xóa" onclick="deleteSchedule(${schedule.scheduleId})">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </td>

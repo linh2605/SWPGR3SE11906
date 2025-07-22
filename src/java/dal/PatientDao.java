@@ -81,11 +81,11 @@ public class PatientDao {
 
     public static List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
-        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description "
-                + "FROM patients p "
-                + "JOIN roles r ON u.role_id = r.role_id "
-                + "WHERE p.deleted_at IS NULL"
-                + "JOIN roles r ON u.role_id = r.role_id where status = 'active'";
+        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description " +
+                "FROM patients p " +
+                "INNER JOIN users u ON p.user_id = u.user_id " +
+                "INNER JOIN roles r ON u.role_id = r.role_id " +
+                "WHERE p.deleted_at IS NULL AND p.status = 'active'";
 
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -100,22 +100,18 @@ public class PatientDao {
     // Lấy tất cả bệnh nhân chưa xóa mềm
     public static List<Patient> getAllNonDeletedPatients() {
         List<Patient> patients = new ArrayList<>();
-        String sql = "SELECT p.patient_id, p.user_id, p.gender, p.date_of_birth, p.address, p.image_url, p.status_code, p.status, p.deleted_at, p.created_at, "
-                + "u.username, u.password, u.full_name, u.email, u.phone, u.created_at as u_created_at, "
-                + "r.name AS role_name, r.description AS role_description "
-                + "FROM patients p "
-                + "JOIN users u ON p.user_id = u.user_id "
-                + "JOIN roles r ON u.role_id = r.role_id "
-                + "WHERE p.deleted_at IS NULL "
-                + "ORDER BY p.patient_id";
+        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description " +
+                "FROM patients p " +
+                "INNER JOIN users u ON p.user_id = u.user_id " +
+                "INNER JOIN roles r ON u.role_id = r.role_id " +
+                "WHERE p.deleted_at IS NULL";
+
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 patients.add(mappingPatient(rs));
             }
-            System.out.println("PatientDao.getAllNonDeletedPatients() - Retrieved " + patients.size() + " patients (not deleted)");
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error in PatientDao.getAllNonDeletedPatients(): " + e.getMessage());
         }
         return patients;
     }
@@ -123,22 +119,18 @@ public class PatientDao {
     // Lấy tất cả bệnh nhân đã xóa mềm
     public static List<Patient> getSoftDeletedPatients() {
         List<Patient> patients = new ArrayList<>();
-        String sql = "SELECT p.patient_id, p.user_id, p.gender, p.date_of_birth, p.address, p.image_url, p.status_code, p.status, p.deleted_at, p.created_at, "
-                + "u.username, u.password, u.full_name, u.email, u.phone, u.created_at as u_created_at, "
-                + "r.name AS role_name, r.description AS role_description "
-                + "FROM patients p "
-                + "JOIN users u ON p.user_id = u.user_id "
-                + "JOIN roles r ON u.role_id = r.role_id "
-                + "WHERE p.deleted_at IS NOT NULL "
-                + "ORDER BY p.deleted_at DESC";
+        String sql = "SELECT p.*, u.*, r.name AS role_name, r.description AS role_description " +
+                "FROM patients p " +
+                "INNER JOIN users u ON p.user_id = u.user_id " +
+                "INNER JOIN roles r ON u.role_id = r.role_id " +
+                "WHERE p.deleted_at IS NOT NULL";
+
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 patients.add(mappingPatient(rs));
             }
-            System.out.println("PatientDao.getSoftDeletedPatients() - Retrieved " + patients.size() + " soft deleted patients");
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error in PatientDao.getSoftDeletedPatients(): " + e.getMessage());
         }
         return patients;
     }

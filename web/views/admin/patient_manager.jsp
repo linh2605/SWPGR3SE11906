@@ -36,83 +36,6 @@
                 <div class="card-header">
                     <h5 class="mb-0">Danh sách bệnh nhân</h5>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Username</th>
-                                    <th>Họ tên</th>
-                                    <th>Email</th>
-                                    <th>Số điện thoại</th>
-                                    <th>Giới tính</th>
-                                    <th>Ngày sinh</th>
-                                    <th>Địa chỉ</th>
-                                    <th>Avatar</th>
-                                    <th>Trạng thái</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <% for (int i = 0; i < patients.size(); i++) { 
-                                String img = patients.get(i).getImage_url();
-                                String imgSrc = (img != null && img.startsWith("http")) ? img : 
-                                              (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : 
-                                               request.getContextPath() + "/assets/default-avatar.jpg");
-                            %>
-                            <tr>
-                                <td class="text-center"><%=patients.get(i).getPatient_id()%></td>
-                                <td><%=patients.get(i).getUser().getUsername()%></td>
-                                <td><%=patients.get(i).getUser().getFullName()%></td>
-                                <td><%=patients.get(i).getUser().getEmail()%></td>
-                                <td><%=patients.get(i).getUser().getPhone()%></td>
-                                <td class="text-center"><%=patients.get(i).getGender()%></td>
-                                <td class="text-center"><%=patients.get(i).getDate_of_birth()%></td>
-                                <td><%=patients.get(i).getAddress()%></td>
-                                <td class="text-center">
-                                    <% if (img != null && !img.isEmpty()) { %>
-                                        <img src="<%= imgSrc %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-                                    <% } else { %>
-                                        <i class="bi bi-person-circle" style="font-size: 40px; color: #6c757d;"></i>
-                                    <% } %>
-                                </td>
-                                <td class="text-center">
-                                    <select class="form-select form-select-sm status-select" 
-                                            data-patient-id="<%= patients.get(i).getPatient_id() %>"
-                                            style="width: auto; min-width: 100px;">
-                                        <option value="active" <%= "active".equalsIgnoreCase(patients.get(i).getStatus()+"") ? "selected" : "" %>>Active</option>
-                                        <option value="inactive" <%= "inactive".equalsIgnoreCase(patients.get(i).getStatus()+"") ? "selected" : "" %>>Inactive</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning" title="Chỉnh sửa"
-                                           onclick="populateUpdateForm(
-                                                   '<%=patients.get(i).getPatient_id()%>',
-                                                   '<%=patients.get(i).getUser().getUsername()%>',
-                                                   '<%=patients.get(i).getUser().getFullName()%>',
-                                                   '<%=patients.get(i).getUser().getEmail()%>',
-                                                   '<%=patients.get(i).getUser().getPhone()%>',
-                                                   '<%=patients.get(i).getGender()%>',
-                                                   '<%=patients.get(i).getDate_of_birth()%>',
-                                                   '<%=patients.get(i).getAddress()%>'
-                                                   )">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-danger" title="Xóa cứng"
-                                           onclick="showDeleteModal('<%=patients.get(i).getUser().getUserId()%>')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-secondary" title="Xóa mềm"
-                                           onclick="softDeletePatient('<%=patients.get(i).getPatient_id()%>', '<%=patients.get(i).getUser().getFullName()%>')">
-                                        <i class="bi bi-archive"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <% } %>
-                            </tbody>
-                        </table>
-                    </div>
                 <div class="card-body" style="overflow-x: auto; max-width: 100%;">
                     <div id="patient-table"></div>
                 </div>
@@ -386,17 +309,33 @@
     document.getElementById("date_of_birth").setAttribute("max", today);
 </script>
 <script>
+    // Hàm mở modal cập nhật bệnh nhân từ Tabulator
+    function editPatient(data) {
+        data = decodeURIComponent(data)
+        const d = typeof data === 'string' ? JSON.parse(data) : data;
+        document.getElementById("update_patient_id").value = d.patientId ?? "";
+        document.getElementById("update_username").value = d.username ?? "";
+        document.getElementById("update_fullname").value = d.fullname ?? "";
+        document.getElementById("update_email").value = d.email ?? "";
+        document.getElementById("update_phone").value = d.phone ?? "";
+        document.getElementById("update_gender").value = d.gender ?? "";
+        document.getElementById("update_date_of_birth").value = d.date_of_birth ?? "";
+        document.getElementById("update_address").value = d.address ?? "";
+        const modal = new bootstrap.Modal(document.getElementById('updateModal'));
+        modal.show();
+    }
+
+    // Tabulator bảng bệnh nhân
     const table = new Tabulator("#patient-table", {
         height: "auto",
         ajaxURL: "<%=request.getContextPath()%>/api/patients",
         ajaxConfig: "GET",
         layout: "fitColumns",
-        pagination: "local",               // <- bật phân trang local
-        paginationSize: 10,               // <- số dòng mỗi trang
-        paginationSizeSelector: [5, 10, 20, 50, 100], // <- tùy chọn hiển thị
+        pagination: "local",
+        paginationSize: 10,
+        paginationSizeSelector: [5, 10, 20, 50, 100],
         placeholder: "Không có dữ liệu",
         columns: [
-            // { title: "ID", field: "patientId", hozAlign: "center", headerFilter: "input", width: 70 },
             { title: "Username", field: "username", headerFilter: "input" },
             { title: "Họ tên", field: "fullname", headerFilter: "input" },
             { title: "Email", field: "email", headerFilter: "input" },
@@ -404,39 +343,21 @@
             { title: "Giới tính", field: "gender", hozAlign: "center", headerFilter: "input" },
             { title: "Ngày sinh", field: "date_of_birth", hozAlign: "center", headerFilter: "input" },
             { title: "Địa chỉ", field: "address", headerFilter: "input" },
-            /*{
-                title: "Avatar", field: "image_url", hozAlign: "center", headerSort: false, headerFilter: false, width: 70,
-                formatter: function(cell) {
-                    let url = cell.getValue();
-                    if (!url) return "<i class='bi bi-person-circle' style='font-size: 24px; color: #6c757d;'></i>";
-                    if (!url.startsWith("http")) url = "' + request.getContextPath() + '/assets/" + url;
-                    return "<img src='" + (url.startsWith('http') ? url : '<%=request.getContextPath()%>/' + url ) + "' style='width: 32px; height: 32px; border-radius: 50%; object-fit: cover;'>";
-                }
-            },*/
             {
                 title: "Thao tác", hozAlign: "center", headerSort: false, width: 250,
                 formatter: function(cell) {
                     const data = cell.getData();
                     return `
-                        <button onclick="location.href='<%=request.getContextPath()%>/admin/patient?id=`+data.patientId+`'" class="btn btn-sm btn-primary">
+                        <button onclick="location.href='<%=request.getContextPath()%>/admin/patient?id=`+data.patientId+`'" class="btn btn-outline-primary btn-sm" title="Xem">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <button class='btn btn-sm btn-warning me-1' title='Sửa'
-                            onclick="populateUpdateForm(
-                                '` + data.userId + `',
-                                '` + data.username + `',
-                                '` + data.fullname + `',
-                                '` + data.email + `',
-                                '` + data.phone + `',
-                                '` + data.gender + `',
-                                '` + data.date_of_birth + `',
-                                '` + data.address + `'
-                            )">
+                        <button class='btn btn-outline-primary btn-sm me-1' title='Sửa'
+                            onclick="editPatient('` + encodeURIComponent(JSON.stringify(data)) + `')">
                             <i class='bi bi-pencil'></i>
                         </button>
-                        <button class='btn btn-sm btn-danger' title='Xóa'
-                            onclick="showDeleteModal('` + data.userId + `')">
-                            <i class='bi bi-trash'></i>
+                        <button class='btn btn-outline-primary btn-sm' title='Xóa mềm'
+                            onclick="softDeletePatient('` + data.patientId + `', '` + data.fullname + `')">
+                            <i class='bi bi-archive'></i>
                         </button>`;
                 }
             }

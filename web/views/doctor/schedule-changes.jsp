@@ -104,11 +104,11 @@
                                                 <span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span>
                                             </td>
                                             <td>
-                                                                                <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                                                <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <c:if test="${change.status == 'pending'}">
-                                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=cancel&id=${change.changeId}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này?');" title="Hủy yêu cầu">
+                                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=cancel&id=${change.changeId}" class="btn btn-outline-primary btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này?');" title="Hủy yêu cầu">
                                         <i class="bi bi-x-circle"></i>
                                     </a>
                                 </c:if>

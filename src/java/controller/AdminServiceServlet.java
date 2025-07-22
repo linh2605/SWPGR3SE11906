@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import models.Doctor;
 import models.Service;
 import models.ServiceType;
+import models.ExaminationPackage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,8 +31,10 @@ public class AdminServiceServlet extends HttpServlet {
         
         List<Doctor> doctors = DoctorDao.getAllDeletedDoctors();
         List<Service> services = ServiceDAO.getAll();
+        List<ExaminationPackage> packages = new dal.ExaminationPackageDAO().getAll();
         req.setAttribute("doctors", doctors);
         req.setAttribute("services", services);
+        req.setAttribute("packages", packages);
         req.getRequestDispatcher("/views/admin/service-manager.jsp").forward(req, resp);
     }
 
@@ -55,7 +58,7 @@ public class AdminServiceServlet extends HttpServlet {
     public static void add(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
         String detail = req.getParameter("detail");
-        long price = Long.parseLong(req.getParameter("price"));
+        long price = (long) Double.parseDouble(req.getParameter("price"));
         String[] doctorIds = req.getParameterValues("doctorIds");
         List<Doctor> doctors = parseDoctorList(doctorIds);
         
@@ -86,7 +89,7 @@ public class AdminServiceServlet extends HttpServlet {
         } else {
             String name = req.getParameter("name");
             String detail = req.getParameter("detail");
-            long price = Long.parseLong(req.getParameter("price"));
+            long price = (long) Double.parseDouble(req.getParameter("price"));
             String[] doctorIds = req.getParameterValues("doctorIds");
             List<Doctor> doctors = parseDoctorList(doctorIds);
 

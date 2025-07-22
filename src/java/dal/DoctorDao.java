@@ -66,7 +66,11 @@ public class DoctorDao {
         try {
             Connection connection = DBContext.makeConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT * FROM doctors d " +
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
                 "INNER JOIN users u ON d.user_id = u.user_id " +
                 "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
                 "WHERE d.deleted_at IS NULL AND d.status = 'active'"
@@ -91,6 +95,7 @@ public class DoctorDao {
             Connection connection = DBContext.makeConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
                 "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
                 "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
                 "FROM doctors d " +
@@ -116,7 +121,30 @@ public class DoctorDao {
     
     // Giữ lại method cũ để tương thích ngược
     public static List<Doctor> getAllDeletedDoctors() {
-        return getAllNonDeletedDoctors();
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
+                "INNER JOIN users u ON d.user_id = u.user_id " +
+                "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
+                "WHERE d.deleted_at IS NOT NULL " +
+                "ORDER BY d.doctor_id"
+            );
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Doctor> doctors = new ArrayList<>();
+            while (resultSet.next()) {
+                Doctor doctor = mappingDoctor(resultSet);
+                doctors.add(doctor);
+            }
+            return doctors;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     
     public static List<Doctor> getSoftDeletedDoctors() {
@@ -418,7 +446,7 @@ public class DoctorDao {
     }
 
     public static boolean updateDoctor(Doctor doctor) {
-        String updateDoctorSQL = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ? WHERE doctor_id = ?";
+        String updateDoctorSQL = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ?, contract_start_date = ?, contract_end_date = ? WHERE doctor_id = ?";
 
         try (Connection connection = DBContext.makeConnection(); PreparedStatement doctorStmt = connection.prepareStatement(updateDoctorSQL)) {
 
@@ -429,7 +457,9 @@ public class DoctorDao {
             doctorStmt.setString(5, doctor.getDegree());
             doctorStmt.setString(6, doctor.getExperience());
             doctorStmt.setString(7, doctor.getStatus().toString());
-            doctorStmt.setInt(8, doctor.getDoctor_id());
+            doctorStmt.setDate(8, doctor.getContract_start_date() != null ? java.sql.Date.valueOf(doctor.getContract_start_date()) : null);
+            doctorStmt.setDate(9, doctor.getContract_end_date() != null ? java.sql.Date.valueOf(doctor.getContract_end_date()) : null);
+            doctorStmt.setInt(10, doctor.getDoctor_id());
 
             return doctorStmt.executeUpdate() > 0;
 

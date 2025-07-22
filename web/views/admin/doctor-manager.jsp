@@ -287,6 +287,7 @@
                             <input pattern=".*[^ ].*" maxlength="100" name="experience" id="update_experience" class="form-control" required>
                         </div>
 
+                        <input type="hidden" id="update_status" name="status">
                         <div class="col-md-12">
                             <label>Image (Leave empty if not updating)</label>
                             <input type="file" name="image" class="form-control">
@@ -543,13 +544,13 @@
                     title: "Thao tác", hozAlign: "center", headerSort: false, width: 300, formatter: function(cell, formatterParams, onRendered){
                         const data = cell.getData();
                         return `
-                        <button onclick="location.href='<%=request.getContextPath()%>/admin/doctor?id=`+data.doctorId+`'" class="btn btn-sm btn-primary"">
+                        <button onclick="location.href='<%=request.getContextPath()%>/admin/doctor?id=`+data.doctorId+`'" class="btn btn-outline-primary btn-sm" title="Xem">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <button class="btn btn-sm btn-warning" onclick="editDoctor('`+encodeURIComponent(JSON.stringify(data))+`')">
+                        <button class="btn btn-outline-primary btn-sm" onclick="editDoctor('`+encodeURIComponent(JSON.stringify(data))+`')" title="Sửa">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="showDoctorDeleteModal('`+data.userId+`')">
+                        <button class="btn btn-outline-primary btn-sm" onclick="showDoctorDeleteModal('`+data.userId+`')" title="Xóa">
                             <i class="bi bi-trash"></i>
                         </button>
                     `;
@@ -564,20 +565,20 @@
         data = decodeURIComponent(data)
         const d = typeof data === 'string' ? JSON.parse(data) : data;
 
-        document.getElementById("update_doctor_id").value = d.doctorId;
-        document.getElementById("update_username").value = d.username;
-        document.getElementById("update_fullname").value = d.fullname;
-        document.getElementById("update_email").value = d.email;
-        document.getElementById("update_phone").value = d.phone;
-        document.getElementById("update_gender").value = d.gender;
-        document.getElementById("update_dob").value = d.dob;
-        document.getElementById("update_specialty_id").value = d.speciality_id;
-        document.getElementById("update_degree").value = d.degree;
-        document.getElementById("update_experience").value = d.experience;
-        document.getElementById("update_status").value = d.status;
-        document.getElementById("update_contract_status").value = d.contract_status;
-        document.getElementById("update_contract_start_date").value = d.contract_start_date;
-        document.getElementById("update_contract_end_date").value = d.contract_end_date;
+        document.getElementById("update_doctor_id").value = d.doctorId ?? "";
+        document.getElementById("update_username").value = d.username ?? "";
+        document.getElementById("update_fullname").value = d.fullname ?? "";
+        document.getElementById("update_email").value = d.email ?? "";
+        document.getElementById("update_phone").value = d.phone ?? "";
+        document.getElementById("update_gender").value = d.gender ?? "";
+        document.getElementById("update_dob").value = d.dob ?? "";
+        document.getElementById("update_specialty_id").value = d.speciality_id ?? "";
+        document.getElementById("update_degree").value = d.degree ?? "";
+        document.getElementById("update_experience").value = d.experience ?? "";
+        document.getElementById("update_status").value = d.status ?? "";
+        document.getElementById("update_contract_status").value = d.contract_status ?? "";
+        document.getElementById("update_contract_start_date").value = d.contract_start_date ?? "";
+        document.getElementById("update_contract_end_date").value = d.contract_end_date ?? "";
 
         const modal = new bootstrap.Modal(document.getElementById('updateDoctorModal'));
         modal.show();

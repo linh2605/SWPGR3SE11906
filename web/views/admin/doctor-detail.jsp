@@ -40,7 +40,8 @@
                             <p><strong>Số điện thoại:</strong> <%= user.getPhone() %></p>
                             <p><strong>Trạng thái tài khoản:</strong> <%= doctor.getStatus() %></p>
                             <p><strong>Ảnh đại diện:</strong><br>
-                                <img src="<%= doctor.getImage_url().startsWith("http") ? doctor.getImage_url() : request.getContextPath() + "/" + doctor.getImage_url() %>" alt="Avatar" width="120" class="rounded">
+                                <% String img = doctor.getImage_url(); %>
+                                <img src="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : request.getContextPath() + "/assets/default-avatar.jpg") %>" alt="Avatar" width="120" class="rounded">
                             </p>
                         </div>
                         <div class="col-md-6">

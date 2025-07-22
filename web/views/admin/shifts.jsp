@@ -75,11 +75,11 @@
                                                       title="${shift.description}">${shift.description}</span>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-warning" title="Chỉnh sửa"
+                                                <button type="button" class="btn btn-outline-primary btn-sm" title="Chỉnh sửa"
                                                         onclick="editShift(${shift.shiftId})">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-danger" title="Xóa"
+                                                <button type="button" class="btn btn-outline-primary btn-sm" title="Xóa"
                                                         onclick="deleteShift(${shift.shiftId}, this)" 
                                                         data-shift-name="${shift.name}">
                                                     <i class="bi bi-trash"></i>

@@ -221,12 +221,12 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        Are you sure you want to delete this doctor? All related records will also be deleted.
+                        Bạn có chắc muốn xóa bác sĩ này không?
                         <input type="hidden" id="deleteDoctorUserId" name="userId">
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     </div>
                 </form>
             </div>
@@ -242,11 +242,11 @@
                     <div class="modal-body row g-3">
                         <input type="hidden" id="update_doctor_id" name="doctor_id">
                         <div class="col-md-6">
-                            <label>Username</label>
+                            <label>Tên đăng nhập</label>
                             <input pattern=".*[^ ].*" maxlength="100" name="username" id="update_username" class="form-control" required disabled>
                         </div>
                         <div class="col-md-6">
-                            <label>Full Name</label>
+                            <label>Họ và tên</label>
                             <input pattern=".*[^ ].*" maxlength="100" name="fullname" id="update_fullname" class="form-control" required>
                         </div>
                         <div class="col-md-6">
@@ -254,16 +254,16 @@
                             <input name="email" id="update_email" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label>Phone</label>
+                            <label>Số điện thoại</label>
                             <input pattern="0[0-9]{9}" maxlength="10"
        title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0" name="phone" id="update_phone" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label>Gender</label>
+                            <label>Giới tính</label>
                             <select name="gender" id="update_gender" class="form-control">
-                                <option value="MALE">Male</option>
-                                <option value="FEMALE">Female</option>
-                                <option value="OTHER">Other</option>
+                                <option value="MALE">Nam</option>
+                                <option value="FEMALE">Nữ</option>
+                                <option value="OTHER">Khác</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -279,17 +279,17 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label>Degree</label>
+                            <label>Bằng cấp</label>
                             <input pattern=".*[^ ].*" maxlength="100" name="degree" id="update_degree" class="form-control" required>
                         </div>
                         <div class="col-md-6">
-                            <label>Experience</label>
+                            <label>Kinh nghiệm</label>
                             <input pattern=".*[^ ].*" maxlength="100" name="experience" id="update_experience" class="form-control" required>
                         </div>
 
                         <input type="hidden" id="update_status" name="status">
                         <div class="col-md-12">
-                            <label>Image (Leave empty if not updating)</label>
+                            <label>Ảnh (Để trống nếu không muốn cập nhật)</label>
                             <input type="file" name="image" class="form-control">
                         </div>
                         <div class="col-md-6">

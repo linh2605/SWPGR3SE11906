@@ -67,7 +67,7 @@ public class AdminUpdateDoctorServlet extends HttpServlet {
         String contractEndDate = req.getParameter("update_contract_end_date");
         doctor.setContract_start_date(contractStartDate != null && !contractStartDate.isEmpty() ? java.time.LocalDate.parse(contractStartDate) : null);
         doctor.setContract_end_date(contractEndDate != null && !contractEndDate.isEmpty() ? java.time.LocalDate.parse(contractEndDate) : null);
-
+        doctor.setContract_status(ContractStatus.valueOf(req.getParameter("update_contract_status")));
         if (req.getPart("image") != null && req.getPart("image").getSize() > 0) {
             String image_url = UploadImage.saveImage(req, "image");
             doctor.setImage_url(image_url);

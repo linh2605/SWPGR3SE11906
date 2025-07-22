@@ -423,7 +423,7 @@ public class DoctorDao {
     }
 
     public static boolean insertDoctor(Doctor doctor) {
-        String insertDoctorSQL = "INSERT INTO doctors (user_id, gender, dob, image_url, specialty_id, degree, experience, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertDoctorSQL = "INSERT INTO doctors (user_id, gender, dob, image_url, specialty_id, degree, experience, status, contract_status, contract_start_date, contract_end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBContext.makeConnection(); PreparedStatement doctorStmt = connection.prepareStatement(insertDoctorSQL)) {
 
@@ -435,6 +435,9 @@ public class DoctorDao {
             doctorStmt.setString(6, doctor.getDegree());
             doctorStmt.setString(7, doctor.getExperience());
             doctorStmt.setString(8, doctor.getStatus().toString());
+            doctorStmt.setString(9, doctor.getContract_status().toString());
+            doctorStmt.setString(10, doctor.getContract_start_date().toString());
+            doctorStmt.setString(11, doctor.getContract_end_date().toString());
 
             int rowsAffected = doctorStmt.executeUpdate();
             return rowsAffected > 0;

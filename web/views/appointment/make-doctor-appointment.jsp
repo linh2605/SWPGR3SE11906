@@ -41,7 +41,7 @@
                 <form id="bookingForm1" class="bg-light-blue p-4 rounded shadow-sm" action="${pageContext.request.contextPath}/appointment-doctor" method="POST" autocomplete="off">
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Họ và tên</label></div>
-                        <div class="col-md-9"><input type="text" class="form-control" name="fullName" value="${patient.fullName}" readonly></div>
+                        <div class="col-md-9"><input type="text" class="form-control" name="fullName" value="${patient.user.fullName}" readonly></div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Số điện thoại</label></div>
@@ -80,7 +80,9 @@
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Ngày hẹn</label></div>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="appointmentDate" name="appointmentDate" required>
+                            <input type="text" class="form-control" 
+                                   id="appointmentDate" name="appointmentDate" 
+                                   value="${appointmentDate}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -92,13 +94,13 @@
                             </select>
                         </div>
                     </div>
-<!--                    <div class="row mb-3" id="errMessage" style="display:flex;">
-                        <div class="col-md-3"></div>
-                        <div class="col-md-9"><div class="alert alert-danger">
-                                <strong id="errMessageDetail">Bác sĩ không có ca làm việc trong ngày đã chọn.</strong>
-                            </div>
-                        </div>
-                    </div>-->
+                    <!--                    <div class="row mb-3" id="errMessage" style="display:flex;">
+                                            <div class="col-md-3"></div>
+                                            <div class="col-md-9"><div class="alert alert-danger">
+                                                    <strong id="errMessageDetail">Bác sĩ không có ca làm việc trong ngày đã chọn.</strong>
+                                                </div>
+                                            </div>
+                                        </div>-->
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Ghi chú</label></div>
                         <div class="col-md-9"><textarea class="form-control" name="note" rows="3">${note}</textarea></div>
@@ -123,17 +125,23 @@
         <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
         <script>
             // Đợi DOM load xong rồi mới xử lý
-            document.addEventListener('DOMContentLoaded', function() {
-                            const selectedServiceId = '${selectedServiceId}';
-            if (selectedServiceId && selectedServiceId !== '') {
-                const serviceSelect = document.getElementById("service");
-                if (serviceSelect) {
-                    serviceSelect.value = selectedServiceId;
-                    // Trigger change event để hiển thị giá
-                    const event = new Event('change');
-                    serviceSelect.dispatchEvent(event);
+            document.addEventListener('DOMContentLoaded', function () {
+                const selectedServiceId = '${selectedServiceId}';
+                if (selectedServiceId && selectedServiceId !== '') {
+                    const serviceSelect = document.getElementById("service");
+                    if (serviceSelect) {
+                        serviceSelect.value = selectedServiceId;
+                        // Trigger change event để hiển thị giá
+                        const event = new Event('change');
+                        serviceSelect.dispatchEvent(event);
+                    }
                 }
-            }
+
+                const input = document.getElementById("appointmentDate");
+                console.log(`date:`, input.value)
+                if (input && input.value) {
+                    updateShiftOptions();
+                }
             });
 
             const serviceSelect = document.getElementById('service');
@@ -219,6 +227,7 @@
             flatpickr("#appointmentDate", {
                 dateFormat: "d/m/Y",
                 minDate: "today",
+                defaultDate: document.getElementById("appointmentDate").value,
                 disable: [
                     function (date) {
                         const day = date.getDay(); // 0–6
@@ -227,6 +236,13 @@
                 ],
                 onChange: function () {
                     updateShiftOptions();
+                }
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                const input = document.getElementById("appointmentDate");
+                console.log(`date:`, input.value)
+                if (input && input.value) {
+                    updateShiftOptions(); // Nếu có sẵn ngày thì load sẵn ca làm
                 }
             });
         </script>

@@ -21,33 +21,33 @@ import java.util.List;
 public class AdminDoctorServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Use AuthHelper for unified authentication
-        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+        if (!utils.AuthHelper.hasRole(req, 4)) {
             resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        if (req.getParameter("id") == null) {
-            List<Doctor> doctors = DoctorDao.getAllDoctors();
+
+        String idParam = req.getParameter("id");
+        if (idParam == null) {
+            List<Doctor> doctors = DoctorDao.getAllNonDeletedDoctors();
             List<Specialty> specialties = SpecialtyDao.getAllSpecialties();
-            System.out.println("check doctor size:" + doctors.size());
             req.setAttribute("doctors", doctors);
             req.setAttribute("specialties", specialties);
             req.getRequestDispatcher("/views/admin/doctor-manager.jsp").forward(req, resp);
+            return;
         } else {
-            int id = Integer.parseInt(req.getParameter("id"));
+            int id = Integer.parseInt(idParam);
             Doctor doctor = DoctorDao.getDoctorById(id);
             List<Service> services = ServiceDAO.getServicesByDoctorId(doctor.getDoctor_id());
             doctor.setServices(services);
             req.setAttribute("doctor", doctor);
             req.getRequestDispatcher("/views/admin/doctor-detail.jsp").forward(req, resp);
+            return;
         }
-
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Use AuthHelper for unified authentication
-        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+        if (!utils.AuthHelper.hasRole(req, 4)) {
             resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }

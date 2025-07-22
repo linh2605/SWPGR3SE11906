@@ -22,7 +22,7 @@ import static java.time.DayOfWeek.THURSDAY;
 import static java.time.DayOfWeek.TUESDAY;
 import static java.time.DayOfWeek.WEDNESDAY;
 
-@WebServlet(name = "DoctorServlet", urlPatterns = {"/doctorupdate", "/doctor", "/getDoctorsByService", "/getDoctorsByServiceAndTime", "/getDoctorsByServiceAndDate"})
+@WebServlet(name = "DoctorServlet", urlPatterns = {"/doctorupdate", "/doctor", "/getDoctorsByService", "/getDoctorsByServiceAndTime", "/getDoctorsByServiceAndDate", "/doctor-api"})
 public class DoctorServlet extends HttpServlet {
 
     @Override
@@ -40,6 +40,10 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
     }
     if ("/getDoctorsByServiceAndDate".equals(action)) {
         handleGetDoctorsByServiceAndDate(req, resp);
+        return;
+    }
+    if ("/doctor-api".equals(action)) {
+        handleGetDoctorsApi(req, resp);
         return;
     }
 
@@ -176,6 +180,28 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
             case SATURDAY: return "Thứ 7";
             case SUNDAY: return "Chủ nhật";
             default: return "";
+        }
+    }
+
+    private void handleGetDoctorsApi(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String action = request.getParameter("action");
+        
+        if ("api".equals(action)) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            
+            try {
+                List<models.Doctor> doctors = dal.DoctorDao.getAllDoctors();
+                Gson gson = new Gson();
+                String json = gson.toJson(doctors);
+                response.getWriter().write(json);
+            } catch (Exception e) {
+                response.setStatus(500);
+                response.getWriter().write("{\"error\": \"Lỗi khi lấy danh sách bác sĩ\"}");
+            }
+        } else {
+            response.setStatus(400);
+            response.getWriter().write("{\"error\": \"Invalid action\"}");
         }
     }
 

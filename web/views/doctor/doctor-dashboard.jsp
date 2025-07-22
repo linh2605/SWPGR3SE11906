@@ -66,6 +66,76 @@
                     </div>
                 </div>
             </div>
+            <!-- Tư vấn sức khỏe Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card shadow-lg">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">
+                                <i class="bi bi-chat-dots me-2"></i> Tư vấn sức khỏe
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-4">
+                                <!-- Phiên tư vấn chờ phản hồi -->
+                                <div class="col-md-4">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-clock me-2"></i> Chờ phản hồi
+                                            </h6>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h3 class="text-warning mb-2">${pendingConsultations}</h3>
+                                            <p class="mb-3">Phiên tư vấn chờ phản hồi</p>
+                                            <a href="${pageContext.request.contextPath}/consultation-chat" class="btn btn-warning">
+                                                <i class="bi bi-eye me-1"></i> Xem chi tiết
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Phiên tư vấn đang hoạt động -->
+                                <div class="col-md-4">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-chat-text me-2"></i> Đang tư vấn
+                                            </h6>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h3 class="text-success mb-2">${activeConsultations}</h3>
+                                            <p class="mb-3">Phiên tư vấn đang diễn ra</p>
+                                            <a href="${pageContext.request.contextPath}/consultation-chat" class="btn btn-success">
+                                                <i class="bi bi-chat me-1"></i> Tham gia chat
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tổng phiên tư vấn -->
+                                <div class="col-md-4">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-graph-up me-2"></i> Tổng cộng
+                                            </h6>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h3 class="text-info mb-2">${totalConsultations}</h3>
+                                            <p class="mb-3">Tổng số phiên tư vấn</p>
+                                            <a href="${pageContext.request.contextPath}/consultation-chat" class="btn btn-info">
+                                                <i class="bi bi-list me-1"></i> Xem tất cả
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row mt-4">
                 <div class="col-md-12 text-end">
                     <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=add" class="btn btn-primary btn-lg">

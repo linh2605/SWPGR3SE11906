@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import models.ContractStatus;
 
+import models.ContractStatus;
 import models.Doctor;
 import models.Gender;
 import models.Role;
@@ -18,23 +18,63 @@ import models.User;
 
 public class DoctorDao {
 
-    public static void deleteDoctor(int userId) {
+    public static boolean deleteDoctor(int userId) {
         try {
-            String sql = "update doctors set status = 'inactive' where user_id = ?";
+            String sql = "UPDATE doctors SET deleted_at = NOW() WHERE user_id = ?";
             Connection conn = DBContext.makeConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, userId);
-            ps.executeUpdate();
+            int result = ps.executeUpdate();
+            return result > 0;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public static boolean restoreDoctor(int userId) {
+        try {
+            String sql = "UPDATE doctors SET deleted_at = NULL WHERE user_id = ?";
+            Connection conn = DBContext.makeConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
+            int result = ps.executeUpdate();
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public static boolean softDeleteDoctor(int doctorId) {
+        try {
+            String sql = "UPDATE doctors SET deleted_at = NOW() WHERE doctor_id = ?";
+            Connection conn = DBContext.makeConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, doctorId);
+            int result = ps.executeUpdate();
+            System.out.println("DoctorDao.softDeleteDoctor() - Soft deleted doctor with doctor_id: " + doctorId + ", rows affected: " + result);
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error in DoctorDao.softDeleteDoctor(): " + e.getMessage());
+            return false;
         }
     }
 
     public static List<Doctor> getAllDoctors() {
-
         try {
             Connection connection = DBContext.makeConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id where doctors.status = 'active'");
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
+                "INNER JOIN users u ON d.user_id = u.user_id " +
+                "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
+                "WHERE d.deleted_at IS NULL AND d.status = 'active'"
+            );
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Doctor> doctors = new ArrayList<>();
             while (resultSet.next()) {
@@ -50,21 +90,84 @@ public class DoctorDao {
         }
     }
 
-    public static List<Doctor> getAllDeletedDoctors() {
+    public static List<Doctor> getAllNonDeletedDoctors() {
         try {
             Connection connection = DBContext.makeConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id");
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
+                "INNER JOIN users u ON d.user_id = u.user_id " +
+                "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
+                "WHERE d.deleted_at IS NULL " +
+                "ORDER BY d.doctor_id"
+            );
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Doctor> doctors = new ArrayList<>();
             while (resultSet.next()) {
                 Doctor doctor = mappingDoctor(resultSet);
                 doctors.add(doctor);
             }
-            System.out.println("DoctorDao.getAllDoctors() - Retrieved " + doctors.size() + " doctors");
+            System.out.println("DoctorDao.getAllNonDeletedDoctors() - Retrieved " + doctors.size() + " doctors (not deleted)");
             return doctors;
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error in DoctorDao.getAllDoctors(): " + e.getMessage());
+            System.err.println("Error in DoctorDao.getAllNonDeletedDoctors(): " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    
+    // Giữ lại method cũ để tương thích ngược
+    public static List<Doctor> getAllDeletedDoctors() {
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
+                "INNER JOIN users u ON d.user_id = u.user_id " +
+                "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
+                "WHERE d.deleted_at IS NOT NULL " +
+                "ORDER BY d.doctor_id"
+            );
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Doctor> doctors = new ArrayList<>();
+            while (resultSet.next()) {
+                Doctor doctor = mappingDoctor(resultSet);
+                doctors.add(doctor);
+            }
+            return doctors;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    public static List<Doctor> getSoftDeletedDoctors() {
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT * FROM doctors d " +
+                "INNER JOIN users u ON d.user_id = u.user_id " +
+                "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
+                "WHERE d.deleted_at IS NOT NULL " +
+                "ORDER BY d.deleted_at DESC"
+            );
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Doctor> doctors = new ArrayList<>();
+            while (resultSet.next()) {
+                Doctor doctor = mappingDoctor(resultSet);
+                doctors.add(doctor);
+            }
+            System.out.println("DoctorDao.getSoftDeletedDoctors() - Retrieved " + doctors.size() + " soft deleted doctors");
+            return doctors;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error in DoctorDao.getSoftDeletedDoctors(): " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -93,7 +196,7 @@ public class DoctorDao {
                 + "	       ON d.user_id = u.user_id\n"
                 + "	       LEFT JOIN booked_doctors bd\n"
                 + "	       ON d.doctor_id = bd.doctor_id\n"
-                + " WHERE d.status = 'active'\n"
+                + " WHERE d.deleted_at IS NULL AND d.status = 'active'\n"
                 + "   AND specialty_id = ?\n"
                 + "  ORDER BY appointment_count ASC;";
         try {
@@ -143,8 +246,18 @@ public class DoctorDao {
         doctor.setDegree(resultSet.getString("degree"));
         doctor.setExperience(resultSet.getString("experience"));
         doctor.setContract_status(ContractStatus.valueOf(resultSet.getString("contract_status")));
-        doctor.setContract_start_date(LocalDate.parse(resultSet.getString("contract_start_date")));
-        doctor.setContract_end_date(LocalDate.parse(resultSet.getString("contract_end_date")));
+        String contractStartDateStr = resultSet.getString("contract_start_date");
+        if (contractStartDateStr != null && !contractStartDateStr.isEmpty()) {
+            doctor.setContract_start_date(LocalDate.parse(contractStartDateStr));
+        } else {
+            doctor.setContract_start_date(null);
+        }
+        String contractEndDateStr = resultSet.getString("contract_end_date");
+        if (contractEndDateStr != null && !contractEndDateStr.isEmpty()) {
+            doctor.setContract_end_date(LocalDate.parse(contractEndDateStr));
+        } else {
+            doctor.setContract_end_date(null);
+        }
 
         String statusStr = resultSet.getString("status");
         if (statusStr != null && !statusStr.trim().isEmpty()) {
@@ -158,23 +271,109 @@ public class DoctorDao {
             doctor.setStatus(Status.active);
         }
 
-        doctor.setCreated_at(resultSet.getTimestamp("doctors.created_at"));
+        // Xử lý created_at - có thể không tồn tại trong database
+        try {
+            doctor.setCreated_at(resultSet.getTimestamp("doctors.created_at"));
+        } catch (SQLException e) {
+            // Nếu trường không tồn tại, set null
+            doctor.setCreated_at(null);
+        }
+        
+        // Xử lý deleted_at
+        doctor.setDeletedAt(resultSet.getTimestamp("deleted_at"));
         User user = new User();
-        user.setUserId(resultSet.getInt("users.user_id"));
-        user.setUsername(resultSet.getString("username"));
-        user.setPassword(resultSet.getString("password"));
-        user.setFullName(resultSet.getString("full_name"));
-        user.setEmail(resultSet.getString("email"));
-        user.setPhone(resultSet.getString("phone"));
-        user.setCreatedAt(resultSet.getTimestamp("users.created_at"));
+        
+        // Xử lý user_id - thử nhiều tên cột khác nhau
+        try {
+            user.setUserId(resultSet.getInt("users.user_id"));
+        } catch (SQLException e) {
+            try {
+                user.setUserId(resultSet.getInt("user_id"));
+            } catch (SQLException e2) {
+                user.setUserId(resultSet.getInt("u.user_id"));
+            }
+        }
+        
+        // Xử lý các trường khác của user
+        try {
+            user.setUsername(resultSet.getString("username"));
+        } catch (SQLException e) {
+            user.setUsername("");
+        }
+        
+        try {
+            user.setPassword(resultSet.getString("password"));
+        } catch (SQLException e) {
+            user.setPassword("");
+        }
+        
+        try {
+            user.setFullName(resultSet.getString("full_name"));
+        } catch (SQLException e) {
+            user.setFullName("");
+        }
+        
+        try {
+            user.setEmail(resultSet.getString("email"));
+        } catch (SQLException e) {
+            user.setEmail("");
+        }
+        
+        try {
+            user.setPhone(resultSet.getString("phone"));
+        } catch (SQLException e) {
+            user.setPhone("");
+        }
+        
+        // Xử lý users.created_at - có thể không tồn tại trong database
+        try {
+            user.setCreatedAt(resultSet.getTimestamp("users.created_at"));
+        } catch (SQLException e) {
+            try {
+                user.setCreatedAt(resultSet.getTimestamp("created_at"));
+            } catch (SQLException e2) {
+                user.setCreatedAt(null);
+            }
+        }
         Role role = new Role();
         role.setName("doctor");
         user.setRole(role);
         doctor.setUser(user);
         Specialty specialty = new Specialty();
-        specialty.setSpecialtyId(resultSet.getInt("specialties.specialty_id"));
-        specialty.setName(resultSet.getString("name"));
-        specialty.setDescription(resultSet.getString("description"));
+        
+        // Xử lý specialty_id - sử dụng alias từ query
+        try {
+            specialty.setSpecialtyId(resultSet.getInt("s_specialty_id"));
+        } catch (SQLException e) {
+            try {
+                specialty.setSpecialtyId(resultSet.getInt("specialty_id"));
+            } catch (SQLException e2) {
+                specialty.setSpecialtyId(0);
+            }
+        }
+        
+        // Xử lý name - sử dụng alias từ query
+        try {
+            specialty.setName(resultSet.getString("specialty_name"));
+        } catch (SQLException e) {
+            try {
+                specialty.setName(resultSet.getString("name"));
+            } catch (SQLException e2) {
+                specialty.setName("");
+            }
+        }
+        
+        // Xử lý description - sử dụng alias từ query
+        try {
+            specialty.setDescription(resultSet.getString("specialty_description"));
+        } catch (SQLException e) {
+            try {
+                specialty.setDescription(resultSet.getString("description"));
+            } catch (SQLException e2) {
+                specialty.setDescription("");
+            }
+        }
+        
         doctor.setSpecialty(specialty);
         return doctor;
     }
@@ -182,7 +381,12 @@ public class DoctorDao {
     public static Doctor getDoctorById(int doctor_id) {
         try {
             Connection connection = DBContext.makeConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from doctors inner join users on doctors.user_id = users.user_id inner join specialties on doctors.specialty_id = specialties.specialty_id where doctor_id = ?");
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT * FROM doctors d " +
+                "INNER JOIN users u ON d.user_id = u.user_id " +
+                "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
+                "WHERE d.doctor_id = ? AND d.deleted_at IS NULL"
+            );
             preparedStatement.setInt(1, doctor_id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -193,6 +397,28 @@ public class DoctorDao {
         } catch (Exception e) {
             e.printStackTrace();
             return new Doctor();
+        }
+    }
+
+    public static Doctor getDoctorByUserId(int user_id) {
+        try {
+            Connection connection = DBContext.makeConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT * FROM doctors d " +
+                "INNER JOIN users u ON d.user_id = u.user_id " +
+                "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
+                "WHERE d.user_id = ? AND d.deleted_at IS NULL"
+            );
+            preparedStatement.setInt(1, user_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mappingDoctor(resultSet);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -220,7 +446,7 @@ public class DoctorDao {
     }
 
     public static boolean updateDoctor(Doctor doctor) {
-        String updateDoctorSQL = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ? WHERE doctor_id = ?";
+        String updateDoctorSQL = "UPDATE doctors SET gender = ?, dob = ?, image_url = ?, specialty_id = ?, degree = ?, experience = ?, status = ?, contract_start_date = ?, contract_end_date = ? WHERE doctor_id = ?";
 
         try (Connection connection = DBContext.makeConnection(); PreparedStatement doctorStmt = connection.prepareStatement(updateDoctorSQL)) {
 
@@ -231,7 +457,9 @@ public class DoctorDao {
             doctorStmt.setString(5, doctor.getDegree());
             doctorStmt.setString(6, doctor.getExperience());
             doctorStmt.setString(7, doctor.getStatus().toString());
-            doctorStmt.setInt(8, doctor.getDoctor_id());
+            doctorStmt.setDate(8, doctor.getContract_start_date() != null ? java.sql.Date.valueOf(doctor.getContract_start_date()) : null);
+            doctorStmt.setDate(9, doctor.getContract_end_date() != null ? java.sql.Date.valueOf(doctor.getContract_end_date()) : null);
+            doctorStmt.setInt(10, doctor.getDoctor_id());
 
             return doctorStmt.executeUpdate() > 0;
 
@@ -278,7 +506,7 @@ public class DoctorDao {
     /**
      * Lấy danh sách doctors có thể cung cấp service cụ thể
      */
-    public static List<Doctor> getDoctorsByServiceId(int serviceId) {
+    public static List<Doctor> getDoctorsByServiceId(int packageId) {
         List<Doctor> doctors = new ArrayList<>();
         String sql = "SELECT DISTINCT d.doctor_id\n"
                 + "              , d.user_id\n"
@@ -294,11 +522,11 @@ public class DoctorDao {
                 + "	       ON d.doctor_id = ds.doctor_id\n"
                 + "	       JOIN specialties s\n"
                 + "	       ON d.specialty_id = s.specialty_id\n"
-                + " WHERE ds.service_id = ?\n"
-                + "   AND d.status = 'active'\n"
+                + " WHERE ds.package_id = ?\n"
+                + "   AND d.deleted_at IS NULL AND d.status = 'active'\n"
                 + " ORDER BY u.full_name";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, serviceId);
+            ps.setInt(1, packageId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Doctor d = new Doctor();

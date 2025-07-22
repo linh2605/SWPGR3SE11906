@@ -60,6 +60,36 @@ public class UploadImage {
         newFileName = "uploads/" + newFileName;
         return newFileName;
     }
+    
+    public static String savePackageImage(HttpServletRequest req, String fieldName, int packageId) throws ServletException, IOException {
+        Part filePart = req.getPart(fieldName);
+        String fileName = UploadImage.getFileName(filePart);
+        assert fileName != null;
+
+        // Kiểm tra kiểu MIME của file
+        String contentType = filePart.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new ServletException("File tải lên không phải là hình ảnh hợp lệ.");
+        }
+
+        // Lấy extension từ file gốc
+        String extension = "";
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex >= 0 && dotIndex < fileName.length() - 1) {
+            extension = fileName.substring(dotIndex + 1);
+        }
+
+        // Tạo tên file theo package_id
+        String newFileName = "package-" + packageId + "." + extension;
+        String uploadDir = req.getServletContext().getRealPath("/") + "assets/uploads";
+        Path filePath = Paths.get(uploadDir, newFileName);
+
+        try (InputStream fileContent = filePart.getInputStream()) {
+            Files.copy(fileContent, filePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return "uploads/" + newFileName;
+    }
     public static String readFile(String filePath) {
         StringBuilder content = new StringBuilder();
 

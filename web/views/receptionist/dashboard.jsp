@@ -167,20 +167,16 @@
                                                         </c:choose>
                                                     </td>
                                                     <td>
-                                                        <c:choose>
-                                                            <c:when test="${appointment.status.code == 'PENDING'}">
-                                                                <button class="btn btn-sm btn-outline-primary">Xác nhận</button>
-                                                            </c:when>
-                                                            <c:when test="${appointment.status.code == 'CONFIRMED'}">
-                                                                <button class="btn btn-sm btn-outline-info">Xem chi tiết</button>
-                                                            </c:when>
-                                                            <c:when test="${appointment.status.code == 'COMPLETED'}">
-                                                                <button class="btn btn-sm btn-outline-success">Hoàn thành</button>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <button class="btn btn-sm btn-outline-secondary">Xem</button>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                        <button class="btn btn-sm btn-primary btn-view-appointment"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#appointmentDetailModal"
+                                                            data-patient="${appointment.patient.user.fullName}"
+                                                            data-service="${appointment.service.name}"
+                                                            data-date="${appointment.appointmentDateTime}"
+                                                            data-status="${appointment.status.displayName}"
+                                                            data-note="${appointment.note}">
+                                                            Xem
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -203,8 +199,43 @@
         <%@ include file="../layouts/footer.jsp" %>
     </div>
 
+    <!-- Modal chi tiết lịch hẹn -->
+    <div class="modal fade" id="appointmentDetailModal" tabindex="-1" aria-labelledby="appointmentDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="appointmentDetailModalLabel">Chi tiết lịch hẹn</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-2"><strong>Bệnh nhân:</strong> <span id="modalPatient"></span></div>
+            <div class="mb-2"><strong>Dịch vụ:</strong> <span id="modalService"></span></div>
+            <div class="mb-2"><strong>Thời gian:</strong> <span id="modalDate"></span></div>
+            <div class="mb-2"><strong>Trạng thái:</strong> <span id="modalStatus"></span></div>
+            <div class="mb-2"><strong>Ghi chú:</strong> <span id="modalNote"></span></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/scripts.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.btn-view-appointment').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.getElementById('modalPatient').textContent = btn.getAttribute('data-patient');
+          document.getElementById('modalService').textContent = btn.getAttribute('data-service');
+          document.getElementById('modalDate').textContent = btn.getAttribute('data-date');
+          document.getElementById('modalStatus').textContent = btn.getAttribute('data-status');
+          document.getElementById('modalNote').textContent = btn.getAttribute('data-note');
+        });
+      });
+    });
+    </script>
 </body>
 </html> 

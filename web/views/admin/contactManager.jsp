@@ -89,15 +89,19 @@
                                 </td>
                                 <td class="text-center"><c:out value="${msg.created_at}"/></td>
                                 <td class="text-center">
-                                    <a href="${pageContext.request.contextPath}/contactManager?view=${msg.message_id}" class="btn btn-sm btn-info mb-1" title="Xem">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                                    <form method="post" action="${pageContext.request.contextPath}/contactDetail" style="display:inline;">
+                                    <a href="${pageContext.request.contextPath}/contactManager?view=${msg.message_id}" class="btn btn-outline-primary btn-sm mb-1" title="Xem">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <form method="post" action="${pageContext.request.contextPath}/contactManager" style="display:inline;">
                                         <input type="hidden" name="action" value="delete" />
                                         <input type="hidden" name="id" value="${msg.message_id}" />
-                                        <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Xóa tin nhắn này?')" title="Xóa">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm mb-1" title="Xóa" onclick="if(confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) { document.getElementById('deleteForm_${msg.message_id}').submit(); }">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                    <form id="deleteForm_${msg.message_id}" method="post" action="${pageContext.request.contextPath}/contactManager" style="display:none;">
+                                        <input type="hidden" name="action" value="delete" />
+                                        <input type="hidden" name="id" value="${msg.message_id}" />
                                     </form>
                                 </td>
                             </tr>

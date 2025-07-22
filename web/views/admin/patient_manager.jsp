@@ -91,7 +91,7 @@
                         </div>
                         <div class="col-md-12">
                             <label for="address" class="form-label">Địa chỉ</label>
-                            <textarea pattern=".*[^ ].*" maxlength="100" class="form-control" id="address" name="address" rows="3"></textarea>
+                            <textarea> pattern=".*[^ ].*" maxlength="100" class="form-control" id="address" name="address" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -216,23 +216,126 @@
         updateModal.show();
     }
 
+    function softDeletePatient(patientId, patientName) {
+        if (confirm('Bạn có chắc muốn xóa mềm bệnh nhân "' + patientName + '"?\n\nBệnh nhân sẽ bị ẩn khỏi danh sách nhưng dữ liệu vẫn được lưu trữ.')) {
+            fetch('${pageContext.request.contextPath}/admin/soft-delete-patient', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'patient_id=' + patientId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success('Xóa mềm bệnh nhân thành công!');
+                    // Reload trang để cập nhật danh sách
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    toastr.error('Xóa mềm bệnh nhân thất bại: ' + (data.message || 'Lỗi không xác định'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastr.error('Có lỗi xảy ra khi xóa mềm bệnh nhân');
+            });
+        }
+    }
+
+    // Xử lý thay đổi status
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelects = document.querySelectorAll('.status-select');
+        
+        statusSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const patientId = this.getAttribute('data-patient-id');
+                const newStatus = this.value;
+                const originalValue = this.getAttribute('data-original-value');
+                
+                // Lưu giá trị ban đầu nếu chưa có
+                if (!originalValue) {
+                    this.setAttribute('data-original-value', this.value);
+                }
+                
+                // Hiển thị confirm dialog
+                if (confirm('Bạn có chắc muốn thay đổi trạng thái bệnh nhân này?')) {
+                    updatePatientStatus(patientId, newStatus);
+                } else {
+                    // Khôi phục giá trị ban đầu
+                    this.value = originalValue || this.value;
+                }
+            });
+        });
+    });
+
+    function updatePatientStatus(patientId, status) {
+        fetch('${pageContext.request.contextPath}/admin/patient/status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'patientId=' + patientId + '&status=' + status
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cập nhật giá trị ban đầu
+                const select = document.querySelector(`[data-patient-id="${patientId}"]`);
+                select.setAttribute('data-original-value', status);
+                
+                // Hiển thị thông báo thành công
+                toastr.success('Cập nhật trạng thái thành công!');
+            } else {
+                // Khôi phục giá trị ban đầu nếu lỗi
+                const select = document.querySelector(`[data-patient-id="${patientId}"]`);
+                select.value = select.getAttribute('data-original-value');
+                toastr.error('Cập nhật trạng thái thất bại: ' + (data.message || 'Lỗi không xác định'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Khôi phục giá trị ban đầu nếu lỗi
+            const select = document.querySelector(`[data-patient-id="${patientId}"]`);
+            select.value = select.getAttribute('data-original-value');
+            toastr.error('Có lỗi xảy ra khi cập nhật trạng thái');
+        });
+    }
+
     // Thiết lập ngày tối đa là hôm nay cho date input
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("update_date_of_birth").setAttribute("max", today);
     document.getElementById("date_of_birth").setAttribute("max", today);
 </script>
 <script>
+    // Hàm mở modal cập nhật bệnh nhân từ Tabulator
+    function editPatient(data) {
+        data = decodeURIComponent(data)
+        const d = typeof data === 'string' ? JSON.parse(data) : data;
+        document.getElementById("update_patient_id").value = d.patientId ?? "";
+        document.getElementById("update_username").value = d.username ?? "";
+        document.getElementById("update_fullname").value = d.fullname ?? "";
+        document.getElementById("update_email").value = d.email ?? "";
+        document.getElementById("update_phone").value = d.phone ?? "";
+        document.getElementById("update_gender").value = d.gender ?? "";
+        document.getElementById("update_date_of_birth").value = d.date_of_birth ?? "";
+        document.getElementById("update_address").value = d.address ?? "";
+        const modal = new bootstrap.Modal(document.getElementById('updateModal'));
+        modal.show();
+    }
+
+    // Tabulator bảng bệnh nhân
     const table = new Tabulator("#patient-table", {
         height: "auto",
         ajaxURL: "<%=request.getContextPath()%>/api/patients",
         ajaxConfig: "GET",
         layout: "fitColumns",
-        pagination: "local",               // <- bật phân trang local
-        paginationSize: 10,               // <- số dòng mỗi trang
-        paginationSizeSelector: [5, 10, 20, 50, 100], // <- tùy chọn hiển thị
+        pagination: "local",
+        paginationSize: 10,
+        paginationSizeSelector: [5, 10, 20, 50, 100],
         placeholder: "Không có dữ liệu",
         columns: [
-            // { title: "ID", field: "patientId", hozAlign: "center", headerFilter: "input", width: 70 },
             { title: "Username", field: "username", headerFilter: "input" },
             { title: "Họ tên", field: "fullname", headerFilter: "input" },
             { title: "Email", field: "email", headerFilter: "input" },
@@ -240,39 +343,21 @@
             { title: "Giới tính", field: "gender", hozAlign: "center", headerFilter: "input" },
             { title: "Ngày sinh", field: "date_of_birth", hozAlign: "center", headerFilter: "input" },
             { title: "Địa chỉ", field: "address", headerFilter: "input" },
-            /*{
-                title: "Avatar", field: "image_url", hozAlign: "center", headerSort: false, headerFilter: false, width: 70,
-                formatter: function(cell) {
-                    let url = cell.getValue();
-                    if (!url) return "<i class='bi bi-person-circle' style='font-size: 24px; color: #6c757d;'></i>";
-                    if (!url.startsWith("http")) url = "' + request.getContextPath() + '/assets/" + url;
-                    return "<img src='" + (url.startsWith('http') ? url : '<%=request.getContextPath()%>/' + url ) + "' style='width: 32px; height: 32px; border-radius: 50%; object-fit: cover;'>";
-                }
-            },*/
             {
                 title: "Thao tác", hozAlign: "center", headerSort: false, width: 250,
                 formatter: function(cell) {
                     const data = cell.getData();
                     return `
-                        <button onclick="location.href='<%=request.getContextPath()%>/admin/patient?id=`+data.patientId+`'" class="btn btn-sm btn-primary">
+                        <button onclick="location.href='<%=request.getContextPath()%>/admin/patient?id=`+data.patientId+`'" class="btn btn-outline-primary btn-sm" title="Xem">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <button class='btn btn-sm btn-warning me-1' title='Sửa'
-                            onclick="populateUpdateForm(
-                                '` + data.userId + `',
-                                '` + data.username + `',
-                                '` + data.fullname + `',
-                                '` + data.email + `',
-                                '` + data.phone + `',
-                                '` + data.gender + `',
-                                '` + data.date_of_birth + `',
-                                '` + data.address + `'
-                            )">
+                        <button class='btn btn-outline-primary btn-sm me-1' title='Sửa'
+                            onclick="editPatient('` + encodeURIComponent(JSON.stringify(data)) + `')">
                             <i class='bi bi-pencil'></i>
                         </button>
-                        <button class='btn btn-sm btn-danger' title='Xóa'
-                            onclick="showDeleteModal('` + data.userId + `')">
-                            <i class='bi bi-trash'></i>
+                        <button class='btn btn-outline-primary btn-sm' title='Xóa mềm'
+                            onclick="softDeletePatient('` + data.patientId + `', '` + data.fullname + `')">
+                            <i class='bi bi-archive'></i>
                         </button>`;
                 }
             }

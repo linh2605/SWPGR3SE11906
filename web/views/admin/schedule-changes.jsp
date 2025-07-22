@@ -83,7 +83,7 @@
                                                 <span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span>
                                             </td>
                                             <td>
-                                                                                <a href="${pageContext.request.contextPath}/admin/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                                                <a href="${pageContext.request.contextPath}/admin/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                             </td>

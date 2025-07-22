@@ -36,6 +36,18 @@
                         </div>
                     </c:if>
 
+                    <!-- Hiển thị thông báo tài khoản bị vô hiệu hóa -->
+                    <c:if test="${accountDisabled == true}">
+                        <div class="alert alert-warning" role="alert">
+                            <h5><i class="bi bi-exclamation-triangle"></i> Tài khoản đã bị vô hiệu hóa</h5>
+                            <p class="mb-2">${error}</p>
+                            <hr>
+                            <p class="mb-1"><strong>Để biết thêm thông tin, vui lòng liên hệ:</strong></p>
+                            <p class="mb-1"><i class="bi bi-telephone"></i> Số điện thoại: <strong>${contactPhone}</strong></p>
+                            <p class="mb-0"><i class="bi bi-envelope"></i> Email: <strong>${contactEmail}</strong></p>
+                        </div>
+                    </c:if>
+
                     <!-- Hiển thị thông báo thành công -->
                     <c:if test="${param.reset != null}">
                         <div class="alert alert-success" role="alert">

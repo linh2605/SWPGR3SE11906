@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import models.AccountStatus;
 import models.Role;
 import models.User;
 import models.UserRegister;
@@ -69,6 +70,79 @@ public class UserDAO {
         return null;
     }
 }
+    
+    /**
+     * Kiểm tra tài khoản có bị vô hiệu hóa không
+     * @param userId ID của user
+     * @return AccountStatus object chứa thông tin trạng thái
+     */
+    public static AccountStatus checkAccountStatus(int userId) {
+        try (Connection connection = DBContext.makeConnection()) {
+            // Kiểm tra user có tồn tại không
+            PreparedStatement userStmt = connection.prepareStatement(
+                "SELECT role_id FROM users WHERE user_id = ?"
+            );
+            userStmt.setInt(1, userId);
+            ResultSet userRs = userStmt.executeQuery();
+            
+            if (!userRs.next()) {
+                return new AccountStatus(false, "Tài khoản không tồn tại", "NOT_FOUND");
+            }
+            
+            int roleId = userRs.getInt("role_id");
+            
+            // Nếu là doctor, kiểm tra thêm trong bảng doctors
+            if (roleId == 2) { // Doctor role
+                PreparedStatement doctorStmt = connection.prepareStatement(
+                    "SELECT status, deleted_at FROM doctors WHERE user_id = ?"
+                );
+                doctorStmt.setInt(1, userId);
+                ResultSet doctorRs = doctorStmt.executeQuery();
+                
+                if (doctorRs.next()) {
+                    String status = doctorRs.getString("status");
+                    java.sql.Timestamp deletedAt = doctorRs.getTimestamp("deleted_at");
+                    
+                    if (deletedAt != null) {
+                        return new AccountStatus(false, "Tài khoản đã bị xóa mềm", "SOFT_DELETED");
+                    }
+                    
+                    if ("inactive".equalsIgnoreCase(status)) {
+                        return new AccountStatus(false, "Tài khoản đã bị vô hiệu hóa", "INACTIVE");
+                    }
+                }
+            }
+            
+            // Nếu là patient, kiểm tra thêm trong bảng patients
+            if (roleId == 1) { // Patient role
+                PreparedStatement patientStmt = connection.prepareStatement(
+                    "SELECT status, deleted_at FROM patients WHERE user_id = ?"
+                );
+                patientStmt.setInt(1, userId);
+                ResultSet patientRs = patientStmt.executeQuery();
+                
+                if (patientRs.next()) {
+                    String status = patientRs.getString("status");
+                    java.sql.Timestamp deletedAt = patientRs.getTimestamp("deleted_at");
+                    
+                    if (deletedAt != null) {
+                        return new AccountStatus(false, "Tài khoản đã bị xóa mềm", "SOFT_DELETED");
+                    }
+                    
+                    if ("inactive".equalsIgnoreCase(status)) {
+                        return new AccountStatus(false, "Tài khoản đã bị vô hiệu hóa", "INACTIVE");
+                    }
+                }
+            }
+            
+            // Tài khoản hoạt động bình thường
+            return new AccountStatus(true, "Tài khoản hoạt động bình thường", "ACTIVE");
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new AccountStatus(false, "Lỗi kiểm tra trạng thái tài khoản", "ERROR");
+        }
+    }
 
     private static User mappingUser(ResultSet resultSet) throws SQLException {
         User user = new User();

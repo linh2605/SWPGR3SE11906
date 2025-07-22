@@ -21,4 +21,13 @@ public class Specialty {
         this.specialty_id = specialty_id;
         this.name = name;
     }
+    
+    @Override
+    public String toString() {
+        return "Specialty{" +
+                "specialty_id=" + specialty_id +
+                ", name='" + (name != null ? name : "") + '\'' +
+                ", description='" + (description != null ? description : "") + '\'' +
+                '}';
+    }
 }

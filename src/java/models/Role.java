@@ -34,4 +34,13 @@ public class Role {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    @Override
+    public String toString() {
+        return "Role{" +
+                "roleId=" + roleId +
+                ", name='" + (name != null ? name : "") + '\'' +
+                ", description='" + (description != null ? description : "") + '\'' +
+                '}';
+    }
 }

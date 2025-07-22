@@ -44,17 +44,11 @@
 
         <!-- Bộ lọc -->
         <div class="row g-3 mb-3">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="filterDate" class="form-label">Lọc theo ngày</label>
                 <input type="date" id="filterDate" class="form-control">
             </div>
-            <div class="col-md-3">
-                <label for="filterDoctor" class="form-label">Lọc theo bác sĩ</label>
-                <select id="filterDoctor" class="form-select">
-                    <option value="">Tất cả</option>
-                </select>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="filterStatus" class="form-label">Lọc theo trạng thái</label>
                 <select id="filterStatus" class="form-select">
                     <option value="">Tất cả</option>
@@ -63,9 +57,6 @@
                     <option value="completed">Hoàn thành</option>
                     <option value="canceled">Đã hủy</option>
                 </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-primary w-100" id="filterButton"><i class="bi bi-funnel"></i> Lọc lịch hẹn</button>
             </div>
         </div>
 

@@ -138,7 +138,7 @@
                                                     <td>Xét nghiệm máu</td>
                                                     <td><span class="badge bg-warning">Chờ xử lý</span></td>
                                                     <td>
-                                                        <button class="btn btn-sm btn-outline-primary">Bắt đầu</button>
+                                                        <button class="btn btn-sm btn-primary">Bắt đầu</button>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -149,7 +149,7 @@
                                                     <td>Xét nghiệm máu</td>
                                                     <td><span class="badge bg-info">Đang xử lý</span></td>
                                                     <td>
-                                                        <button class="btn btn-sm btn-outline-success">Hoàn thành</button>
+                                                        <button class="btn btn-sm btn-success">Hoàn thành</button>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
@@ -160,7 +160,7 @@
                                                     <td>Xét nghiệm máu</td>
                                                     <td><span class="badge bg-secondary">Chờ kết quả</span></td>
                                                     <td>
-                                                        <button class="btn btn-sm btn-outline-info">Xem kết quả</button>
+                                                        <button class="btn btn-sm btn-info">Xem kết quả</button>
                                                     </td>
                                                 </tr>
                                             </c:forEach>

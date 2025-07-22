@@ -25,32 +25,33 @@ import java.util.List;
 public class AdminPatientServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Use AuthHelper for unified authentication
-        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+        if (!utils.AuthHelper.hasRole(req, 4)) {
             resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        if (req.getParameter("id") == null) {
-            List<Patient> patients = PatientDao.getAllPatients();
+
+        String idParam = req.getParameter("id");
+        if (idParam == null) {
+            List<Patient> patients = PatientDao.getAllNonDeletedPatients();
             req.setAttribute("patients", patients);
             req.getRequestDispatcher("/views/admin/patient_manager.jsp").forward(req, resp);
+            return;
         } else {
-            int id = Integer.parseInt(req.getParameter("id"));
+            int id = Integer.parseInt(idParam);
             Patient patient = PatientDao.getPatientById(id);
             req.setAttribute("patient", patient);
             req.getRequestDispatcher("/views/admin/patient-detail.jsp").forward(req, resp);
+            return;
         }
-
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Use AuthHelper for unified authentication
-        if (!utils.AuthHelper.hasRole(req, 4)) { // 4 = admin
+        if (!utils.AuthHelper.hasRole(req, 4)) {
             resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        
+
         HttpSession session = req.getSession();
         String username = req.getParameter("username");
         if (UserDAO.doesUsernameExist(username)) {

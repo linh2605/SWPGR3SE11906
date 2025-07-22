@@ -13,6 +13,7 @@ public class Patient {
     private String image_url;
     private Timestamp created_at;
     private int status_code;
+    private String status; // Thêm field status
 
     public Patient() {}
 
@@ -42,6 +43,9 @@ public class Patient {
 
     public Timestamp getCreated_at() { return created_at; }
     public void setCreated_at(Timestamp created_at) { this.created_at = created_at; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public Patient(User user, Gender gender, Date date_of_birth, String address, String image_url) {
         this.user = user;
@@ -49,5 +53,19 @@ public class Patient {
         this.date_of_birth = date_of_birth;
         this.address = address;
         this.image_url = image_url;
+    }
+    
+    @Override
+    public String toString() {
+        return "Patient{" +
+                "patient_id=" + patient_id +
+                ", user=" + (user != null ? user.getUserId() : "null") +
+                ", fullName='" + (fullName != null ? fullName : "") + '\'' +
+                ", gender=" + (gender != null ? gender.name() : "null") +
+                ", date_of_birth=" + date_of_birth +
+                ", address='" + (address != null ? address : "") + '\'' +
+                ", image_url='" + (image_url != null ? image_url : "") + '\'' +
+                ", status='" + (status != null ? status : "") + '\'' +
+                '}';
     }
 }

@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import dal.DBContext;
-import config.WebSocketConfig;
+// WebSocketConfig removed - using ChatWebSocket instead
 
 @WebServlet(name = "UpdateAppointmentStatusServlet", urlPatterns = {"/update-appointment-status"})
 public class UpdateAppointmentStatusServlet extends HttpServlet {
@@ -38,13 +38,6 @@ public class UpdateAppointmentStatusServlet extends HttpServlet {
                 int result = stmt.executeUpdate();
 
                 if (result > 0) {
-                    // Send realtime notification
-                    String notification = String.format(
-                        "{\"type\":\"appointment_update\",\"appointmentId\":%d,\"status\":\"%s\"}",
-                        appointmentId, status
-                    );
-                    WebSocketConfig.broadcast(notification);
-                    
                     response.setContentType("application/json");
                     response.getWriter().write("{\"success\":true}");
                 } else {

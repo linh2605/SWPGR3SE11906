@@ -11,38 +11,26 @@ import models.Doctor;
 import models.Service;
 import models.ServiceType;
 
-import javax.print.Doc;
-
 public class ServiceDAO {
 
     public static Service getServiceById(int serviceId) {
-        String sql = "SELECT service_id, name, detail, price, type, image FROM services WHERE service_id = ?";
+        String sql = "SELECT package_id, name, description, price, duration FROM examination_packages WHERE package_id = ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, serviceId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Service s = new Service();
-                    s.setServiceId(rs.getInt("service_id"));
+                    s.setServiceId(rs.getInt("package_id"));
                     s.setName(rs.getString("name"));
-                    s.setDetail(rs.getString("detail"));
+                    s.setDetail(rs.getString("description"));
                     s.setPrice(rs.getLong("price"));
-                    String typeStr = rs.getString("type");
-                    s.setImage(rs.getString("image"));
-                    if (typeStr != null && !typeStr.trim().isEmpty()) {
-                        try {
-                            s.setType(ServiceType.valueOf(typeStr));
-                        } catch (IllegalArgumentException e) {
-                            System.err.println("Invalid service type value in database: " + typeStr);
-                            s.setType(ServiceType.SPECIALIST);
-                        }
-                    } else {
-                        s.setType(ServiceType.SPECIALIST);
-                    }
+                    s.setType(ServiceType.SPECIALIST);
+                    s.setImage("");
                     List<DoctorService> doctorServices = ServiceDAO.getDoctorService();
                     List<Doctor> doctors = DoctorDao.getAllDeletedDoctors();
                     List<Doctor> temp = new ArrayList<>();
                     for (int i = 0; i < doctorServices.size(); i++) {
-                        if (doctorServices.get(i).service_id == serviceId) {
+                        if (doctorServices.get(i).package_id == serviceId) {
                             temp.add(ServiceDAO.searchDoctor(doctors, doctorServices.get(i).doctor_id));
                         }
                     }
@@ -58,28 +46,18 @@ public class ServiceDAO {
 
     public static List<Service> getTopServices(int limit) {
         List<Service> list = new ArrayList<>();
-        String sql = "SELECT service_id, name, detail, price, type, image FROM services LIMIT ?";
+        String sql = "SELECT package_id, name, description, price, duration FROM examination_packages LIMIT ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Service s = new Service();
-                    s.setServiceId(rs.getInt("service_id"));
+                    s.setServiceId(rs.getInt("package_id"));
                     s.setName(rs.getString("name"));
-                    s.setDetail(rs.getString("detail"));
+                    s.setDetail(rs.getString("description"));
                     s.setPrice(rs.getLong("price"));
-                    String typeStr = rs.getString("type");
-                    s.setImage(rs.getString("image"));
-                    if (typeStr != null && !typeStr.trim().isEmpty()) {
-                        try {
-                            s.setType(ServiceType.valueOf(typeStr));
-                        } catch (IllegalArgumentException e) {
-                            System.err.println("Invalid service type value in database: " + typeStr);
-                            s.setType(ServiceType.SPECIALIST);
-                        }
-                    } else {
-                        s.setType(ServiceType.SPECIALIST);
-                    }
+                    s.setType(ServiceType.SPECIALIST);
+                    s.setImage("");
                     list.add(s);
                 }
             }
@@ -91,31 +69,21 @@ public class ServiceDAO {
 
     public static List<Service> getServicesByDoctorId(int doctorId) {
         List<Service> list = new ArrayList<>();
-        String sql = "SELECT s.service_id, name, detail, price, type, image\n"
-                + "  FROM services s\n"
-                + "	JOIN doctor_services ds ON s.service_id = ds.service_id\n"
+        String sql = "SELECT ep.package_id, ep.name, ep.description, ep.price, ep.duration\n"
+                + "  FROM examination_packages ep\n"
+                + "	JOIN doctor_services ds ON ep.package_id = ds.package_id\n"
                 + " WHERE ds.doctor_id = ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, doctorId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Service s = new Service();
-                    s.setServiceId(rs.getInt("service_id"));
+                    s.setServiceId(rs.getInt("package_id")); // Sử dụng package_id thay cho service_id
                     s.setName(rs.getString("name"));
-                    s.setDetail(rs.getString("detail"));
+                    s.setDetail(rs.getString("description")); // Sử dụng description thay cho detail
                     s.setPrice(rs.getLong("price"));
-                    String typeStr = rs.getString("type");
-                    s.setImage(rs.getString("image"));
-                    if (typeStr != null && !typeStr.trim().isEmpty()) {
-                        try {
-                            s.setType(ServiceType.valueOf(typeStr));
-                        } catch (IllegalArgumentException e) {
-                            System.err.println("Invalid service type value in database: " + typeStr);
-                            s.setType(ServiceType.SPECIALIST);
-                        }
-                    } else {
-                        s.setType(ServiceType.SPECIALIST);
-                    }
+                    s.setType(ServiceType.SPECIALIST); // Mặc định là SPECIALIST
+                    s.setImage(""); // Không có image trong examination_packages
                     list.add(s);
                 }
             }
@@ -125,56 +93,22 @@ public class ServiceDAO {
         return list;
     }
     
-    public static List<Service> getTopPopularServices(int limit) {
-        List<Service> list = new ArrayList<>();
-        String sql = "SELECT s.service_id, s.name, s.detail, s.price, s.image, s.type, COUNT(a.appointment_id) as count " +
-                "FROM services s LEFT JOIN appointments a ON s.service_id = a.service_id " +
-                "GROUP BY s.service_id, s.name, s.detail, s.price, s.type, s.image " +
-                "ORDER BY count DESC LIMIT ?";
-        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, limit);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Service s = new Service();
-                    s.setServiceId(rs.getInt("service_id"));
-                    s.setName(rs.getString("name"));
-                    s.setDetail(rs.getString("detail"));
-                    s.setPrice(rs.getLong("price"));
-                    String typeStr = rs.getString("type");
-                    s.setImage(rs.getString("image"));
-                    if (typeStr != null && !typeStr.trim().isEmpty()) {
-                        try {
-                            s.setType(ServiceType.valueOf(typeStr));
-                        } catch (IllegalArgumentException e) {
-                            System.err.println("Invalid service type value in database: " + typeStr);
-                            s.setType(ServiceType.SPECIALIST);
-                        }
-                    } else {
-                        s.setType(ServiceType.SPECIALIST);
-                    }
-                    list.add(s);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
+    // Đã xóa hàm getTopPopularServices vì không còn sử dụng
 
     public static class DoctorService{
         int doctor_id;
-        int service_id;
+        int package_id;
 
-        public DoctorService(int doctor_id, int service_id) {
+        public DoctorService(int doctor_id, int package_id) {
             this.doctor_id = doctor_id;
-            this.service_id = service_id;
+            this.package_id = package_id;
         }
     }
 
     public static List<Service> getAll(){
         List<Service> list = new ArrayList<>();
         try {
-            String sql = "select * from services";
+            String sql = "select * from examination_packages";
             Connection connection = DBContext.makeConnection();
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -182,15 +116,15 @@ public class ServiceDAO {
             List<DoctorService> doctorServices = getDoctorService();
             while (rs.next()) {
                 Service s = new Service();
-                s.setServiceId(rs.getInt("service_id"));
+                s.setServiceId(rs.getInt("package_id"));
                 s.setName(rs.getString("name"));
-                s.setDetail(rs.getString("detail"));
+                s.setDetail(rs.getString("description"));
                 s.setPrice(rs.getLong("price"));
-                s.setType(ServiceType.valueOf(rs.getString("type")));
-                s.setImage(rs.getString("image"));
+                s.setType(ServiceType.SPECIALIST);
+                s.setImage("");
                 List<Doctor> temp = new ArrayList<>();
                 for (int i = 0; i < doctorServices.size(); i++) {
-                    if (doctorServices.get(i).service_id == s.getService_id()){
+                                            if (doctorServices.get(i).package_id == s.getServiceId()){
                         temp.add(searchDoctor(doctors, doctorServices.get(i).doctor_id));
                     }
                 }
@@ -219,7 +153,7 @@ public class ServiceDAO {
             PreparedStatement preparedStatement = connection.prepareStatement("select * from doctor_services");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                DoctorService s = new DoctorService(resultSet.getInt("doctor_id"), resultSet.getInt("service_id"));
+                DoctorService s = new DoctorService(resultSet.getInt("doctor_id"), resultSet.getInt("package_id"));
                 doctors.add(s);
             }
         } catch (Exception e){
@@ -228,37 +162,37 @@ public class ServiceDAO {
         return doctors;
     }
 
-    public static void create(Service service) {
-        String insertServiceSQL = "INSERT INTO services (name, detail, price, image, type) VALUES (?, ?, ?, ?, ?)";
-        String insertDoctorServiceSQL = "INSERT INTO doctor_services (doctor_id, service_id) VALUES (?, ?)";
+    public static int create(Service service) {
+        String insertPackageSQL = "INSERT INTO examination_packages (name, description, price, duration) VALUES (?, ?, ?, ?)";
+        String insertDoctorServiceSQL = "INSERT INTO doctor_services (doctor_id, package_id) VALUES (?, ?)";
 
         Connection conn = null;
-        PreparedStatement serviceStmt = null;
+        PreparedStatement packageStmt = null;
         PreparedStatement doctorStmt = null;
         ResultSet generatedKeys = null;
+        int packageId = -1;
 
         try {
             conn = DBContext.makeConnection();
             assert conn != null;
             conn.setAutoCommit(false);
 
-            serviceStmt = conn.prepareStatement(insertServiceSQL, Statement.RETURN_GENERATED_KEYS);
-            serviceStmt.setString(1, service.getName());
-            serviceStmt.setString(2, service.getDetail());
-            serviceStmt.setLong(3, service.getPrice());
-            serviceStmt.setString(4, service.getImage());
-            serviceStmt.setString(5, service.getType().name());
+            packageStmt = conn.prepareStatement(insertPackageSQL, Statement.RETURN_GENERATED_KEYS);
+            packageStmt.setString(1, service.getName());
+            packageStmt.setString(2, service.getDetail());
+            packageStmt.setLong(3, service.getPrice());
+            packageStmt.setInt(4, 60); // duration mặc định 60 phút
 
-            serviceStmt.executeUpdate();
+            packageStmt.executeUpdate();
 
-            generatedKeys = serviceStmt.getGeneratedKeys();
+            generatedKeys = packageStmt.getGeneratedKeys();
             if (generatedKeys.next()) {
-                int serviceId = generatedKeys.getInt(1);
+                packageId = generatedKeys.getInt(1);
 
                 doctorStmt = conn.prepareStatement(insertDoctorServiceSQL);
                 for (Doctor doctor : service.getDoctors()) {
                     doctorStmt.setInt(1, doctor.getDoctor_id());
-                    doctorStmt.setInt(2, serviceId);
+                    doctorStmt.setInt(2, packageId);
                     doctorStmt.addBatch();
                 }
                 doctorStmt.executeBatch();
@@ -268,11 +202,12 @@ public class ServiceDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return packageId;
     }
     public static void update(Service service) {
-        String updateServiceSQL = "UPDATE services SET name=?, detail=?, price=?, image=?, type=? WHERE service_id=?";
-        String deleteOldDoctorsSQL = "DELETE FROM doctor_services WHERE service_id=?";
-        String insertDoctorServiceSQL = "INSERT INTO doctor_services (doctor_id, service_id) VALUES (?, ?)";
+        String updatePackageSQL = "UPDATE examination_packages SET name=?, description=?, price=?, duration=? WHERE package_id=?";
+        String deleteOldDoctorsSQL = "DELETE FROM doctor_services WHERE package_id=?";
+        String insertDoctorServiceSQL = "INSERT INTO doctor_services (doctor_id, package_id) VALUES (?, ?)";
 
         Connection conn = null;
         PreparedStatement updateStmt = null;
@@ -283,26 +218,25 @@ public class ServiceDAO {
             conn = DBContext.makeConnection();
             conn.setAutoCommit(false);
 
-            // Cập nhật thông tin service
-            updateStmt = conn.prepareStatement(updateServiceSQL);
+            // Cập nhật thông tin package
+            updateStmt = conn.prepareStatement(updatePackageSQL);
             updateStmt.setString(1, service.getName());
             updateStmt.setString(2, service.getDetail());
             updateStmt.setLong(3, service.getPrice());
-            updateStmt.setString(4, service.getImage());
-            updateStmt.setString(5, service.getType().name());
-            updateStmt.setInt(6, service.getService_id());
+            updateStmt.setInt(4, 60); // duration mặc định
+            updateStmt.setInt(5, service.getServiceId());
             updateStmt.executeUpdate();
 
             // Xóa liên kết cũ
             deleteStmt = conn.prepareStatement(deleteOldDoctorsSQL);
-            deleteStmt.setInt(1, service.getService_id());
+            deleteStmt.setInt(1, service.getServiceId());
             deleteStmt.executeUpdate();
 
             // Thêm liên kết mới
             insertStmt = conn.prepareStatement(insertDoctorServiceSQL);
             for (Doctor doctor : service.getDoctors()) {
                 insertStmt.setInt(1, doctor.getDoctor_id());
-                insertStmt.setInt(2, service.getService_id());
+                insertStmt.setInt(2, service.getServiceId());
                 insertStmt.addBatch();
             }
             insertStmt.executeBatch();
@@ -314,8 +248,8 @@ public class ServiceDAO {
         }
     }
     public static void delete(int serviceId) {
-        String deleteDoctorServicesSQL = "DELETE FROM doctor_services WHERE service_id=?";
-        String deleteServiceSQL = "DELETE FROM services WHERE service_id=?";
+        String deleteDoctorServicesSQL = "DELETE FROM doctor_services WHERE package_id=?";
+        String deletePackageSQL = "DELETE FROM examination_packages WHERE package_id=?";
 
         Connection conn = null;
         PreparedStatement deleteDoctorsStmt = null;
@@ -329,7 +263,7 @@ public class ServiceDAO {
             deleteDoctorsStmt.setInt(1, serviceId);
             deleteDoctorsStmt.executeUpdate();
 
-            deleteServiceStmt = conn.prepareStatement(deleteServiceSQL);
+            deleteServiceStmt = conn.prepareStatement(deletePackageSQL);
             deleteServiceStmt.setInt(1, serviceId);
             deleteServiceStmt.executeUpdate();
 

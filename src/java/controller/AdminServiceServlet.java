@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import models.Doctor;
 import models.Service;
 import models.ServiceType;
+import models.ExaminationPackage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,10 +29,12 @@ public class AdminServiceServlet extends HttpServlet {
             return;
         }
         
-        List<Doctor> doctors = DoctorDao.getAllDoctors();
+        List<Doctor> doctors = DoctorDao.getAllDeletedDoctors();
         List<Service> services = ServiceDAO.getAll();
+        List<ExaminationPackage> packages = new dal.ExaminationPackageDAO().getAll();
         req.setAttribute("doctors", doctors);
         req.setAttribute("services", services);
+        req.setAttribute("packages", packages);
         req.getRequestDispatcher("/views/admin/service-manager.jsp").forward(req, resp);
     }
 
@@ -55,14 +58,25 @@ public class AdminServiceServlet extends HttpServlet {
     public static void add(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
         String detail = req.getParameter("detail");
-        long price = Long.parseLong(req.getParameter("price"));
+        long price = (long) Double.parseDouble(req.getParameter("price"));
         String[] doctorIds = req.getParameterValues("doctorIds");
         List<Doctor> doctors = parseDoctorList(doctorIds);
-        String image = UploadImage.saveImage(req, "image");
-        ServiceType type = ServiceType.valueOf(req.getParameter("type"));
+        
+        // Kiểm tra có ảnh upload không
+        boolean hasImage = req.getPart("image") != null && req.getPart("image").getSize() > 0;
 
-        Service service = new Service(name, detail, price,type, image, doctors);
-        ServiceDAO.create(service);
+        Service service = new Service(name, detail, price, ServiceType.SPECIALIST, "", doctors);
+        int packageId = ServiceDAO.create(service);
+        
+        // Nếu có ảnh, lưu với tên file theo package_id
+        if (hasImage && packageId > 0) {
+            try {
+                UploadImage.savePackageImage(req, "image", packageId);
+            } catch (Exception e) {
+                System.out.println("Lỗi lưu ảnh: " + e.getMessage());
+            }
+        }
+        
         req.getSession().setAttribute("flash_success", "Thêm mới thành công.");
         resp.sendRedirect(req.getContextPath() + "/admin/examination-manage");
     }
@@ -75,7 +89,7 @@ public class AdminServiceServlet extends HttpServlet {
         } else {
             String name = req.getParameter("name");
             String detail = req.getParameter("detail");
-            long price = Long.parseLong(req.getParameter("price"));
+            long price = (long) Double.parseDouble(req.getParameter("price"));
             String[] doctorIds = req.getParameterValues("doctorIds");
             List<Doctor> doctors = parseDoctorList(doctorIds);
 
@@ -83,9 +97,14 @@ public class AdminServiceServlet extends HttpServlet {
             service.setDetail(detail);
             service.setPrice(price);
             service.setDoctors(doctors);
+            
+            // Upload ảnh mới nếu có
             if (req.getPart("image") != null && req.getPart("image").getSize() > 0) {
-                String image_url = UploadImage.saveImage(req, "image");
-                service.setImage(image_url);
+                try {
+                    UploadImage.savePackageImage(req, "image", service.getServiceId());
+                } catch (Exception e) {
+                    System.out.println("Lỗi lưu ảnh: " + e.getMessage());
+                }
             }
 
             ServiceDAO.update(service);

@@ -35,7 +35,7 @@ public class NewsAddServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        
+
         News news = new News();
         news.setCreatedBy(AuthHelper.getCurrentUser(request));
         request.setAttribute("n", news);
@@ -54,7 +54,7 @@ public class NewsAddServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        
+
         request.setCharacterEncoding("UTF-8");
         if (!utils.AuthHelper.isAuthenticated(request)) {
             response.sendRedirect(request.getContextPath() + "/login");
@@ -86,7 +86,10 @@ public class NewsAddServlet extends HttpServlet {
         News news = new News();
         news.setCreatedBy(AuthHelper.getCurrentUser(request));
         news.setImagePreview(imageUrl);
-
+        news.setTitle(title);
+        news.setShortDescription(shortDescription);
+        news.setDescription(description);
+        
         // validate truong du lieu
         String errMsg = "";
         errMsg += title.isEmpty() ? "<span>Tiêu đề bài viết không được để trống!</span>" : "";
@@ -98,10 +101,6 @@ public class NewsAddServlet extends HttpServlet {
             request.getRequestDispatcher("/views/home/add-news.jsp").forward(request, response);
             return;
         }
-
-        news.setTitle(title);
-        news.setShortDescription(shortDescription);
-        news.setDescription(description);
 
         if (NewsDAO.insert(news)) {
             response.sendRedirect(request.getContextPath() + "/news?addSuccess=true");

@@ -2,6 +2,7 @@
 <%@ page import="models.Specialty" %>
 <%@ page import="dal.FeedbackDAO" %>
 <%@ page import="models.*" %>
+<%@ page import="dal.ExaminationPackageDAO" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -148,27 +149,42 @@
             </div>
         </div>
 
+        <!-- Gói khám sức khỏe -->
+        <section class="doctors mb-5">
+            <h2 class="text-center mb-4" style="color: #004d99;">Gói Khám Sức Khỏe</h2>
+            <div class="row">
+                <%
+                    ExaminationPackageDAO packageDAO = new ExaminationPackageDAO();
+                    List<ExaminationPackage> topPackages = packageDAO.getTop3();
+                    for (ExaminationPackage pkg : topPackages) {
+                %>
+                <div class="col-md-4 mb-4">
+                    <div class="card doctor-card" style="cursor: pointer;">
+                        <img src="${pageContext.request.contextPath}/assets/uploads/package-<%= pkg.getPackageId() %>.jpg" 
+                             class="card-img-top" 
+                             alt="<%= pkg.getName() %>" 
+                             style="height: 200px; object-fit: cover;"
+                             onerror="this.src='https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>'">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= pkg.getName() %></h5>
+                            <p class="card-text"><%= pkg.getDescription() %></p>
+                            <p class="card-text">
+                                <i class="bi bi-clock"></i> <%= pkg.getFormattedDuration() %><br>
+                                <strong>Giá: <%= pkg.getFormattedPrice() %></strong>
+                            </p>
+                            <a href="${pageContext.request.contextPath}/appointment?package_id=<%= pkg.getPackageId() %>" class="btn btn-primary">Đặt lịch ngay</a>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+            <div class="text-center mt-4">
+                <a href="${pageContext.request.contextPath}/examination-packages" class="btn btn-primary">Xem tất cả gói khám</a>
+            </div>
+        </section>
+
         <!-- Main Content -->
         <main class="container my-5">
-            <!-- Dịch Vụ Khám Nổi Bật -->
-            <section class="promotions mb-5">
-                <h2 class="text-center mb-4" style="color: #004d99;">Dịch Vụ Khám Nổi Bật</h2>
-                <div class="row">
-                    <c:forEach var="service" items="${popularServices}">
-                        <div class="col-md-4 mb-4">
-                            <div class="card service-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/service-detail?id=${service.serviceId}'">
-                                <img src="${service.image}" class="card-img-top" alt="${service.name}" style="height: 200px; object-fit: cover;">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">${service.name}</h5>
-                                    <p class="card-text">${service.detail}</p>
-                                    <p class="card-text"><strong>Giá: ${service.price} VNĐ</strong></p>
-                                    <a href="<%=request.getContextPath()%>/appointment?service_id=${service.service_id}"><button class="btn btn-primary">Đặt lịch khám ngay</button></a>
-                                </div>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </div>
-            </section>
             <!-- Tại sao chọn G3 Hospital -->
             <section class="why-choose-us mb-5">
                 <h2 class="text-center mb-4" style="color: #004d99;">Tại sao chọn G3 Hospital?</h2>
@@ -218,23 +234,25 @@
             <!-- Giới thiệu về G3 Hospital -->
             <section class="introduction mb-5">
                 <h2 class="text-center mb-4" style="color: #004d99;">Giới thiệu về G3 Hospital</h2>
-                <div class="row g-0">
+                <div class="row align-items-stretch">
                     <div class="col-md-6">
-                        <div class="card">
-                            <img src="https://picsum.photos/600/400" class="card-img-top" alt="Giới thiệu G3 Hospital">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <img src="https://picsum.photos/600/400" class="card-img-top" alt="Giới thiệu G3 Hospital" style="height: 400px; object-fit: cover;">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <p class="card-text">Năm 2003, Bệnh viện Đa khoa G3 Hospital được thành lập, là bệnh viện tư nhân hàng đầu tại Việt Nam. Với sứ mệnh mang lại dịch vụ y tế chất lượng cao, G3 Hospital không ngừng đầu tư vào cơ sở vật chất hiện đại và đội ngũ bác sĩ chuyên môn xuất sắc.</p>
-                                <ul class="list-unstyled">
-                                    <li><i class="bi bi-check-circle"></i> Hơn 250 bác sĩ chuyên gia, giàu kinh nghiệm</li>
-                                    <li><i class="bi bi-check-circle"></i> Hệ thống trang thiết bị hiện đại, tiên tiến</li>
-                                    <li><i class="bi bi-check-circle"></i> Dịch vụ chăm sóc sức khỏe toàn diện</li>
-                                    <li><i class="bi bi-check-circle"></i> Hiệu quả điều trị cao, sự hài lòng của bệnh nhân</li>
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body d-flex flex-column justify-content-center p-4">
+                                <p class="card-text mb-4">Năm 2003, Bệnh viện Đa khoa G3 Hospital được thành lập, là bệnh viện tư nhân hàng đầu tại Việt Nam. Với sứ mệnh mang lại dịch vụ y tế chất lượng cao, G3 Hospital không ngừng đầu tư vào cơ sở vật chất hiện đại và đội ngũ bác sĩ chuyên môn xuất sắc.</p>
+                                <ul class="list-unstyled mb-4">
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Hơn 250 bác sĩ chuyên gia, giàu kinh nghiệm</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Hệ thống trang thiết bị hiện đại, tiên tiến</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Dịch vụ chăm sóc sức khỏe toàn diện</li>
+                                    <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i> Hiệu quả điều trị cao, sự hài lòng của bệnh nhân</li>
                                 </ul>
-                                <a href="${pageContext.request.contextPath}/views/info/about_us.jsp" class="btn btn-primary">Xem nhiều hơn</a>
+                                <div class="mt-auto">
+                                    <a href="${pageContext.request.contextPath}/views/info/about_us.jsp" class="btn btn-primary">Xem nhiều hơn</a>
+                                </div>
                             </div>
                         </div>
                     </div>

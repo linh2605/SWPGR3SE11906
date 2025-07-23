@@ -6,6 +6,7 @@ package controller;
 
 import dal.UserDAO;
 import models.User;
+import dal.PatientDao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -106,6 +107,13 @@ public class LoginServlet extends HttpServlet {
                 if (roleId == 1) { // Patient
                     jwtCookie.setMaxAge(4 * 60 * 60); // 4 hours for patients
                     System.out.println("JWT token generated for PATIENT: " + user.getUsername() + " (4 hours expiration)");
+                int patientId = PatientDao.getPatientIdByUserId(user.getUserId());
+                    if (patientId != -1) {
+                        session.setAttribute("patientId", patientId);
+                        System.out.println("✅ Patient ID saved in session: " + patientId);
+                    } else {
+                        System.err.println("❌ Không tìm thấy patientId cho userId=" + user.getUserId());
+                    }    
                 } else { // Admin, Doctor, Receptionist, Technician
                     jwtCookie.setMaxAge(24 * 60 * 60); // 24 hours for others
                     System.out.println("JWT token generated for " + user.getRole().getName().toUpperCase() + ": " + user.getUsername() + " (24 hours expiration)");

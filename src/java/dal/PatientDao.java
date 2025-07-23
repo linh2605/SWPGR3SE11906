@@ -316,6 +316,20 @@ public class PatientDao {
             return false;
         }
     }
+    public static int getPatientIdByUserId(int userId) {
+    String sql = "SELECT patient_id FROM patients WHERE user_id = ?";
+    try (Connection conn = DBContext.makeConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("patient_id");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return -1; // Không tìm thấy
+}
     
     public static int countAllPatients() {
         String sql = "SELECT COUNT(*) FROM patients WHERE deleted_at IS NULL";

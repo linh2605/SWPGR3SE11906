@@ -140,7 +140,7 @@
                                             <!-- Menu cho Patient -->
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/ProfileServlet">Hồ sơ cá nhân</a></li>
                                             <li><a class="dropdown-item" href="${pageContext.request.contextPath}/patient/appointments">Lịch hẹn của tôi</a></li>
-                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/views/patient/medical-records.jsp">Hồ sơ bệnh án</a></li>
+                                            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/medicalRecord?action=list">Hồ sơ bệnh án</a></li>
                                         </c:when>
                                     </c:choose>
                                     <li><hr class="dropdown-divider"></li>

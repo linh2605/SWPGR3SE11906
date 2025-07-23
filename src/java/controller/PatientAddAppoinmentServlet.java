@@ -16,7 +16,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -37,33 +36,6 @@ import java.util.ArrayList;
 @WebServlet(name = "PatientAddAppoinmentServlet", urlPatterns = {"/appointment"})
 public class PatientAddAppoinmentServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet PatientAddAppoinmentServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet PatientAddAppoinmentServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -165,10 +137,6 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             System.out.println("[DEBUG] PatientAddAppoinmentServlet.doPost() - Starting appointment creation");
-
-            String fullName = request.getParameter("fullName");
-            String phone = request.getParameter("phone");
-            String email = request.getParameter("email");
 
             int patientId = Integer.parseInt(request.getParameter("patientId"));
             int doctorId = Integer.parseInt(request.getParameter("doctor"));
@@ -303,6 +271,14 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
         }
         System.out.println("[DEBUG] Slot is available");
 
+        // Check if slot in that day patient were booked
+        System.out.println("[DEBUG] Checking if in that day patient were booked...");
+        if (!AppointmentDao.isAppointmentAvailable(patientId, appointmentDate, shiftId)) {
+            System.out.println("[DEBUG] Slot is not available");
+            return "Bạn đã có lịch đặt vào thời gian này, vui lòng chọn thời gian khác.";
+        }
+        System.out.println("[DEBUG] Slot is available");
+
         // Check if appointment date is in the future
         System.out.println("[DEBUG] Checking if appointment date is in the future...");
         if (appointmentDate.isBefore(LocalDateTime.now())) {
@@ -345,6 +321,7 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
             Patient patient = PatientDao.getPatientById(patientId);
             List<Doctor> doctors = DoctorDao.getAllDoctors();
             List<Service> services = ServiceDAO.getTopServices(10);
+            List<Shift> shifts = new ShiftDAO().getAllShifts();
 
             if (doctors == null) {
                 doctors = new ArrayList<>();
@@ -377,11 +354,12 @@ public class PatientAddAppoinmentServlet extends HttpServlet {
 
             // Format appointmentDate thành string cho input datetime-local
             if (appointmentDate != null) {
-                String formattedDate = appointmentDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+                String formattedDate = appointmentDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 request.setAttribute("appointmentDate", formattedDate);
             }
 
             request.setAttribute("note", note);
+            request.setAttribute("shifts", shifts);
         } catch (Exception e) {
             e.printStackTrace();
         }

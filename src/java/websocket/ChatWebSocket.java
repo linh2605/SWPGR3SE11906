@@ -5,24 +5,32 @@ import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @ServerEndpoint("/websocket/chat/{sessionId}")
 public class ChatWebSocket {
     
-    private static final Map<String, Session> sessions = new ConcurrentHashMap<>();
+    private static final Map<String, Set<Session>> sessions = new ConcurrentHashMap<>();
     private static final Map<String, String> sessionToUser = new ConcurrentHashMap<>();
     
     @OnOpen
     public void onOpen(Session session, @PathParam("sessionId") String sessionId) {
         System.out.println("WebSocket opened for session: " + sessionId);
-        sessions.put(sessionId, session);
+        sessions.computeIfAbsent(sessionId, k -> new CopyOnWriteArraySet<>()).add(session);
     }
     
     @OnClose
     public void onClose(Session session, @PathParam("sessionId") String sessionId) {
         System.out.println("WebSocket closed for session: " + sessionId);
-        sessions.remove(sessionId);
+        Set<Session> sessionSet = sessions.get(sessionId);
+        if (sessionSet != null) {
+            sessionSet.remove(session);
+            if (sessionSet.isEmpty()) {
+                sessions.remove(sessionId);
+            }
+        }
     }
     
     @OnMessage
@@ -39,25 +47,31 @@ public class ChatWebSocket {
     }
     
     public static void broadcastToSession(String sessionId, String message) {
-        Session session = sessions.get(sessionId);
-        if (session != null && session.isOpen()) {
-            try {
-                session.getBasicRemote().sendText(message);
-            } catch (IOException e) {
-                System.err.println("Error broadcasting message: " + e.getMessage());
-                e.printStackTrace();
+        Set<Session> sessionSet = sessions.get(sessionId);
+        if (sessionSet != null) {
+            for (Session s : sessionSet) {
+                if (s.isOpen()) {
+                    try {
+                        s.getBasicRemote().sendText(message);
+                    } catch (IOException e) {
+                        System.err.println("Error broadcasting message: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
     
     public static void broadcastToAll(String message) {
-        sessions.values().forEach(session -> {
-            if (session.isOpen()) {
-                try {
-                    session.getBasicRemote().sendText(message);
-                } catch (IOException e) {
-                    System.err.println("Error broadcasting to all: " + e.getMessage());
-                    e.printStackTrace();
+        sessions.values().forEach(sessionSet -> {
+            for (Session s : sessionSet) {
+                if (s.isOpen()) {
+                    try {
+                        s.getBasicRemote().sendText(message);
+                    } catch (IOException e) {
+                        System.err.println("Error broadcasting to all: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
             }
         });

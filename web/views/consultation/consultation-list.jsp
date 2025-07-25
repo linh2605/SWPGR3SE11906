@@ -187,32 +187,17 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
 
-<script>
-// Thiết lập active menu
-document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        if (link.textContent.trim() === 'Tư vấn sức khỏe') {
-            link.classList.add('active');
-        }
-    });
-    
-    // Load danh sách bác sĩ cho modal
-    <% if (isPatient) { %>
-    loadDoctors();
-    <% } %>
-});
-
 <% if (isPatient) { %>
+<script>
 function loadDoctors() {
-    fetch('${pageContext.request.contextPath}/doctor-api?action=api')
+    fetch('${pageContext.request.contextPath}/api/doctors')
         .then(response => response.json())
         .then(data => {
             const select = document.querySelector('select[name="doctor_id"]');
             data.forEach(doctor => {
                 const option = document.createElement('option');
-                option.value = doctor.doctor_id;
-                option.textContent = doctor.user.fullName + ' - ' + (doctor.specialty ? doctor.specialty.name : 'Chuyên khoa');
+                option.value = doctor.doctorId;
+                option.textContent = doctor.fullname + ' - ' + (doctor.speciality_name ? doctor.speciality_name : 'Chuyên khoa');
                 select.appendChild(option);
             });
         })
@@ -221,24 +206,27 @@ function loadDoctors() {
         });
 }
 
-// Xử lý form tạo phiên tư vấn mới
+document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        if (link.textContent.trim() === 'Tư vấn sức khỏe') {
+            link.classList.add('active');
+        }
+    });
+    loadDoctors();
+});
+
 document.getElementById('newConsultationForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
     const formData = new FormData(this);
     formData.append('action', 'create-session');
-    
     console.log('Creating consultation session...');
     console.log('Form data:', Object.fromEntries(formData));
-    
-    // Convert FormData to URLSearchParams for better compatibility
     const params = new URLSearchParams();
     for (let [key, value] of formData.entries()) {
         params.append(key, value);
     }
-    
     console.log('URLSearchParams:', params.toString());
-    
     fetch('${pageContext.request.contextPath}/consultation-chat', {
         method: 'POST',
         headers: {
@@ -274,6 +262,7 @@ document.getElementById('newConsultationForm').addEventListener('submit', functi
         alert('Có lỗi xảy ra khi tạo phiên tư vấn: ' + error.message);
     });
 });
+</script>
 <% } %>
 </script>
 

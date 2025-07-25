@@ -10,6 +10,9 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility; // ✅ Thêm dòng này để mã hóa tiêu đề
+import models.Appointment;
+import models.Doctor;
+import models.ScheduleChange;
 
 public class EmailServices {
 

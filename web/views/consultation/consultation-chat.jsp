@@ -164,33 +164,40 @@
 <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script>
 
 <script>
-// WebSocket connection
+var contextPath = '<%= request.getContextPath() %>';
+const isPatient = <%= isPatient %>;
+const senderName = isPatient ? '<%= consultationSession.getPatient().getUser().getFullName() %>' : 'Bác sĩ <%= consultationSession.getDoctor().getUser().getFullName() %>';
 let websocket;
 const sessionId = '<%= consultationSession.getSession_id() %>';
 
-// Initialize WebSocket
 function initWebSocket() {
-    const wsUrl = `ws://${window.location.host}${window.location.pathname.replace('/views/consultation/consultation-chat.jsp', '')}/websocket/chat/${sessionId}`;
+    if (!sessionId) {
+        console.error('sessionId is empty!');
+        return;
+    }
+    // window.location.origin includes protocol, host, and port
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = wsProtocol + '//' + window.location.host + contextPath + '/websocket/chat/' + sessionId;
+    console.log('Connecting WebSocket to:', wsUrl);
     websocket = new WebSocket(wsUrl);
-    
     websocket.onopen = function(event) {
         console.log('WebSocket connected');
     };
-    
     websocket.onmessage = function(event) {
-        console.log('Received message:', event.data);
-        const data = JSON.parse(event.data);
-        if (data.type === 'new_message') {
-            addMessageToChat(data.message);
+        try {
+            const data = JSON.parse(event.data);
+            console.log('WebSocket received:', data);
+            if (data.type === 'new_message') {
+                addMessageToChat(data.message);
+            }
+        } catch (e) {
+            console.error('WebSocket message parse error:', e, event.data);
         }
     };
-    
     websocket.onclose = function(event) {
         console.log('WebSocket disconnected');
-        // Try to reconnect after 3 seconds
         setTimeout(initWebSocket, 3000);
     };
-    
     websocket.onerror = function(error) {
         console.error('WebSocket error:', error);
     };
@@ -204,22 +211,40 @@ function scrollToBottom() {
 
 // Add new message to chat
 function addMessageToChat(message) {
+    console.log('addMessageToChat:', message);
+    if (!message || !message.message_content || !message.senderName) {
+        console.warn('Message object thiếu trường hoặc rỗng:', message);
+        return; // Không render nếu thiếu nội dung
+    }
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${message.isFromPatient ? 'message-patient' : 'message-doctor'}`;
-    
+
     const time = new Date(message.created_at).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
-    
-    messageDiv.innerHTML = `
-        <div class="message-content">
-            <div class="message-header">
-                <strong>${message.senderName}</strong>
-                <small class="text-muted">${time}</small>
-            </div>
-            <div class="message-text">${message.message_content}</div>
-        </div>
-    `;
-    
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'message-header';
+
+    const strong = document.createElement('strong');
+    strong.textContent = message.senderName;
+
+    const small = document.createElement('small');
+    small.className = 'text-muted';
+    small.textContent = time;
+
+    headerDiv.appendChild(strong);
+    headerDiv.appendChild(small);
+
+    const textDiv = document.createElement('div');
+    textDiv.className = 'message-text';
+    textDiv.textContent = message.message_content;
+
+    contentDiv.appendChild(headerDiv);
+    contentDiv.appendChild(textDiv);
+    messageDiv.appendChild(contentDiv);
     chatMessages.appendChild(messageDiv);
     scrollToBottom();
 }
@@ -251,49 +276,41 @@ document.getElementById('messageForm').addEventListener('submit', function(e) {
         },
         body: params
     })
-    .then(response => {
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
-        return response.text().then(text => {
-            console.log('Raw response:', text);
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                console.error('JSON parse error:', e);
-                console.error('Response text:', text);
-                throw new Error('Invalid JSON response: ' + text);
-            }
-        });
-    })
-    .then(data => {
-        if (data.success) {
-            // Clear input
-            this.querySelector('input[name="message_content"]').value = '';
-            
-            // Add message to chat immediately
-            const messageContent = formData.get('message_content');
-            const currentTime = new Date().toISOString();
-            const isPatient = <%= isPatient %>;
-            const senderName = isPatient ? '<%= consultationSession.getPatient().getUser().getFullName() %>' : 'Bác sĩ <%= consultationSession.getDoctor().getUser().getFullName() %>';
-            
-            const newMessage = {
-                message_content: messageContent,
-                created_at: currentTime,
-                isFromPatient: isPatient,
-                senderName: senderName
-            };
-            
-            addMessageToChat(newMessage);
-            
-            // Broadcast to other users via WebSocket
-            if (websocket && websocket.readyState === WebSocket.OPEN) {
-                websocket.send(JSON.stringify({
+    .then(response => response.text())
+    .then(text => {
+        try {
+            const data = JSON.parse(text);
+            if (data.success) {
+                this.querySelector('input[name="message_content"]').value = '';
+                // Gửi message qua WebSocket, chỉ render khi nhận lại qua WebSocket
+                const messageContent = formData.get('message_content');
+                const currentTime = new Date().toISOString();
+                const newMessage = {
+                    message_content: messageContent,
+                    created_at: currentTime,
+                    isFromPatient: isPatient,
+                    senderName: senderName
+                };
+                console.log('Sending WebSocket message:', {
                     type: 'new_message',
                     message: newMessage
-                }));
+                });
+                if (websocket && websocket.readyState === WebSocket.OPEN) {
+                    websocket.send(JSON.stringify({
+                        type: 'new_message',
+                        message: newMessage
+                    }));
+                } else {
+                    // Nếu WebSocket chưa sẵn sàng, fallback reload sau 1s
+                    setTimeout(() => location.reload(), 1000);
+                }
+            } else {
+                alert('Lỗi: ' + data.message);
             }
-        } else {
-            alert('Lỗi: ' + data.message);
+        } catch (e) {
+            console.error('JSON parse error:', e);
+            console.error('Response text:', text);
+            alert('Có lỗi xảy ra khi gửi tin nhắn.');
         }
     })
     .catch(error => {

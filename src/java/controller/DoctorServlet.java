@@ -59,6 +59,10 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
     }
 
     // Lấy danh sách bệnh nhân mà bác sĩ có thể xử lý (role_id = 2)
+    
+    // Fix các appointment đã confirmed nhưng chưa có status_code = 3
+//    dal.PatientStatusDao.fixConfirmedAppointments();
+    
     List<PatientStatus> patients = PatientStatusDao.getByHandledRole(2);  // role_id = 2: doctor
 
     // Lấy logs từ patient_status_logs và cập nhật trạng thái cho bệnh nhân

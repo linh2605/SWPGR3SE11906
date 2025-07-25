@@ -407,6 +407,47 @@ public class AppointmentDao {
         }
     }
 
+    /**
+     * Cập nhật trạng thái appointment bằng status code (int)
+     * @param appointmentId ID của appointment
+     * @param statusCode Mã trạng thái từ bảng status_definitions
+     * @return true nếu cập nhật thành công
+     */
+    public static boolean updateAppointmentStatusByCode(int appointmentId, int statusCode) {
+        String sql = "UPDATE appointments SET status = ?, updated_at = NOW() WHERE appointment_id = ?";
+        try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            // Chuyển đổi status code thành string tương ứng
+            String statusString;
+            switch (statusCode) {
+                case 1: statusString = "pending"; break;      // New
+                case 2: statusString = "pending"; break;      // Check in  
+                case 3: statusString = "confirmed"; break;    // Đang đợi khám
+                case 4: statusString = "in_progress"; break;  // Đang khám
+                case 5: statusString = "pending"; break;      // Đang chờ bệnh nhân xét nghiệm
+                case 6: statusString = "pending"; break;      // Đang xét nghiệm
+                case 7: statusString = "pending"; break;      // Chờ kết quả xét nghiệm
+                case 8: statusString = "pending"; break;      // Đã lấy kết quả xét nghiệm
+                case 9: statusString = "completed"; break;    // Đã khám xong. Đợi thanh toán
+                case 10: statusString = "completed"; break;   // Thanh toán xong
+                default: statusString = "pending"; break;
+            }
+            
+            System.out.println("DEBUG: Updating appointment " + appointmentId + " to status: " + statusString);
+            
+            ps.setString(1, statusString);
+            ps.setInt(2, appointmentId);
+            
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("DEBUG: Rows affected: " + rowsAffected);
+            
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            System.out.println("DEBUG: Error updating appointment status: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean updateAppointmentPaymentStatus(int id, PaymentStatus status) {
         String sql = "UPDATE appointments SET payment_status = ?, updated_at = NOW() WHERE appointment_id = ?";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {

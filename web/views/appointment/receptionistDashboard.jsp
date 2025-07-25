@@ -165,9 +165,12 @@
                 
                 let actionButtons = '<button type="button" class="btn btn-sm btn-outline-info" title="Xem chi tiết" data-bs-toggle="modal" data-bs-target="#appointmentDetailModal" onclick="showAppointmentDetail(\'' + appointment.id + '\',\'' + appointment.queueNumber + '\',\'' + appointment.date + '\',\'' + appointment.shiftId + '\',\'' + patientName + '\',\'' + serviceName + '\',\'' + statusText + '\',\'' + (appointment.note || '') + '\')"><i class="bi bi-eye"></i> Xem</button>';
                 
-                // Nút xác nhận (chỉ hiện khi trạng thái là 'pending')
+                // Nút xác nhận (chỉ hiện khi trạng thái là 'pending' và đã cọc)
                 if (appointment.statusCode && appointment.statusCode.toLowerCase() === 'pending') {
-                    actionButtons += '<button type="button" class="btn btn-sm btn-outline-primary ms-1" title="Xác nhận" onclick="updateAppointmentStatus(' + appointment.id + ',\'new\')"><i class="bi bi-check2-circle"></i> Xác nhận</button>';
+                    const isPaid = appointment.paymentStatus === 'RESERVED' || appointment.paymentStatus === 'PAID';
+                    const disabledAttr = isPaid ? '' : 'disabled';
+                    const title = isPaid ? 'Xác nhận' : 'Xác nhận (chưa cọc)';
+                    actionButtons += '<button type="button" class="btn btn-sm btn-outline-primary ms-1" title="' + title + '" ' + disabledAttr + ' onclick="updateAppointmentStatus(' + appointment.id + ',\'confirmed\')"><i class="bi bi-check2-circle"></i> Xác nhận</button>';
                 }
                 
                 // Nút hoàn thành (chỉ hiện khi trạng thái là 'completed' và đã thanh toán)

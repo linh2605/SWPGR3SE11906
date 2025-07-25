@@ -25,6 +25,7 @@ public class ReceptionistServlet extends HttpServlet {
         }
 
         // Lọc bệnh nhân mà lễ tân có thể xử lý
+        dal.PatientStatusDao.fixConfirmedAppointments();
         List<PatientStatus> patients = PatientStatusDao.getByHandledRole(3);  // role_id = 3: receptionist
         req.setAttribute("statuses", StatusDAO.getStatusesByRole(3));  // Trạng thái dành cho lễ tân
 

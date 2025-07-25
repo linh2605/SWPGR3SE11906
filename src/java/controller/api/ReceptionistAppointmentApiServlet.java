@@ -89,8 +89,60 @@ public class ReceptionistAppointmentApiServlet extends HttpServlet {
                 java.util.Map<String, Object> map = gson.fromJson(body, java.util.Map.class);
                 int id = ((Number) map.get("id")).intValue();
                 String status = (String) map.get("status");
-                boolean ok = dal.AppointmentDao.updateAppointmentStatus(id, status);
-                response.getWriter().write("{\"success\":" + ok + "}");
+                
+                System.out.println("DEBUG: Received request to update appointment " + id + " to status: " + status);
+                
+                // Kiểm tra trạng thái cọc trước khi xác nhận
+                Appointment appt = dal.AppointmentDao.getAppointmentById(id);
+                if (appt == null) {
+                    System.out.println("DEBUG: Appointment not found with ID: " + id);
+                    response.getWriter().write("{\"success\":false,\"message\":\"Không tìm thấy lịch hẹn!\"}");
+                    return;
+                }
+                
+                System.out.println("DEBUG: Found appointment with payment status: " + appt.getPaymentStatus());
+                
+                // Debug: Kiểm tra trạng thái bệnh nhân trước khi cập nhật
+                dal.PatientStatusDao.debugPatientStatus(appt.getPatient().getPatient_id());
+                
+                if (status.equals("confirmed")) {
+                    // Chỉ cho phép xác nhận nếu đã cọc
+                    if (appt.getPaymentStatus() != models.PaymentStatus.RESERVED && appt.getPaymentStatus() != models.PaymentStatus.PAID) {
+                        System.out.println("DEBUG: Payment not completed, cannot confirm");
+                        response.getWriter().write("{\"success\":false,\"message\":\"Bệnh nhân chưa cọc, không thể xác nhận!\"}");
+                        return;
+                    }
+                    // Sử dụng hàm mới với status code 3 (Đang đợi khám)
+                    System.out.println("DEBUG: Calling updateAppointmentStatusByCode with status code 3");
+                    boolean ok = dal.AppointmentDao.updateAppointmentStatusByCode(id, 3);
+                    System.out.println("DEBUG: Update result: " + ok);
+                    
+                    // Cập nhật trạng thái bệnh nhân thành "Đang đợi khám" (status_code = 3)
+                    if (ok) {
+                        Integer currentUserId = utils.AuthHelper.getCurrentUserId(request);
+                        System.out.println("DEBUG: About to update patient status - Patient ID: " + appt.getPatient().getPatient_id() + ", Status Code: 3, Changed By: " + currentUserId);
+                        dal.PatientStatusDao.updateStatus(appt.getPatient().getPatient_id(), 3, currentUserId);
+                        System.out.println("DEBUG: Updated patient status to 'Đang đợi khám'");
+                        
+                        // Debug: Kiểm tra trạng thái bệnh nhân sau khi cập nhật
+                        dal.PatientStatusDao.debugPatientStatus(appt.getPatient().getPatient_id());
+                    } else {
+                        System.out.println("DEBUG: Appointment status update failed, skipping patient status update");
+                    }
+                    
+                    response.getWriter().write("{\"success\":" + ok + "}");
+                } else if (status.equals("new")) {
+                    // Xử lý trường hợp status "new" - chuyển sang "pending"
+                    System.out.println("DEBUG: Converting 'new' to 'pending'");
+                    boolean ok = dal.AppointmentDao.updateAppointmentStatus(id, "pending");
+                    System.out.println("DEBUG: Update result: " + ok);
+                    response.getWriter().write("{\"success\":" + ok + "}");
+                } else {
+                    // Cho các trạng thái khác, vẫn dùng hàm cũ
+                    System.out.println("DEBUG: Using old updateAppointmentStatus for status: " + status);
+                    boolean ok = dal.AppointmentDao.updateAppointmentStatus(id, status);
+                    response.getWriter().write("{\"success\":" + ok + "}");
+                }
             } catch (Exception e) {
                 response.getWriter().write("{\"success\":false,\"message\":\"Error: " + e.getMessage() + "\"}");
             }

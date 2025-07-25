@@ -82,11 +82,21 @@ public class VNPayReturnController extends HttpServlet {
                             if (appt.getStatus().equals(AppointmentStatus.PENDING)) {
                                 AppointmentDao.updateAppointmentStatus(Integer.parseInt(apptID), AppointmentStatus.CONFIRMED.getCode());
                             }
+                            // Cập nhật trạng thái bệnh nhân thành "New" (status_code = 1)
+                            User currentUser = (User) request.getSession().getAttribute("user");
+                            System.out.println("DEBUG: VNPay - About to update patient status - Patient ID: " + appt.getPatient().getPatient_id() + ", Status Code: 1, Changed By: " + currentUser.getUserId());
+                            dal.PatientStatusDao.updateStatus(appt.getPatient().getPatient_id(), 1, currentUser.getUserId());
+                            System.out.println("DEBUG: VNPay - Updated patient status to 'New'");
                         } else { // chuyen tu RESERVED -> PAID
                             AppointmentDao.updateAppointmentPaymentStatus(Integer.parseInt(apptID), PaymentStatus.PAID);
                             if (appt.getStatus().equals(AppointmentStatus.PENDING)) {
                                 AppointmentDao.updateAppointmentStatus(Integer.parseInt(apptID), AppointmentStatus.CONFIRMED.getCode());
                             }
+                            // Cập nhật trạng thái bệnh nhân thành "New" (status_code = 1)
+                            User currentUser = (User) request.getSession().getAttribute("user");
+                            System.out.println("DEBUG: VNPay - About to update patient status - Patient ID: " + appt.getPatient().getPatient_id() + ", Status Code: 1, Changed By: " + currentUser.getUserId());
+                            dal.PatientStatusDao.updateStatus(appt.getPatient().getPatient_id(), 1, currentUser.getUserId());
+                            System.out.println("DEBUG: VNPay - Updated patient status to 'New'");
                         }
                         System.out.println("Payment success.");
                         System.out.println("apptID:" + apptID);

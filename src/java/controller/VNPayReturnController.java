@@ -21,7 +21,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import models.Appointment;
-import models.AppointmentStatus;
 import models.PaymentStatus;
 import models.User;
 
@@ -76,17 +75,10 @@ public class VNPayReturnController extends HttpServlet {
                 switch (vnp_ResponseCode) {
                     case "00":
                         isSuccess = true;
-                        Appointment appt = AppointmentDao.getAppointmentById(Integer.parseInt(apptID));
                         if (isReserved) { // chuyen tu PENDING -> RESERVED
                             AppointmentDao.updateAppointmentPaymentStatus(Integer.parseInt(apptID), PaymentStatus.RESERVED);
-                            if (appt.getStatus().equals(AppointmentStatus.PENDING)) {
-                                AppointmentDao.updateAppointmentStatus(Integer.parseInt(apptID), AppointmentStatus.CONFIRMED.getCode());
-                            }
                         } else { // chuyen tu RESERVED -> PAID
                             AppointmentDao.updateAppointmentPaymentStatus(Integer.parseInt(apptID), PaymentStatus.PAID);
-                            if (appt.getStatus().equals(AppointmentStatus.PENDING)) {
-                                AppointmentDao.updateAppointmentStatus(Integer.parseInt(apptID), AppointmentStatus.CONFIRMED.getCode());
-                            }
                         }
                         System.out.println("Payment success.");
                         System.out.println("apptID:" + apptID);
@@ -158,8 +150,8 @@ public class VNPayReturnController extends HttpServlet {
                                 + "Họ và tên bệnh nhân: " + user.getFullName() + "\n"
                                 + "Số điện thoại: " + user.getPhone() + "\n"
                                 + "Dịch vụ khám: " + appt.getService().getName() + "\n"
-                                + "Bác sĩ khám: " + appt.getDoctor().getUser().getFullName() + "\n"
-                                + "Thời gian khám: " + appt.getAppointmentDateTime().format(DateTimeFormatter.ISO_DATE) + "\n"
+                                + "Bác sĩ khám:" + appt.getDoctor().getUser().getFullName() + "\n"
+                                + "Thời gian khám:" + appt.getAppointmentDateTime().format(DateTimeFormatter.ISO_DATE) + "\n"
                                 + "Giá tiền: " + appt.getService().getPrice() + "đ\n"
                                 + "Trạng thái thanh toán: Đã đặt cọc - 50000đ\n";
                     } else {
@@ -168,8 +160,8 @@ public class VNPayReturnController extends HttpServlet {
                                 + "Họ và tên bệnh nhân: " + user.getFullName() + "\n"
                                 + "Số điện thoại: " + user.getPhone() + "\n"
                                 + "Dịch vụ khám: " + appt.getService().getName() + "\n"
-                                + "Bác sĩ khám: " + appt.getDoctor().getUser().getFullName() + "\n"
-                                + "Thời gian khám: " + appt.getAppointmentDateTime().format(DateTimeFormatter.ISO_DATE) + "\n"
+                                + "Bác sĩ khám:" + appt.getDoctor().getUser().getFullName() + "\n"
+                                + "Thời gian khám:" + appt.getAppointmentDateTime().format(DateTimeFormatter.ISO_DATE) + "\n"
                                 + "Giá tiền: " + appt.getService().getPrice() + "đ\n"
                                 + "Trạng thái thanh toán: Đã thanh toán.\n";
                     }

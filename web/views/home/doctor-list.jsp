@@ -263,7 +263,7 @@
                                                     <div class="p-3">
                                                         <div class="row">
                                                             <div class="col-4">
-                                                                <img src="${not empty d.image_url ? d.image_url : defaultAvatar}" 
+                                                                <img src="${not empty d.image_url && d.image_url.startsWith('http') ? d.image_url : (not empty d.image_url ? pageContext.request.contextPath.concat('/assets/').concat(d.image_url) : pageContext.request.contextPath.concat('/assets/default-avatar.jpg'))}"
                                                                      alt="${d.user.fullName}" 
                                                                      class="doctor-image">
                                                             </div>

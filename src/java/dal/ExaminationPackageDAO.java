@@ -24,6 +24,7 @@ public class ExaminationPackageDAO extends DBContext {
                 pkg.setDescription(rs.getString("description"));
                 pkg.setPrice(rs.getDouble("price"));
                 pkg.setDuration(rs.getInt("duration"));
+                pkg.setImageUrl(rs.getString("image_url"));
                 list.add(pkg);
             }
         } catch (SQLException e) {
@@ -47,11 +48,24 @@ public class ExaminationPackageDAO extends DBContext {
                 pkg.setDescription(rs.getString("description"));
                 pkg.setPrice(rs.getDouble("price"));
                 pkg.setDuration(rs.getInt("duration"));
+                pkg.setImageUrl(rs.getString("image_url"));
                 list.add(pkg);
             }
         } catch (SQLException e) {
             System.out.println("Error getting top examination packages: " + e.getMessage());
         }
         return list;
+    }
+
+    public void updateImageUrl(int packageId, String imageUrl) {
+        String sql = "UPDATE examination_packages SET image_url = ? WHERE package_id = ?";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, imageUrl);
+            ps.setInt(2, packageId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 } 

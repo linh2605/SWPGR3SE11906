@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="admin-auth.jsp" %>
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,13 +48,18 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="doctorId" class="form-label">Bác sĩ <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="doctorId" name="doctorId" required>
+                                        <select name="doctorId" class="form-select" required>
                                             <option value="">Chọn bác sĩ</option>
-                                            <c:forEach var="doctor" items="${doctors}">
-                                                <option value="${doctor.doctor_id}" ${doctor.doctor_id == schedule.doctorId ? 'selected' : ''}>
-                                                    ${doctor.user.fullName}
+                                            <% List<models.Doctor> doctors = (List<models.Doctor>) request.getAttribute("doctors");
+                                               Integer selectedDoctorId = null;
+                                               if (request.getAttribute("schedule") != null) {
+                                                   selectedDoctorId = ((models.WorkingSchedule)request.getAttribute("schedule")).getDoctorId();
+                                               }
+                                               for (models.Doctor doc : doctors) { %>
+                                                <option value="<%= doc.getDoctor_id() %>" <%= (selectedDoctorId != null && doc.getDoctor_id() == selectedDoctorId) ? "selected" : "" %>>
+                                                    <%= doc.getUser().getFullName() %>
                                                 </option>
-                                            </c:forEach>
+                                            <% } %>
                                         </select>
                                     </div>
                                 </div>

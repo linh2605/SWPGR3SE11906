@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import models.PatientStatus;
 import models.PatientStatusLog;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import static java.time.DayOfWeek.FRIDAY;
 import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SATURDAY;
@@ -22,10 +21,6 @@ import static java.time.DayOfWeek.SUNDAY;
 import static java.time.DayOfWeek.THURSDAY;
 import static java.time.DayOfWeek.TUESDAY;
 import static java.time.DayOfWeek.WEDNESDAY;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import utils.LocalDateAdapter;
-import utils.LocalDateTimeAdapter;
 
 @WebServlet(name = "DoctorServlet", urlPatterns = {"/doctorupdate", "/doctor", "/getDoctorsByService", "/getDoctorsByServiceAndTime", "/getDoctorsByServiceAndDate", "/doctor-api"})
 public class DoctorServlet extends HttpServlet {
@@ -140,7 +135,6 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
     private void handleGetDoctorsByServiceAndDate(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String serviceIdStr = request.getParameter("serviceId");
         String dateStr = request.getParameter("date");
-        System.out.println("date:\'" + dateStr + "\'");
         String shiftIdStr = request.getParameter("shiftId");
         
         int serviceId = 0;
@@ -153,10 +147,9 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
             response.getWriter().write("[]");
             return;
         }
-        LocalDate date = null;
+        java.time.LocalDate date = null;
         try {
-            date = LocalDate.parse(dateStr);
-            System.out.println("date parse:" + date);
+            date = java.time.LocalDate.parse(dateStr);
         } catch (Exception e) {
             response.setStatus(400);
             response.getWriter().write("[]");
@@ -172,11 +165,8 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
                 availableDoctors.add(d);
             }
         }
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                .create();
         response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(gson.toJson(availableDoctors));
+        response.getWriter().write(new com.google.gson.Gson().toJson(availableDoctors));
     }
 
     // Hàm chuyển đổi ngày sang tuần trong tuần (tiếng Việt)

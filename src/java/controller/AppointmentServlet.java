@@ -20,14 +20,11 @@ import dal.AppointmentDao;
 import models.Appointment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import utils.LocalDateAdapter;
 import utils.LocalDateTimeAdapter;
 
 @WebServlet("/getAppointments")
 public class AppointmentServlet extends HttpServlet {
-
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -72,21 +69,16 @@ public class AppointmentServlet extends HttpServlet {
             try {
                 String pageStr = request.getParameter("page");
                 String sizeStr = request.getParameter("size");
-                if (pageStr != null) {
-                    page = Integer.parseInt(pageStr);
-                }
-                if (sizeStr != null) {
-                    size = Integer.parseInt(sizeStr);
-                }
+                if (pageStr != null) page = Integer.parseInt(pageStr);
+                if (sizeStr != null) size = Integer.parseInt(sizeStr);
             } catch (NumberFormatException e) {
                 // Use default values if parsing fails
             }
-
+            
             List<Appointment> appointments = AppointmentDao.getAppointmentsByPatientId(patientId, page, size);
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                    .create();
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
             response.getWriter().write(gson.toJson(appointments));
         } catch (SQLException e) {
             e.printStackTrace();

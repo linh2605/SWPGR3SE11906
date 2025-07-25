@@ -37,7 +37,7 @@
                 <form id="bookingForm" class="bg-light-blue p-4 rounded shadow-sm" action="${pageContext.request.contextPath}/appointment" method="POST" autocomplete="off">
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Họ và tên</label></div>
-                        <div class="col-md-9"><input type="text" class="form-control" name="fullName" value="${patient.user.fullName}" readonly></div>
+                        <div class="col-md-9"><input type="text" class="form-control" name="fullName" value="${patient.fullName}" readonly></div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Số điện thoại</label></div>
@@ -68,7 +68,7 @@
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Ngày hẹn</label></div>
                         <div class="col-md-9">
-                            <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" value="${appointmentDate}" required>
+                            <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required>
                         </div>
                     </div>
                     <div class="row mb-3">

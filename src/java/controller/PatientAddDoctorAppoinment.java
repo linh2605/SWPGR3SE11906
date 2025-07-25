@@ -63,8 +63,9 @@ public class PatientAddDoctorAppoinment extends HttpServlet {
                 return;
             }
 
-            if (request.getParameter("id") != null
-                    && request.getParameter("id").length() > 0) {
+            
+            if (request.getParameter("id") != null 
+                && request.getParameter("id").length() > 0) {
                 int doctor_id = Integer.parseInt(request.getParameter("id"));
                 Doctor doctor = DoctorDao.getDoctorById(doctor_id);
                 if (doctor.getDoctor_id() != 0) {
@@ -132,7 +133,7 @@ public class PatientAddDoctorAppoinment extends HttpServlet {
             // Parse date with proper error handling
             LocalDate date;
             try {
-                date = LocalDate.parse(dateStr.trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                date = LocalDate.parse(dateStr.trim(),DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 System.out.println("[DEBUG] Date parsed successfully: " + date);
             } catch (Exception e) {
                 System.out.println("[DEBUG] Date parsing failed: " + e.getMessage());
@@ -240,14 +241,6 @@ public class PatientAddDoctorAppoinment extends HttpServlet {
         }
         System.out.println("[DEBUG] Slot is available");
 
-        // Check if slot in that day patient were booked
-        System.out.println("[DEBUG] Checking if in that day patient were booked...");
-        if (!AppointmentDao.isAppointmentAvailable(patientId, appointmentDate, shiftId)) {
-            System.out.println("[DEBUG] Slot is not available");
-            return "Bạn đã có lịch đặt vào thời gian này, vui lòng chọn thời gian khác.";
-        }
-        System.out.println("[DEBUG] Slot is available");
-
         // Check if appointment date is in the future
         System.out.println("[DEBUG] Checking if appointment date is in the future...");
         if (appointmentDate.isBefore(LocalDateTime.now())) {
@@ -288,32 +281,41 @@ public class PatientAddDoctorAppoinment extends HttpServlet {
     private void loadFormData(HttpServletRequest request, int patientId, int doctorId, int packageId, LocalDateTime appointmentDate, String note) {
         try {
             Patient patient = PatientDao.getPatientById(patientId);
-            Doctor doctor = DoctorDao.getDoctorById(doctorId);
-            List<Service> services = ServiceDAO.getServicesByDoctorId(doctorId);
-            List<WorkingSchedule> schedules = new WorkingScheduleDAO().getSchedulesByDoctorId(doctorId);
-            List<Shift> shifts = new ShiftDAO().getAllShifts();
+            List<Doctor> doctors = DoctorDao.getAllDoctors();
+            List<Service> services = ServiceDAO.getTopServices(10);
 
+            if (doctors == null) {
+                doctors = new ArrayList<>();
+            }
             if (services == null) {
                 services = new ArrayList<>();
             }
-            if (shifts == null) {
-                shifts = new ArrayList<>();
-            }
 
-            if (doctor == null) {
-                doctor = new Doctor();
-            }
+            Collections.sort(doctors, new Comparator<Doctor>() {
+                @Override
+                public int compare(Doctor d1, Doctor d2) {
+                    if (d1.getSpecialty() == null || d2.getSpecialty() == null) {
+                        return 0;
+                    }
+                    int specialty_id1 = d1.getSpecialty().getSpecialtyId();
+                    int specialty_id2 = d2.getSpecialty().getSpecialtyId();
+                    if (specialty_id1 == specialty_id2) {
+                        return d1.getDoctor_id() - d2.getDoctor_id();
+                    } else {
+                        return specialty_id1 - specialty_id2;
+                    }
+                }
+            });
 
             request.setAttribute("patient", patient);
-            request.setAttribute("doctor", doctor);
+            request.setAttribute("doctors", doctors);
             request.setAttribute("services", services);
+            request.setAttribute("selectedDoctorId", doctorId);
             request.setAttribute("selectedServiceId", packageId);
-            request.setAttribute("schedules", schedules);
-            request.setAttribute("shifts", shifts);
 
             // Format appointmentDate thành string cho input datetime-local
             if (appointmentDate != null) {
-                String formattedDate = appointmentDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                String formattedDate = appointmentDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
                 request.setAttribute("appointmentDate", formattedDate);
             }
 

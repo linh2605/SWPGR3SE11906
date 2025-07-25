@@ -47,6 +47,7 @@
                                 <th class="text-center">Giá (VND)</th>
                                 <th class="text-center">Thời lượng</th>
                                 <th class="text-center">Ảnh</th>
+                                <th class="text-center">Bác sĩ phụ trách</th>
                                 <th class="text-center">Thao tác</th>
                             </tr>
                             </thead>
@@ -67,6 +68,15 @@
                                     <% } %>
                                 </td>
                                 <td class="text-center">
+                                    <% if (p.getDoctors() != null && !p.getDoctors().isEmpty()) { %>
+                                        <% for (Doctor d : p.getDoctors()) { %>
+                                            <span><%= d.getUser().getFullName() %></span><br>
+                                        <% } %>
+                                    <% } else { %>
+                                        <span>Chưa có bác sĩ phụ trách</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-center">
                                     <button type="button" class="btn btn-outline-primary btn-sm view-btn" title="Xem"
                                         data-id="<%= p.getPackageId() %>"
                                         data-name="<%= p.getName() %>"
@@ -77,15 +87,9 @@
                                         data-bs-toggle="modal" data-bs-target="#viewPackageModal">
                                         <i class="bi bi-eye"></i>
                                     </button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm edit-btn" title="Sửa"
-                                        data-id="<%= p.getPackageId() %>"
-                                        data-name="<%= p.getName() %>"
-                                        data-description="<%= p.getDescription() %>"
-                                        data-price="<%= p.getPrice() %>"
-                                        data-duration="<%= p.getDuration() %>"
-                                        data-bs-toggle="modal" data-bs-target="#updatePackageModal">
+                                    <a href="${pageContext.request.contextPath}/admin/examination-manage?editId=<%= p.getPackageId() %>" class="btn btn-outline-primary btn-sm" title="Sửa">
                                         <i class="bi bi-pencil"></i>
-                                    </button>
+                                    </a>
                                     <button type="button" class="btn btn-outline-primary btn-sm" title="Xóa"
                                         onclick="confirmDelete('<%= p.getPackageId() %>')">
                                         <i class="bi bi-trash"></i>
@@ -165,40 +169,58 @@
         </div>
 
         <!-- Modal cập nhật gói khám -->
-        <div class="modal fade" id="updatePackageModal" tabindex="-1">
+        <%
+            String editId = request.getParameter("editId");
+            ExaminationPackage editingPackage = null;
+            if (editId != null && packages != null) {
+                for (ExaminationPackage pkg : packages) {
+                    if (String.valueOf(pkg.getPackageId()).equals(editId)) {
+                        editingPackage = pkg;
+                        break;
+                    }
+                }
+            }
+        %>
+        <div class="modal fade<%= editId != null ? " show d-block" : "" %>" id="updatePackageModal" tabindex="-1" <%= editId != null ? "style='display:block;'" : "" %>>
             <div class="modal-dialog modal-lg">
                 <form method="post" action="${pageContext.request.contextPath}/admin/examination-manage" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="edit">
-                    <input type="hidden" name="id" id="update_package_id">
+                    <input type="hidden" name="id" value="<%= editingPackage != null ? editingPackage.getPackageId() : "" %>">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Cập nhật gói khám</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <a href="${pageContext.request.contextPath}/admin/examination-manage" class="btn-close"></a>
                         </div>
                         <div class="modal-body">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Tên gói</label>
-                                    <input type="text" name="name" id="update_name" class="form-control" required>
+                                    <input type="text" name="name" class="form-control" required value="<%= editingPackage != null ? editingPackage.getName() : "" %>">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Giá (VND)</label>
-                                    <input type="number" name="price" id="update_price" class="form-control" min="0" step="1" required>
+                                    <input type="number" name="price" class="form-control" min="0" step="1" required value="<%= editingPackage != null ? editingPackage.getPrice() : "" %>">
                                 </div>
                                 <div class="col-md-12">
-                                    <label class="form-label" for="update_detail">Mô tả</label>
-                                    <textarea name="detail" id="update_detail" class="form-control" rows="3"></textarea>
+                                    <label class="form-label">Mô tả</label>
+                                    <textarea name="detail" class="form-control" rows="3"><%= editingPackage != null ? editingPackage.getDescription() : "" %></textarea>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label">Bác sĩ phụ trách</label>
                                     <div class="row">
-                                        <% for (Doctor s : doctors) { %>
-                                        <div class="col-md-4">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="doctorIds" value="<%= s.getDoctor_id() %>" id="doctor_update_<%= s.getDoctor_id() %>">
-                                                <label class="form-check-label" for="doctor_update_<%= s.getDoctor_id() %>"><%= s.getUser().getFullName() %></label>
+                                        <% if (doctors != null && !doctors.isEmpty()) {
+                                            List<Doctor> responsibleDoctors = editingPackage != null ? editingPackage.getDoctors() : null;
+                                            for (Doctor s : doctors) { %>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="doctorIds" value="<%= s.getDoctor_id() %>"
+                                                        id="doctor_update_<%= s.getDoctor_id() %>"
+                                                        <%= responsibleDoctors != null && responsibleDoctors.stream().anyMatch(d -> d.getDoctor_id() == s.getDoctor_id()) ? "checked" : "" %>>
+                                                    <label class="form-check-label" for="doctor_update_<%= s.getDoctor_id() %>"><%= s.getUser().getFullName() %></label>
+                                                </div>
                                             </div>
-                                        </div>
+                                        <% } } else { %>
+                                            <div class="col-12"><span class="text-danger">Không có bác sĩ nào để chọn!</span></div>
                                         <% } %>
                                     </div>
                                 </div>
@@ -218,7 +240,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Cập nhật</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <a href="${pageContext.request.contextPath}/admin/examination-manage" class="btn btn-secondary">Hủy</a>
                         </div>
                     </div>
                 </form>
@@ -279,7 +301,6 @@
         }
     });
 
-    // Handle edit button click
     document.addEventListener('click', function(e) {
         if (e.target.closest('.edit-btn')) {
             const btn = e.target.closest('.edit-btn');
@@ -287,21 +308,16 @@
             const name = btn.dataset.name;
             const description = btn.dataset.description;
             const price = btn.dataset.price;
-            const type = btn.dataset.type;
             const doctors = btn.dataset.doctors ? btn.dataset.doctors.split(',').map(id => parseInt(id)) : [];
-
             document.getElementById('update_package_id').value = id;
             document.getElementById('update_name').value = name;
             document.getElementById('update_detail').value = description;
             document.getElementById('update_price').value = price;
-            document.getElementById('update_type').value = type;
-
             // Uncheck all checkboxes first
             document.querySelectorAll("#updatePackageModal input[type='checkbox']").forEach(cb => cb.checked = false);
-
-            // Re-check selected specialties
-            doctors.forEach(specialtyId => {
-                const checkbox = document.getElementById("doctor_update_" + specialtyId);
+            // Re-check selected doctors
+            doctors.forEach(doctorId => {
+                const checkbox = document.getElementById("doctor_update_" + doctorId);
                 if (checkbox) checkbox.checked = true;
             });
         }

@@ -151,7 +151,11 @@ public class DoctorDao {
         try {
             Connection connection = DBContext.makeConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT * FROM doctors d " +
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
                 "INNER JOIN users u ON d.user_id = u.user_id " +
                 "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
                 "WHERE d.deleted_at IS NOT NULL " +
@@ -408,7 +412,11 @@ public class DoctorDao {
         try {
             Connection connection = DBContext.makeConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT * FROM doctors d " +
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
                 "INNER JOIN users u ON d.user_id = u.user_id " +
                 "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
                 "WHERE d.user_id = ? AND d.deleted_at IS NULL"
@@ -519,19 +527,21 @@ public class DoctorDao {
                 + "              , s.name AS specialty_name\n"
                 + "              , d.degree\n"
                 + "              , d.experience\n"
+                + "              , d.image_url\n" // Thêm dòng này để lấy trường image_url
                 + "  FROM doctors d\n"
-                + "	       JOIN users u\n"
-                + "	       ON d.user_id = u.user_id\n"
-                + "	       JOIN doctor_services ds\n"
-                + "	       ON d.doctor_id = ds.doctor_id\n"
-                + "	       JOIN specialties s\n"
-                + "	       ON d.specialty_id = s.specialty_id\n"
+                + "\t   JOIN users u\n"
+                + "\t   ON d.user_id = u.user_id\n"
+                + "\t   JOIN doctor_services ds\n"
+                + "\t   ON d.doctor_id = ds.doctor_id\n"
+                + "\t   JOIN specialties s\n"
+                + "\t   ON d.specialty_id = s.specialty_id\n"
                 + " WHERE ds.package_id = ?\n"
                 + "   AND d.deleted_at IS NULL AND d.status = 'active'\n"
                 + " ORDER BY u.full_name";
         try (Connection conn = DBContext.makeConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, packageId);
             try (ResultSet rs = ps.executeQuery()) {
+                int count = 0;
                 while (rs.next()) {
                     Doctor d = new Doctor();
                     d.setDoctor_id(rs.getInt("doctor_id"));
@@ -548,6 +558,37 @@ public class DoctorDao {
                     d.setDegree(rs.getString("degree"));
                     d.setExperience(rs.getString("experience"));
                     doctors.add(d);
+                    System.out.println("[DEBUG][getDoctorsByServiceId] Found doctor_id=" + d.getDoctor_id() + " for packageId=" + packageId);
+                    count++;
+                }
+                System.out.println("[DEBUG][getDoctorsByServiceId] Total doctors found for packageId=" + packageId + ": " + count);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return doctors;
+    }
+
+    public static List<Doctor> getDoctorsByPackageId(int packageId) {
+        List<Doctor> doctors = new ArrayList<>();
+        String sql = "SELECT d.*, u.full_name, u.user_id FROM doctors d " +
+                     "JOIN doctor_services ds ON d.doctor_id = ds.doctor_id " +
+                     "JOIN users u ON d.user_id = u.user_id " +
+                     "WHERE ds.package_id = ? AND d.deleted_at IS NULL AND d.status = 'active'";
+        try (Connection conn = DBContext.makeConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, packageId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Doctor doctor = mappingDoctor(rs);
+                    // Đảm bảo set user cho doctor nếu mappingDoctor chưa làm
+                    if (doctor.getUser() == null) {
+                        User user = new User();
+                        user.setUserId(rs.getInt("user_id"));
+                        user.setFullName(rs.getString("full_name"));
+                        doctor.setUser(user);
+                    }
+                    doctors.add(doctor);
                 }
             }
         } catch (Exception e) {

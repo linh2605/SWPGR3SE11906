@@ -28,8 +28,8 @@ public class AdminServiceServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/views/error/access-denied.jsp");
             return;
         }
-        
-        List<Doctor> doctors = DoctorDao.getAllDeletedDoctors();
+        // Lấy danh sách bác sĩ active để truyền sang view quản lý gói khám
+        List<Doctor> doctors = DoctorDao.getAllDoctors();
         List<Service> services = ServiceDAO.getAll();
         List<ExaminationPackage> packages = new dal.ExaminationPackageDAO().getAll();
         req.setAttribute("doctors", doctors);

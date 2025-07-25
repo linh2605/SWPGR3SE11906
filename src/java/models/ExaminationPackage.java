@@ -2,6 +2,7 @@ package models;
 
 import java.sql.Timestamp;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class ExaminationPackage {
@@ -14,6 +15,7 @@ public class ExaminationPackage {
     private boolean isActive;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private List<Doctor> doctors;
     
     public int getPackageId() { return packageId; }
     public void setPackageId(int packageId) { this.packageId = packageId; }
@@ -27,6 +29,8 @@ public class ExaminationPackage {
     public void setDuration(int duration) { this.duration = duration; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public List<Doctor> getDoctors() { return doctors; }
+    public void setDoctors(List<Doctor> doctors) { this.doctors = doctors; }
     
     public String getFormattedPrice() {
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));

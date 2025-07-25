@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import models.ExaminationPackage;
 
 public class ExaminationPackageDAO extends DBContext {
@@ -25,6 +26,8 @@ public class ExaminationPackageDAO extends DBContext {
                 pkg.setPrice(rs.getDouble("price"));
                 pkg.setDuration(rs.getInt("duration"));
                 pkg.setImageUrl(rs.getString("image_url"));
+                // Gán danh sách bác sĩ phụ trách
+                pkg.setDoctors(dal.DoctorDao.getDoctorsByPackageId(pkg.getPackageId()));
                 list.add(pkg);
             }
         } catch (SQLException e) {

@@ -219,30 +219,31 @@
     <script src="${pageContext.request.contextPath}/assets/js/admin-shifts.js">
 <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
     <script>
-        $(document).ready(function() {
-            $('#table').DataTable({
-                language: {
-                    "sProcessing": "Đang xử lý...",
-                    "sLengthMenu": "Xem _MENU_ mục",
-                    "sZeroRecords": "Không tìm thấy dữ liệu",
-                    "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
-                    "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
-                    "sInfoFiltered": "(được lọc từ _MAX_ mục)",
-                    "sInfoPostFix": "",
-                    "sSearch": "Tìm:",
-                    "sUrl": "",
-                    "oPaginate": {
-                        "sFirst": "Đầu",
-                        "sPrevious": "Trước",
-                        "sNext": "Tiếp",
-                        "sLast": "Cuối"
-                    }
-                },
-                pageLength: 10,
-                responsive: true,
-                order: [[1, 'asc']]
-            });
-        });
+        // Tắt DataTables để kiểm tra lỗi hiển thị ca sáng
+        // $(document).ready(function() {
+        //     $('#table').DataTable({
+        //         language: {
+        //             "sProcessing": "Đang xử lý...",
+        //             "sLengthMenu": "Xem _MENU_ mục",
+        //             "sZeroRecords": "Không tìm thấy dữ liệu",
+        //             "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
+        //             "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+        //             "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+        //             "sInfoPostFix": "",
+        //             "sSearch": "Tìm:",
+        //             "sUrl": "",
+        //             "oPaginate": {
+        //                 "sFirst": "Đầu",
+        //                 "sPrevious": "Trước",
+        //                 "sNext": "Tiếp",
+        //                 "sLast": "Cuối"
+        //             }
+        //         },
+        //         pageLength: 10,
+        //         responsive: true,
+        //         order: [[1, 'asc']]
+        //     });
+        // });
     </script>
 </body>
 </html> 

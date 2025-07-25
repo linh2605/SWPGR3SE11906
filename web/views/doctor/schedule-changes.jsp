@@ -22,6 +22,9 @@
         vertical-align: middle;
         word-break: break-word;
     }
+    a[title="Xem chi tiết"] {
+        display: inline-block !important;
+    }
     </style>
 </head>
 <body>
@@ -104,11 +107,11 @@
                                                 <span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span>
                                             </td>
                                             <td>
-                                                                                <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
+                                                                                <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=detail&id=<c:out value='${change.changeId}'/>" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <c:if test="${change.status == 'pending'}">
-                                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=cancel&id=${change.changeId}" class="btn btn-outline-primary btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này?');" title="Hủy yêu cầu">
+                                    <a href="${pageContext.request.contextPath}/doctor/schedule-changes?action=cancel&id=<c:out value='${change.changeId}'/>" class="btn btn-outline-primary btn-sm" onclick="return confirm('Bạn có chắc chắn muốn hủy yêu cầu này?');" title="Hủy yêu cầu">
                                         <i class="bi bi-x-circle"></i>
                                     </a>
                                 </c:if>
@@ -139,32 +142,33 @@
     <script src="${pageContext.request.contextPath}/assets/js/scripts.js">
 <script src="${pageContext.request.contextPath}/assets/js/jwt-manager.js"></script></script>
     <script>
-        $(document).ready(function() {
-            $('#table').DataTable({
-                language: {
-                    "language": {
-            "sProcessing": "Đang xử lý...",
-            "sLengthMenu": "Xem _MENU_ mục",
-            "sZeroRecords": "Không tìm thấy dữ liệu",
-            "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
-            "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
-            "sInfoFiltered": "(được lọc từ _MAX_ mục)",
-            "sInfoPostFix": "",
-            "sSearch": "Tìm:",
-            "sUrl": "",
-            "oPaginate": {
-                "sFirst": "Đầu",
-                "sPrevious": "Trước",
-                "sNext": "Tiếp",
-                "sLast": "Cuối"
-            }
-        }
-                },
-                pageLength: 10,
-                responsive: true,
-                order: [[3, 'desc']]
-            });
-        });
+        // Tắt DataTables để kiểm tra lỗi hiển thị nút con mắt
+        // $(document).ready(function() {
+        //     $('#table').DataTable({
+        //         language: {
+        //             "language": {
+        //         "sProcessing": "Đang xử lý...",
+        //         "sLengthMenu": "Xem _MENU_ mục",
+        //         "sZeroRecords": "Không tìm thấy dữ liệu",
+        //         "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
+        //         "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+        //         "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+        //         "sInfoPostFix": "",
+        //         "sSearch": "Tìm:",
+        //         "sUrl": "",
+        //         "oPaginate": {
+        //             "sFirst": "Đầu",
+        //             "sPrevious": "Trước",
+        //             "sNext": "Tiếp",
+        //             "sLast": "Cuối"
+        //         }
+        //     }
+        //     },
+        //     pageLength: 10,
+        //     responsive: true,
+        //     order: [[3, 'desc']]
+        // });
+        // });
     </script>
 </body>
 </html> 

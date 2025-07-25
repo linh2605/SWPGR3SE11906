@@ -36,24 +36,6 @@ public class AdminScheduleExceptionServlet extends HttpServlet {
             return;
         }
 
-        String action = request.getParameter("action");
-        if (action != null && action.equals("detail")) {
-            // Xử lý xem chi tiết ngoại lệ
-            try {
-                int id = Integer.parseInt(request.getParameter("id"));
-                ScheduleException exception = scheduleExceptionDAO.getExceptionById(id);
-                if (exception != null) {
-                    request.setAttribute("exception", exception);
-                    request.getRequestDispatcher("/views/admin/schedule-exception-detail.jsp").forward(request, response);
-                } else {
-                    response.sendRedirect(request.getContextPath() + "/admin/schedule-exceptions?error=not_found");
-                }
-            } catch (NumberFormatException e) {
-                response.sendRedirect(request.getContextPath() + "/admin/schedule-exceptions?error=invalid_id");
-            }
-            return;
-        }
-
         // Lấy filter từ request
         String doctorIdStr = request.getParameter("doctorId");
         String status = request.getParameter("status");

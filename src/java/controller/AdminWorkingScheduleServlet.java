@@ -153,7 +153,7 @@ public class AdminWorkingScheduleServlet extends HttpServlet {
             WorkingSchedule schedule = scheduleDAO.getScheduleById(scheduleId);
             
             if (schedule != null) {
-                List<Doctor> doctors = doctorDAO.getAllDoctors(); // Sửa lại lấy tất cả bác sĩ đang hoạt động
+                List<Doctor> doctors = doctorDAO.getAllDeletedDoctors();
                 List<Shift> shifts = shiftDAO.getAllShifts();
                 
                 request.setAttribute("schedule", schedule);

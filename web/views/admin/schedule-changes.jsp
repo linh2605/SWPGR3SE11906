@@ -59,20 +59,20 @@
                                 <tbody>
                                     <c:forEach var="change" items="${changes}">
                                         <tr>
-                                            <td>${not empty change.doctor && not empty change.doctor.user ? change.doctor.user.fullName : ''}</td>
+                                            <td>${change.doctor.user.fullName}</td>
                                             <td>
                                                 <span class="badge ${change.isCancelRequest() ? 'bg-danger' : 'bg-primary'}">
                                                     ${change.typeDisplay}
                                                 </span>
                                             </td>
-                                            <td>${not empty change.oldShift ? change.oldShift.name : ''} (${not empty change.oldShift ? change.oldShift.startTime : ''} - ${not empty change.oldShift ? change.oldShift.endTime : ''})</td>
+                                            <td>${change.oldShift.name} (${change.oldShift.startTime} - ${change.oldShift.endTime})</td>
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${change.isCancelRequest()}">
                                                         <span class="text-danger">Hủy ca</span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        ${not empty change.newShift ? change.newShift.name : ''} (${not empty change.newShift ? change.newShift.startTime : ''} - ${not empty change.newShift ? change.newShift.endTime : ''})
+                                                        ${change.newShift.name} (${change.newShift.startTime} - ${change.newShift.endTime})
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -83,27 +83,10 @@
                                                 <span class="badge ${change.statusBadgeClass}">${change.statusDisplay}</span>
                                             </td>
                                             <td>
-                                                <c:if test="${not empty change.changeId}">
-                                                    <a href="${pageContext.request.contextPath}/admin/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
-                                                        <i class="bi bi-eye"></i>
-                                                    </a>
-                                                </c:if>
-                                                <c:if test="${change.status == 'pending'}">
-                                                    <form action="${pageContext.request.contextPath}/admin/schedule-changes" method="post" style="display:inline;">
-                                                        <input type="hidden" name="action" value="process">
-                                                        <input type="hidden" name="decision" value="approve">
-                                                        <input type="hidden" name="changeId" value="${change.changeId}">
-                                                        <button type="submit" class="btn btn-success btn-sm" title="Duyệt"><i class="bi bi-check"></i></button>
-                                                    </form>
-                                                    <form action="${pageContext.request.contextPath}/admin/schedule-changes" method="post" style="display:inline;">
-                                                        <input type="hidden" name="action" value="process">
-                                                        <input type="hidden" name="decision" value="reject">
-                                                        <input type="hidden" name="changeId" value="${change.changeId}">
-                                                        <button type="submit" class="btn btn-danger btn-sm" title="Từ chối"><i class="bi bi-x"></i></button>
-                                                    </form>
-                                                </c:if>
+                                                                                <a href="${pageContext.request.contextPath}/admin/schedule-changes?action=detail&id=${change.changeId}" class="btn btn-outline-primary btn-sm" title="Xem chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                                             </td>
-                                            <td style="color:red;">${change.changeId}</td> <!-- debug cột changeId -->
                                         </tr>
                                     </c:forEach>
                                     <c:if test="${empty changes}">

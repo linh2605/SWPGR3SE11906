@@ -316,8 +316,7 @@
             document.getElementById('view_price').textContent = btn.dataset.price;
             document.getElementById('view_duration').textContent = btn.dataset.duration;
             const img = btn.dataset.img;
-            const contextPath = '${pageContext.request.contextPath}';
-            document.getElementById('view_img').src = img && img !== 'null' ? (img.startsWith('http') ? img : (img ? (contextPath + '/assets/' + img) : (contextPath + '/assets/default-image.svg'))) : (contextPath + '/assets/default-image.svg');
+            document.getElementById('view_img').src = img && img !== 'null' ? (img.startsWith('http') ? img : (img ? ('${pageContext.request.contextPath}/assets/' + img) : ('${pageContext.request.contextPath}/assets/default-image.svg'))) : ('${pageContext.request.contextPath}/assets/default-image.svg');
         }
     });
 

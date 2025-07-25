@@ -160,11 +160,11 @@
                 %>
                 <div class="col-md-4 mb-4">
                     <div class="card doctor-card" style="cursor: pointer;">
-                        <% String img = pkg.getImageUrl(); %>
-                        <img src="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : request.getContextPath() + "/assets/default-image.svg") %>"
-                             class="card-img-top"
-                             alt="<%= pkg.getName() %>"
-                             style="height: 200px; object-fit: cover;">
+                        <img src="${pageContext.request.contextPath}/assets/uploads/package-<%= pkg.getPackageId() %>.jpg" 
+                             class="card-img-top" 
+                             alt="<%= pkg.getName() %>" 
+                             style="height: 200px; object-fit: cover;"
+                             onerror="this.src='https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>'">
                         <div class="card-body">
                             <h5 class="card-title"><%= pkg.getName() %></h5>
                             <p class="card-text"><%= pkg.getDescription() %></p>
@@ -307,10 +307,7 @@
                                         <c:set var="doctor" value="${doctors[d]}" />
                                         <div class="col-md-4 mb-4">
                                             <div class="card doctor-card" style="cursor: pointer;" onclick="window.location.href = '${pageContext.request.contextPath}/doctors/view?id=${doctor.doctor_id}'">
-                                                <img src="${not empty doctor.image_url && doctor.image_url.startsWith('http') ? doctor.image_url : (not empty doctor.image_url ? pageContext.request.contextPath.concat('/assets/').concat(doctor.image_url) : pageContext.request.contextPath.concat('/assets/default-avatar.jpg'))}"
-                                                     class="card-img-top"
-                                                     alt="${doctor.user.fullName}"
-                                                     style="height: 200px; object-fit: cover;">
+                                                <img src="${doctor.image_url}" class="card-img-top" alt="${doctor.user.fullName}" style="height: 200px; object-fit: cover;">
                                                 <div class="card-body">
                                                     <h5 class="card-title">${doctor.user.fullName}</h5>
                                                     <p class="card-text">${doctor.specialty.name}</p>

@@ -81,9 +81,8 @@
                              data-price="<%= pkg.getPrice() %>"
                              data-duration="<%= pkg.getDuration() %>">
                             <div class="package-card">
-                                <% String img = pkg.getImageUrl(); %>
-                                <img src="<%= (img != null && img.startsWith("http")) ? img : (img != null && !img.isEmpty() ? request.getContextPath() + "/assets/" + img : request.getContextPath() + "/assets/default-image.svg") %>"
-                                     class="package-image"
+                                <img src="${pageContext.request.contextPath}/assets/uploads/package-<%= pkg.getPackageId() %>.jpg" 
+                                     class="package-image" 
                                      alt="<%= pkg.getName() %>"
                                      onerror="this.src='https://picsum.photos/600/400?random=<%= pkg.getPackageId() %>'">
                                 <div class="package-info">

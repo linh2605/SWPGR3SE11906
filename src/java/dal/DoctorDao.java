@@ -382,7 +382,11 @@ public class DoctorDao {
         try {
             Connection connection = DBContext.makeConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT * FROM doctors d " +
+                "SELECT d.doctor_id, d.user_id, d.gender, d.dob, d.image_url, d.specialty_id, d.degree, d.experience, d.status, d.deleted_at, " +
+                "d.contract_status, d.contract_start_date, d.contract_end_date, " +
+                "u.username, u.password, u.full_name, u.email, u.phone, u.created_at, " +
+                "s.specialty_id as s_specialty_id, s.name as specialty_name, s.description as specialty_description " +
+                "FROM doctors d " +
                 "INNER JOIN users u ON d.user_id = u.user_id " +
                 "INNER JOIN specialties s ON d.specialty_id = s.specialty_id " +
                 "WHERE d.doctor_id = ? AND d.deleted_at IS NULL"
@@ -536,6 +540,7 @@ public class DoctorDao {
                     u.setFullName(rs.getString("full_name"));
                     d.setUser(u);
                     d.setFullName(rs.getString("full_name"));
+                    d.setImage_url(rs.getString("image_url"));
                     Specialty s = new Specialty();
                     s.setSpecialtyId(rs.getInt("specialty_id"));
                     s.setName(rs.getString("specialty_name"));

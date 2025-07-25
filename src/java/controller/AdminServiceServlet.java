@@ -71,7 +71,8 @@ public class AdminServiceServlet extends HttpServlet {
         // Nếu có ảnh, lưu với tên file theo package_id
         if (hasImage && packageId > 0) {
             try {
-                UploadImage.savePackageImage(req, "image", packageId);
+                String imageUrl = Util.UploadImage.savePackageImage(req, "image", packageId);
+                new dal.ExaminationPackageDAO().updateImageUrl(packageId, imageUrl);
             } catch (Exception e) {
                 System.out.println("Lỗi lưu ảnh: " + e.getMessage());
             }
@@ -101,7 +102,8 @@ public class AdminServiceServlet extends HttpServlet {
             // Upload ảnh mới nếu có
             if (req.getPart("image") != null && req.getPart("image").getSize() > 0) {
                 try {
-                    UploadImage.savePackageImage(req, "image", service.getServiceId());
+                    String imageUrl = Util.UploadImage.savePackageImage(req, "image", service.getServiceId());
+                    new dal.ExaminationPackageDAO().updateImageUrl(service.getServiceId(), imageUrl);
                 } catch (Exception e) {
                     System.out.println("Lỗi lưu ảnh: " + e.getMessage());
                 }

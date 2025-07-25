@@ -79,6 +79,10 @@
                 text-decoration: none;
             }
 
+            .doctor-info {
+                padding: 20px;
+            }
+
             .doctor-detail-btn {
                 background-color: #004d99;
                 color: white;

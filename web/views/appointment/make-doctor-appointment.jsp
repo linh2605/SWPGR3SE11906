@@ -209,6 +209,7 @@
                         }
                     ],
                     onChange: function () {
+                        getDisabledDatesForServic();
                         updateShiftOptions();
                     }
                 });

@@ -94,13 +94,6 @@
                             </select>
                         </div>
                     </div>
-                    <!--                    <div class="row mb-3" id="errMessage" style="display:flex;">
-                                            <div class="col-md-3"></div>
-                                            <div class="col-md-9"><div class="alert alert-danger">
-                                                    <strong id="errMessageDetail">Bác sĩ không có ca làm việc trong ngày đã chọn.</strong>
-                                                </div>
-                                            </div>
-                                        </div>-->
                     <div class="row mb-3">
                         <div class="col-md-3"><label class="form-label">Ghi chú</label></div>
                         <div class="col-md-9"><textarea class="form-control" name="note" rows="3">${note}</textarea></div>
@@ -109,7 +102,9 @@
                         <div class="col-md-3"></div>
                         <div class="col-md-9"><button type="submit" class="btn btn-primary w-100">Đặt lịch</button></div>
                     </div>
-                    <input type="hidden" name="patientId" value="${patient.patient_id}"/>
+                    <input type="hidden" id="patientId" name="patientId" value="${patient.patient_id}"/>
+                    <input type="hidden" id="doctorId" name="doctorId" value="${doctor.doctor_id}"/>
+
                 </form>
             </c:if>
         </main>
@@ -142,20 +137,11 @@
                 if (input && input.value) {
                     updateShiftOptions();
                 }
+                getDisabledDatesForServic();
             });
-
             const serviceSelect = document.getElementById('service');
             const priceDisplay = document.getElementById('priceDisplay');
             const servicePrice = document.getElementById('servicePrice');
-            serviceSelect.addEventListener('change', function () {
-                const price = this.options[this.selectedIndex].getAttribute('data-price');
-                if (price && price !== 'null') {
-                    servicePrice.textContent = new Intl.NumberFormat('vi-VN').format(price);
-                    priceDisplay.style.display = 'flex';
-                } else {
-                    priceDisplay.style.display = 'none';
-                }
-            });
             const allowedWeekDays = [
             <c:forEach var="s" items="${schedules}" varStatus="loop">
             "${s.weekDay}"<c:if test="${!loop.last}">,</c:if>
@@ -192,59 +178,230 @@
             </c:forEach>
             ];
             console.log(`shifts:`, shifts);
+            let flatpickrInstance;
+            let specificDisabledDates = [];
+            let fullyDisabledDates = [];
+            function getFullyDisabledDates() {
+                const shiftCount = shifts.length;
+                const map = {};
+                specificDisabledDates.forEach(({ date, shiftId }) => {
+                    if (!map[date])
+                        map[date] = new Set();
+                    map[date].add(shiftId);
+                });
+                return Object.entries(map)
+                        .filter(([_, set]) => set.size >= shiftCount)
+                        .map(([date]) => date);
+            }
+
+            function updateFlatpickr() {
+                if (flatpickrInstance)
+                    flatpickrInstance.destroy();
+                fullyDisabledDates = getFullyDisabledDates();
+                flatpickrInstance = flatpickr("#appointmentDate", {
+                    dateFormat: "d/m/Y",
+                    minDate: "today",
+                    disable: [
+                        function (date) {
+                            const day = date.getDay();
+//                            const yyyyMMdd = date.toISOString().split("T")[0];
+                            return !allowedDayIndexes.includes(day) || fullyDisabledDates.includes(formatDateToYMD(date));
+                        }
+                    ],
+                    onChange: function () {
+                        updateShiftOptions();
+                    }
+                });
+            }
 
             function updateShiftOptions() {
                 const input = document.getElementById("appointmentDate").value;
                 if (!input)
                     return;
-                const dateParts = input.split("/");
-                if (dateParts.length !== 3)
-                    return;
-                const day = parseInt(dateParts[0]);
-                const month = parseInt(dateParts[1]) - 1; // JS: 0-based month
-                const year = parseInt(dateParts[2]);
-                const selectedDate = new Date(year, month, day);
-                const weekdayNames = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
-                const weekdayString = weekdayNames[selectedDate.getDay()];
-                // Lọc shift theo thứ
-                const matchingShifts = schedules.filter(s => s.weekDay === weekdayString);
-                console.log(`matchingShifts:`, matchingShifts);
-                // Gán vào thẻ select
-                const select = document.getElementById("shift");
-                select.innerHTML = '<option value="" disabled selected>Chọn ca làm việc</option>'; // clear cũ
+                console.log(`input`, input);
 
-                matchingShifts.forEach(sh => {
-                    const matchedShift = shifts.find(shift => shift.id === sh.shiftId);
-                    if (matchedShift) {
+                const [d, m, y] = input.split("/");
+                const selectedDate = new Date(+y, +m - 1, +d);
+                const weekdayString = Object.keys(weekdayMap).find(k => weekdayMap[k] === selectedDate.getDay());
+                console.log(`weekdayString`, weekdayString);
+
+//                const yyyyMMdd = selectedDate.toDateString();
+                const yyyyMMdd = selectedDate.getFullYear() + "-" + ("0" + (selectedDate.getMonth() + 1)).slice(-2) + "-" + ("0" + selectedDate.getDate()).slice(-2);
+                console.log(`yyyyMMdd`, yyyyMMdd);
+                console.log(`specificDisabledDates`, specificDisabledDates);
+                const disabledShifts = specificDisabledDates
+                        .filter(item => item.date === yyyyMMdd)
+                        .map(item => item.shiftId + '');
+                console.log(`disabledShifts`, disabledShifts);
+                const validShifts = schedules
+                        .filter(s => s.weekDay === weekdayString && !disabledShifts.includes(s.shiftId));
+                console.log(`validShifts`, validShifts);
+
+                const select = document.getElementById("shift");
+                select.innerHTML = '<option value="" disabled selected>Chọn ca làm việc</option>';
+                validShifts.forEach(sh => {
+                    const matched = shifts.find(shift => shift.id === sh.shiftId);
+                    if (matched) {
                         const opt = document.createElement("option");
                         opt.value = sh.shiftId;
-                        opt.textContent = matchedShift.name;
+                        opt.textContent = matched.name;
                         select.appendChild(opt);
                     }
                 });
             }
 
-            flatpickr("#appointmentDate", {
-                dateFormat: "d/m/Y",
-                minDate: "today",
-                defaultDate: document.getElementById("appointmentDate").value,
-                disable: [
-                    function (date) {
-                        const day = date.getDay(); // 0–6
-                        return !allowedDayIndexes.includes(day); // chỉ cho phép ngày có thứ nằm trong danh sách
-                    }
-                ],
-                onChange: function () {
-                    updateShiftOptions();
+            function getDisabledDatesForServic() {
+                try {
+                    const contextPat = window.contextPath || '';
+                    const dId = document.getElementById("doctorId").value;
+                    const patientId = document.getElementById("patientId").value;
+                    console.log(`contextPat`, contextPat);
+                    console.log(`dId`, dId);
+                    console.log(`patientId`, patientId);
+                    const url = contextPat + '/doctor-disable-schedule?doctorId=' + dId + '&patientId=' + patientId
+                    console.log(`url`, url);
+
+                    const res = fetch(url, {method: "GET"})
+                            .then(res => {
+                                if (!res.ok) {
+                                    throw new Error("Network response was not o");
+                                }
+                                return res.json();
+                            })
+                            .then(
+                                    function (data) {
+                                        console.log("Fetched data:", data);
+
+                                        if (!Array.isArray(data)) {
+                                            console.warn("Dữ liệu không phải mảng!");
+                                            return;
+                                        }
+
+                                        specificDisabledDates = data;
+                                        updateFlatpickr();
+                                        updateShiftOptions();
+                                    }
+//                            data => {
+////                        specificDisabledDates = res.json();
+////                                console.log(specificDisabledDates)
+////                                updateFlatpickr();
+////                                updateShiftOptions();
+//                                console.log("Dữ liệu JSON:", data);
+//                                specificDisabledDates = data;
+//                                updateFlatpickr();
+//                            }
+                            )
+                            .catch(error => {
+                                console.error('Error loading doctors:', error);
+                            });
+
+                } catch (e) {
+                    console.error("Network response was not ok", e);
                 }
-            });
-            document.addEventListener('DOMContentLoaded', function () {
-                const input = document.getElementById("appointmentDate");
-                console.log(`date:`, input.value)
-                if (input && input.value) {
-                    updateShiftOptions(); // Nếu có sẵn ngày thì load sẵn ca làm
-                }
-            });
+            }
+
+            async function getDisabledDatesForService(serviceId) {
+                try {
+                    console.log(`contextPath`, contextPath)
+                    const doctorId = document.getElementById("doctorId").value;
+                    const patientId = document.getElementById("patientId").value;
+                    console.log(`serviceId`, serviceId);
+                    console.log(`doctorId`, doctorId);
+                    console.log(`patientId`, patientId);
+                    const res = await fetch(`${contextPath}/doctor-disable-schedule?serviceId=${serviceId}&doctorId=${doctorId}&patientId=${patientId}`, {method: "GET"});
+                                if (!res.ok) {
+                                    throw new Error("Network response was not ok");
+                                }
+                                specificDisabledDates = await res.json();
+                                updateFlatpickr();
+                                updateShiftOptions();
+                            } catch (e) {
+                                console.error("Network response was not ok", e);
+                            }
+                        }
+
+
+//            function updateShiftOptions() {
+//                const input = document.getElementById("appointmentDate").value;
+//                if (!input)
+//                    return;
+//                const dateParts = input.split("/");
+//                if (dateParts.length !== 3)
+//                    return;
+//                const day = parseInt(dateParts[0]);
+//                const month = parseInt(dateParts[1]) - 1; // JS: 0-based month
+//                const year = parseInt(dateParts[2]);
+//                const selectedDate = new Date(year, month, day);
+//                const weekdayNames = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+//                const weekdayString = weekdayNames[selectedDate.getDay()];
+//                // Lọc shift theo thứ
+//                const matchingShifts = schedules.filter(s => s.weekDay === weekdayString);
+//                console.log(`matchingShifts:`, matchingShifts);
+//                // Gán vào thẻ select
+//                const select = document.getElementById("shift");
+//                select.innerHTML = '<option value="" disabled selected>Chọn ca làm việc</option>'; // clear cũ
+//
+//                matchingShifts.forEach(sh => {
+//                    const matchedShift = shifts.find(shift => shift.id === sh.shiftId);
+//                    if (matchedShift) {
+//                        const opt = document.createElement("option");
+//                        opt.value = sh.shiftId;
+//                        opt.textContent = matchedShift.name;
+//                        select.appendChild(opt);
+//                    }
+//                });
+//            }
+
+                        function formatDateToYMD(date) {
+                            return date.toISOString().split('T')[0];
+                        }
+
+//            const flatpickrInstance = flatpickr("#appointmentDate", {
+//                dateFormat: "d/m/Y",
+//                minDate: "today",
+//                defaultDate: document.getElementById("appointmentDate").value,
+//                disable: [
+//                    function (date) {
+//                        const day = date.getDay();
+//                        // Disable nếu không nằm trong thứ được phép
+//                        const isInvalidWeekday = !allowedDayIndexes.includes(day);
+//                        // Disable nếu nằm trong danh sách ngày cụ thể bị khóa
+////                        const isSpecificDate = specificDisabledDates.some(disabledDate =>
+////                            date.toDateString() === disabledDate.toDateString()
+////                        );
+//                        return isInvalidWeekday //|| isSpecificDate;
+//                    }
+//                ],
+//                onChange: function () {
+//                    updateShiftOptions();
+//                }
+//            });
+
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const input = document.getElementById("appointmentDate");
+                            console.log(`date:`, input.value)
+                            if (input && input.value) {
+                                updateShiftOptions(); // Nếu có sẵn ngày thì load sẵn ca làm
+                            }
+                        });
+                        serviceSelect.addEventListener('change', function () {
+                            const price = this.options[this.selectedIndex].getAttribute('data-price');
+                            if (price && price !== 'null') {
+                                servicePrice.textContent = new Intl.NumberFormat('vi-VN').format(price);
+                                priceDisplay.style.display = 'flex';
+                            } else {
+                                priceDisplay.style.display = 'none';
+                            }
+
+                            const serviceId = this.value;
+                            console.log(`serviceId`, serviceId);
+                            if (serviceId) {
+                                console.log(`calling`);
+                                getDisabledDatesForService(serviceId);
+                            }
+                        }
+                        );
+
         </script>
 
     </body>

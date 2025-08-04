@@ -163,6 +163,7 @@
             },
             responsive: true,
             pageLength: 10,
+//            lengthMenu: [ [10, 20, 30, 40], [10, 20, 30, 40] ],
             order: [[0, 'asc']],
             columnDefs: [
                 { orderable: false, targets: [4,5] } // Disable sorting on actions

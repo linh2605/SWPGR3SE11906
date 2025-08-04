@@ -120,6 +120,7 @@
                     }
                 },
                 pageLength: 10,
+//                lengthMenu: [ [10, 20, 30, 40], [10, 20, 30, 40] ],
                 responsive: true,
                 order: [[0, 'asc']],
                 columnDefs: [

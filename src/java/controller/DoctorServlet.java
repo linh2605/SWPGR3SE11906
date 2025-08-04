@@ -372,7 +372,7 @@ public class DoctorServlet extends HttpServlet {
             stmt.setInt(3, doctorId);
             try (ResultSet rs = stmt.executeQuery()) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");;
-                if (rs.next()) {
+                while (rs.next()) {
 
                     DisableShift ds = new DisableShift();
                     ds.setDate(rs.getTimestamp("appointment_date").toLocalDateTime().format(formatter));
